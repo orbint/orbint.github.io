@@ -3,153 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orbint | Space-Based SIGINT</title>
+    <title>Orbint | Orbital Intelligence</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <style>
-        :root {
-            --deep-space: #0B0E14;
-            --satellite-grey: #E2E8F0;
-            --launch-white: #FFFFFF;
-            --orbint-orange: #EC6E00;
-            --border-subtle: rgba(226, 232, 240, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--deep-space);
-            color: var(--satellite-grey);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Technical Typography */
-        h1, h2, h3 { color: var(--launch-white); font-weight: 600; }
-        .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Layout */
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
-        section { padding: 80px 0; border-bottom: 1px solid var(--border-subtle); }
-
-        /* Navigation */
-        nav {
-            padding: 1.5rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .logo { font-weight: 700; font-size: 1.5rem; color: var(--launch-white); text-decoration: none; }
-
-        /* Hero Section */
-        .hero { text-align: center; padding: 120px 0; }
-        .hero h1 { font-size: 3.5rem; margin-bottom: 1.5rem; letter-spacing: -1px; }
-        .hero p { font-size: 1.25rem; max-width: 700px; margin: 0 auto 2rem; }
-
-        .btn {
-            background-color: var(--orbint-orange);
-            color: white;
-            padding: 12px 28px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s ease;
-            display: inline-block;
-        }
-        .btn:hover { transform: translateY(-2px); }
-
-        /* Grid System */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, min-minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 2rem;
-            border: 1px solid var(--border-subtle);
-            border-radius: 4px;
-        }
-        .card h3 { margin-bottom: 1rem; border-left: 3px solid var(--orbint-orange); padding-left: 1rem; }
-
-        /* Contact Form */
-        form { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
-        input, textarea {
-            background: transparent;
-            border: 1px solid var(--border-subtle);
-            padding: 1rem;
-            color: white;
-            font-family: 'Inter', sans-serif;
-        }
-        input:focus { outline: 1px solid var(--orbint-orange); }
-
-        footer { padding: 40px 0; text-align: center; font-size: 0.8rem; opacity: 0.6; }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+    <div class="video-background">
+    <video 
+    autoplay 
+    muted 
+    loop 
+    playsinline 
+    disableremoteplayback 
+    disablepictureinpicture 
+    controlslist="nodownload"
+    oncontextmenu="return false;">
+    <source src="60sLEO.mp4" type="video/mp4">
+</video>
+</div>
+   <nav>
+    <div class="nav-content">        
+        <a href="index.html" class="logo">
+            <img src="orbint_logo.svg" alt="Orbint" style="height: 70px; width: auto;">
+            </a>
+        <div class="nav-links">
+            <a href="index.html" class="mono active">Home</a>
+            <a href="news.html" class="mono">News</a>
+            <a href="career.html" class="mono">Career</a>
+            <a href="company.html" class="mono">Company</a>
+            <a href="contact.html" class="mono">Contact</a>
+        </div>
+    </div>
+</nav>
     <div class="container">
-        <nav>
-            <a href="#" class="logo">ORBINT</a>
-            <div class="mono">v1.0 // System Active</div>
-        </nav>
-
         <section class="hero">
-            <div class="mono" style="color: var(--orbint-orange); margin-bottom: 1rem;">[ Orbiting Signal Intelligence ]</div>
-            <h1>Global transparency through space-based intelligence.</h1>
-            <p>Near real-time high-precision geolocation for security-critical applications in the global defense market.</p>
-            <a href="#contact" class="btn">Request Technical Specs</a>
-        </section>
+    <div class="mono" style="margin-bottom: 1.5rem;">Orbital Intelligence</div>
+    <h1 id="typewriter"></h1> <p>Orbint is a spin-off from the SeRANIS project at University of the Bundeswehr Munich, funded by dtec.bw.</p>
+    <a href="#contact" class="btn">Contact Us</a>
+</section>
 
-        <section id="strategy">
-            <div class="mono">01 // The Only Statement</div>
-            <h2 style="margin-top: 1rem;">Orbint is the ONLY satellite-based SIGINT provider delivering near real-time geolocation for European sovereignty.</h2>
-            
+        <section id="mission">
+            <div class="mono" style="margin-bottom: 1rem; color: var(--orbint-orange);">01 // Strategic Advantage</div>
+            <h2>Protecting Sovereignty.</h2>
             <div class="grid">
                 <div class="card">
-                    <div class="mono" style="margin-bottom: 0.5rem;">Why</div>
+                    <div class="mono" style="margin-bottom: 10px; opacity: 0.5;">01. Why</div>
                     <h3>Transparency</h3>
-                    <p>Protecting sovereignty through intelligence that supports strategic decision-making.</p>
+                    <p>Identify risks before they materialize with unblinking space-based monitoring.</p>
                 </div>
                 <div class="card">
-                    <div class="mono" style="margin-bottom: 0.5rem;">How</div>
-                    <h3>Distributed Network</h3>
-                    <p>Near real-time identification and geolocation of electromagnetic signals.</p>
+                    <div class="mono" style="margin-bottom: 10px; opacity: 0.5;">02. How</div>
+                    <h3>Precision</h3>
+                    <p>A distributed network of SIGINT satellites utilizing advanced geolocation algorithms.</p>
                 </div>
                 <div class="card">
-                    <div class="mono" style="margin-bottom: 0.5rem;">What</div>
+                    <div class="mono" style="margin-bottom: 10px; opacity: 0.5;">03. What</div>
                     <h3>Actionable Data</h3>
-                    <p>High-fidelity monitoring systems and actionable intelligence streams.</p>
+                    <p>Clean, technical intelligence delivered directly to your strategic infrastructure.</p>
                 </div>
             </div>
         </section>
 
         <section id="contact">
-            <div class="mono" style="text-align: center; margin-bottom: 2rem;">02 // Secure Contact</div>
-            <form action="https://formspree.io/f/your-id-here" method="POST">
-                <input type="text" name="name" placeholder="Name / Organization" required>
-                <input type="email" name="_replyto" placeholder="Email (Official Domain Required)" required>
-                <textarea name="message" rows="5" placeholder="Inquiry Details..." required></textarea>
-                <button type="submit" class="btn">Transmit Signal</button>
-            </form>
+            <div style="text-align: center;">
+                <div class="mono" style="margin-bottom: 1rem; color: var(--orbint-orange);">02 // Data Uplink</div>
+                <h2>Connect with Mission Control</h2>
+            </div>
+            <div class="contact-wrap">
+                <form id="uplink-form">
+                    <input type="text" placeholder="ORGANIZATION_ID" required>
+                    <input type="email" placeholder="SECURE_EMAIL" required>
+                    <textarea rows="5" placeholder="REASON_FOR_INQUIRY" required></textarea>
+                    <button type="submit" class="btn">Initiate Transmission</button>
+                </form>
+            </div>
         </section>
 
         <footer>
-            <p class="mono">© 2024 ORBINT // HOSTED ON GITHUB PAGES // ENCRYPTED DATA TRANSFER</p>
+            <div class="mono">© 2026 ORBINT AG</div>
         </footer>
     </div>
 
-    <script>
-        // Simple scroll reveal or interaction logic can go here
-        console.log("Orbint System Initialized...");
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
