@@ -24,6 +24,9 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
 }
+/*     font-family: 'Inter', sans-serif;
+ */
+
 
 /* --- VIDEO BACKGROUND LAYER --- */
 .video-background {
@@ -70,6 +73,7 @@ body::after {
 }
 
 /* --- TYPOGRAPHY & LAYOUT --- */
+
 
 h1, h2, h3 { color: var(--launch-white); font-weight: 600; }
 
@@ -147,6 +151,7 @@ nav {
 }
 
 .hero h1 { 
+    text-align: left; /* This 'wins' inside the hero section */
     font-family: 'JetBrains Mono', monospace;
     font-size: 3.5rem; 
     margin-bottom: 1.5rem; 
@@ -260,4 +265,122 @@ video {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+.nav-links a:hover, .nav-links a.active {
+    opacity: 1;
+    color: var(--orbint-orange);
+}
+
+
+/* --- NEWS PAGE / LIGHT THEME OVERRIDES --- */
+
+body.light-theme {
+    background-color: var(--launch-white);
+    color: #1a1a1a; /* Soft black for better readability */
+}
+
+/* Remove or hide the video/overlays on the light page if desired */
+body.light-theme .video-background,
+body.light-theme::before,
+body.light-theme::after {
+    display: none;
+}
+
+/* Adjust navigation for the light background */
+body.light-theme .logo, 
+body.light-theme h1, 
+body.light-theme h2, 
+body.light-theme h3 {
+    color: #0b0e14;
+}
+
+body.light-theme .nav-links a {
+    color: #444;
+    opacity: 0.8;
+}
+
+body.light-theme .nav-links a.active {
+    color: var(--orbint-orange);
+    opacity: 1;
+}
+
+/* Ensure cards or content blocks look good on white */
+body.light-theme .card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+
+/* --- NEWS SECTION STYLES --- */
+
+#news-feed {
+    padding-top: 2rem;
+    max-width: 850px; /* Narrower than main container for better readability */
+    margin: 0 auto;
+}
+
+.news-card {
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+/* Metadata (Date // Category) */
+.news-meta {
+    color: var(--orbint-orange);
+    font-weight: 500;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Typography Overrides for Light Theme News */
+body.light-theme .news-card h2 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+body.light-theme .news-card p {
+    font-size: 1.15rem;
+    color: #334155;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+/* Blockquotes for the Rohde & Schwarz press release */
+body.light-theme blockquote {
+    border-left: 3px solid var(--orbint-orange);
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    color: #475569;
+    font-size: 1.1rem;
+}
+
+body.light-theme blockquote span {
+    display: block;
+    margin-top: 0.5rem;
+    font-style: normal;
+    font-size: 0.8rem;
+}
+
+/* Captions and Figures */
+.figure-caption {
+    background: #f1f5f9;
+    padding: 1rem;
+    border-radius: 2px;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+/* Visual Dividers */
+.news-divider {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, var(--orbint-orange), transparent);
+    margin: 4rem 0;
+    opacity: 0.3;
 }

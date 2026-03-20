@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="video-background">
@@ -21,14 +21,15 @@
     disableremoteplayback 
     disablepictureinpicture 
     controlslist="nodownload"
-    oncontextmenu="return false;">
-    <source src="60sLEO.mp4" type="video/mp4">
+    oncontextmenu="return false;"
+    poster="fallback-image.jpg">
+    <source src="assets/videos/60sLEO.mp4" type="video/mp4">
 </video>
 </div>
    <nav>
     <div class="nav-content">        
         <a href="index.html" class="logo">
-            <img src="orbint_logo.svg" alt="Orbint" style="height: 70px; width: auto;">
+            <img src="assets/images/white_white_logo.png" alt="Orbint" style="height: 70px; width: auto;">
             </a>
         <div class="nav-links">
             <a href="index.html" class="mono active">Home</a>
@@ -42,7 +43,8 @@
     <div class="container">
         <section class="hero">
     <div class="mono" style="margin-bottom: 1.5rem;">Orbital Intelligence</div>
-    <h1 id="typewriter"></h1> <p>Orbint is a spin-off from the SeRANIS project at University of the Bundeswehr Munich, funded by dtec.bw.</p>
+    <h1 id="typewriter">We detect, identify, and locate signals around the globe.</h1> 
+    <p>Orbint is a spin-off from the SeRANIS project at University of the Bundeswehr Munich, funded by dtec.bw.</p>
     <a href="#contact" class="btn">Contact Us</a>
 </section>
 
@@ -88,6 +90,6 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
