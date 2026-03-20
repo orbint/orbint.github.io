@@ -34,3 +34,13 @@ function toggleArticle(card) {
         btn.innerText = "Read Full Article +";
     }
 }
+
+const footerTemplate = `
+    <footer>
+        <div class="container">
+            <div class="mono">© 2026 ORBINT GmbH</div>
+        </div>
+    </footer>
+`;
+
+document.getElementById('footer-placeholder').innerHTML = footerTemplate;
