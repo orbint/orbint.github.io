@@ -35,10 +35,32 @@ function toggleArticle(card) {
     }
 }
 
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        navLinks.classList.toggle('open');
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            navLinks.classList.remove('open');
+        });
+    });
+}
+
 const footerTemplate = `
     <footer>
         <div class="container">
             <div class="mono">© 2026 ORBINT GmbH</div>
+            <div class="mono" style="margin-top: 0.5rem;">
+                <a href="impressum.html" class="footer-link">Impressum</a>
+                &nbsp;·&nbsp;
+                <a href="privacy.html" class="footer-link">Privacy Policy</a>
+            </div>
         </div>
     </footer>
 `;

@@ -228,6 +228,15 @@ input:focus { border-color: var(--orbint-orange); outline: none; }
 
 footer { padding: 80px 0; text-align: center; opacity: 0.5; font-size: 0.7rem; }
 
+.footer-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    opacity: 1;
+}
+
 /* --- ANIMATIONS & RESPONSIVENESS --- */
 
 #typewriter.typing::after {
@@ -242,9 +251,76 @@ footer { padding: 80px 0; text-align: center; opacity: 0.5; font-size: 0.7rem; }
     50% { opacity: 0; }
 }
 
+/* --- HAMBURGER BUTTON --- */
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: auto;
+    position: relative;
+    z-index: 200;
+}
+
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--satellite-grey);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+body.light-theme .hamburger span {
+    background: #0b0e14;
+}
+
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 @media (max-width: 768px) {
     .hero h1 { font-size: 2.5rem; }
-    .nav-links { display: none; } /* Consider a mobile menu later */
+
+    .hamburger { display: flex; }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(11, 14, 20, 0.97);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        z-index: 100;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        pointer-events: none;
+        margin: 0;
+    }
+
+    .nav-links.open {
+        transform: translateY(0);
+        pointer-events: all;
+    }
+
+    .nav-links a {
+        font-size: 1.25rem !important;
+        opacity: 0.9 !important;
+        letter-spacing: 3px;
+    }
+
+    body.light-theme .nav-links {
+        background: rgba(255, 255, 255, 0.97);
+    }
 }
 
 ::selection {
@@ -374,6 +450,42 @@ body.light-theme blockquote span {
     color: #64748b;
     margin-top: 1rem;
     display: inline-block;
+}
+
+/* --- LEGAL PAGES (Privacy, Impressum) --- */
+
+.legal-content p {
+    font-size: 1.1rem;
+    color: #334155;
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+}
+
+.legal-content h2 {
+    font-size: 1.1rem;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    color: #0b0e14;
+}
+
+.legal-content ul {
+    margin: 0.75rem 0 1.25rem 1.5rem;
+}
+
+.legal-content li {
+    font-size: 1.1rem;
+    color: #334155;
+    line-height: 1.7;
+    margin-bottom: 0.4rem;
+}
+
+.legal-content a {
+    color: var(--orbint-orange);
+    text-decoration: none;
+}
+
+.legal-content a:hover {
+    text-decoration: underline;
 }
 
 /* Visual Dividers */
