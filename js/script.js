@@ -35,6 +35,57 @@ function toggleArticle(card) {
     }
 }
 
+// Set to live URL when server is deployed:
+// const CONTACT_ENDPOINT = 'https://api.orbint.de/contact';
+const CONTACT_ENDPOINT = null; // mock mode
+
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('form-submit');
+        const errorBox = document.getElementById('form-error');
+        const successBox = document.getElementById('form-success');
+
+        errorBox.hidden = true;
+        successBox.hidden = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        const payload = {
+            name: contactForm.name.value.trim(),
+            email: contactForm.email.value.trim(),
+            phone: contactForm.phone.value.trim(),
+            message: contactForm.message.value.trim(),
+        };
+
+        try {
+            if (CONTACT_ENDPOINT) {
+                const res = await fetch(CONTACT_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                if (!res.ok) throw new Error('Server error');
+            } else {
+                // Mock: simulate network delay
+                console.log('Contact form payload (mock):', payload);
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            contactForm.reset();
+            successBox.hidden = false;
+        } catch {
+            errorBox.textContent = 'Something went wrong. Please try again or email us directly at info@orbint.de.';
+            errorBox.hidden = false;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Message';
+        }
+    });
+}
+
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
 
