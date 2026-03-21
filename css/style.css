@@ -251,6 +251,42 @@ footer { padding: 80px 0; text-align: center; opacity: 0.5; font-size: 0.7rem; }
     50% { opacity: 0; }
 }
 
+/* --- FOUNDERS GRID --- */
+
+.founders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 3rem 2rem;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.founder-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.founder-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--orbint-orange);
+}
+
+.founder-name {
+    font-weight: 600;
+    color: var(--launch-white);
+    font-size: 1rem;
+}
+
+.founder-role {
+    opacity: 0.6;
+    margin-top: 0.25rem;
+}
+
 /* --- HAMBURGER BUTTON --- */
 
 .hamburger {
