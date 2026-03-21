@@ -108,9 +108,13 @@ const footerTemplate = `
         <div class="container">
             <div class="mono">© 2026 ORBINT GmbH</div>
             <div class="mono" style="margin-top: 0.5rem;">
-                <a href="/impressum.html" class="footer-link">Impressum</a>
+                <a href="/index.html" class="footer-link">Home</a>
                 &nbsp;·&nbsp;
                 <a href="/privacy.html" class="footer-link">Privacy Policy</a>
+                &nbsp;·&nbsp;
+                <a href="/impressum.html" class="footer-link">Impressum</a>
+                &nbsp;·&nbsp;
+                <a href="/contact.html" class="footer-link">Contact</a>
             </div>
         </div>
     </footer>
