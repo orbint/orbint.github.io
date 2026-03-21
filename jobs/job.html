@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career | Orbint</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="light-theme">
+    <nav>
+        <div class="nav-content">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/black_black_logo.png" alt="Orbint" style="height: 70px; width: auto;">
+            </a>
+            <div class="nav-links">
+                <a href="../index.html" class="mono">Mission</a>
+                <a href="../news.html" class="mono">News</a>
+                <a href="../career.html" class="mono active">Career</a>
+                <a href="../company.html" class="mono">Company</a>
+                <a href="../contact.html" class="mono">Contact</a>
+            </div>
+            <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="hero">
+            <div class="mono" id="job-meta" style="margin-bottom: 1.5rem;"></div>
+            <h1 id="job-title"></h1>
+        </section>
+
+        <section class="legal-content" id="job-body"></section>
+
+        <div id="footer-placeholder"></div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        const slug = new URLSearchParams(location.search).get('slug');
+
+        if (!slug) {
+            location.href = '../career.html';
+        } else {
+            fetch(`posts/${slug}.json`)
+                .then(r => {
+                    if (!r.ok) throw new Error();
+                    return r.json();
+                })
+                .then(job => {
+                    document.title = `${job.title} | Orbint`;
+                    document.getElementById('job-meta').textContent = `${job.location} // ${job.type}`;
+                    document.getElementById('job-title').textContent = job.title;
+                    document.getElementById('job-body').innerHTML =
+                        job.body + '<p style="margin-top:3rem"><a href="../career.html">← Back to Career</a></p>';
+                })
+                .catch(() => {
+                    document.getElementById('job-body').innerHTML =
+                        '<p>Job not found.</p><p><a href="../career.html">← Back to Career</a></p>';
+                });
+        }
+    </script>
+</body>
+</html>
