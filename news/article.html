@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News | Orbint</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="light-theme">
+    <nav>
+        <div class="nav-content">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/black_black_logo.png" alt="Orbint" style="height: 70px; width: auto;">
+            </a>
+            <div class="nav-links">
+                <a href="../index.html" class="mono">Mission</a>
+                <a href="../news.html" class="mono active">News</a>
+                <a href="../career.html" class="mono">Career</a>
+                <a href="../company.html" class="mono">Company</a>
+                <a href="../contact.html" class="mono">Contact</a>
+            </div>
+            <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="hero">
+            <div class="mono" id="article-meta" style="margin-bottom: 1.5rem;"></div>
+            <h1 id="article-title"></h1>
+        </section>
+
+        <section class="legal-content" id="article-body"></section>
+
+        <div id="footer-placeholder"></div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        const slug = new URLSearchParams(location.search).get('slug');
+
+        if (!slug) {
+            location.href = '../news.html';
+        } else {
+            fetch(`articles/${slug}.json`)
+                .then(r => {
+                    if (!r.ok) throw new Error();
+                    return r.json();
+                })
+                .then(article => {
+                    document.title = `${article.title} | Orbint`;
+                    document.getElementById('article-meta').textContent = `${article.date} // ${article.category}`;
+                    document.getElementById('article-title').textContent = article.title;
+                    document.getElementById('article-body').innerHTML =
+                        article.body + '<p style="margin-top:3rem"><a href="../news.html">← Back to News</a></p>';
+                })
+                .catch(() => {
+                    document.getElementById('article-body').innerHTML =
+                        '<p>Article not found.</p><p><a href="../news.html">← Back to News</a></p>';
+                });
+        }
+    </script>
+</body>
+</html>

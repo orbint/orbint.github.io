@@ -24,7 +24,7 @@
                 <img src="assets/images/black_black_logo.png" alt="Orbint" style="height: 70px; width: auto;">
             </a>
             <div class="nav-links">
-                <a href="index.html" class="mono">Home</a>
+                <a href="index.html" class="mono">Mission</a>
                 <a href="news.html" class="mono active">News</a>
                 <a href="career.html" class="mono">Career</a>
                 <a href="company.html" class="mono">Company</a>
@@ -41,45 +41,33 @@
         </section>
 
         <section id="news-feed">
-            
-            <article class="news-card">
-                <div class="mono news-meta">Nov 18, 2025 // EVENT</div>
-                <h2>SeRANIS and Orbint at Space Tech Expo 2025</h2>
-                <p>Last week, Leonhard Kessler and Daniel Weinzierl from the Universität der Bundeswehr München had the pleasure of presenting the SeRANIS Mission and our spin-off Orbint at the joint booth during Space Tech Expo Europe in Bremen.</p>
-                <div class="figure-caption mono">Figure: Leonhard Kessler (l.) and Daniel Weinzierl (r.)</div>
-            </article>
-
-            <hr class="news-divider">
-
-            <article class="news-card">
-                <div class="mono news-meta">Nov 13, 2025 // STRATEGIC PARTNERSHIP</div>
-                <h2>Rohde & Schwarz beteiligt sich an Orbint GmbH</h2>
-                <p>Der Technologiekonzern Rohde & Schwarz hat sich an der Orbint GmbH beteiligt. Als strategische Partner bündeln beide Unternehmen ihre Kompetenz im Bereich satellitengestützte, signalerfassende Aufklärung, um die technologische Souveränität Deutschlands und Europas zu stärken.</p>
-                <blockquote>
-                    "In der aktuellen sicherheitspolitischen Lage ist Signalaufklärung aus dem Weltraum eine Schlüsselfähigkeit für Europa." 
-                    <span class="mono">— Alexander Orellano, Rohde & Schwarz</span>
-                </blockquote>
-            </article>
-
-            <hr class="news-divider">
-
-            <article class="news-card">
-                <div class="mono news-meta">Jul 15, 2025 // MILESTONE</div>
-                <h2>Orbint becomes 100th Member of BDI NewSpace Initiative</h2>
-                <p>Mit großer Freude heißen wir die Orbint GmbH als 100. Mitglied der NewSpace Initiative willkommen! Das Unternehmen revolutioniert die weltraumgestützte Signalaufklärung (SIGINT) durch ein verteiltes Satellitennetzwerk.</p>
-                <div class="figure-caption mono">Figure: Orbint Co-Founders at BDI</div>
-            </article>
-
-            <hr class="news-divider">
-
-            <article class="news-card">
-                <div class="mono news-meta">Mar 31, 2025 // BROADCAST</div>
-                <h2>"Tag der Raumfahrt" in Berlin: Space Cafe Clip</h2>
-                <p>Alexander Schmidt, co-founder of Orbint GmbH, sat down with SpaceWatch.Global TV to dive into the future of satellite-based signal intelligence and Orbint's mission to deliver precise, actionable insights through advanced orbital technology.</p>
-                <a href="#" class="mono" style="color: var(--orbint-orange);">Watch Interview →</a>
-            </article>
-
+            <div class="mono" style="opacity: 0.5;">Loading...</div>
         </section>
+
+        <script>
+            const slugs = [
+                'space-tech-expo-2025',
+                'rohde-schwarz-partnership',
+                'bdi-newspace-100th-member',
+                'tag-der-raumfahrt-space-cafe',
+            ];
+
+            Promise.all(
+                slugs.map(slug =>
+                    fetch(`news/articles/${slug}.json`).then(r => r.json()).then(a => ({ ...a, slug }))
+                )
+            ).then(articles => {
+                document.getElementById('news-feed').innerHTML = articles.map((a, i) => `
+                    ${i > 0 ? '<hr class="news-divider">' : ''}
+                    <article class="news-card">
+                        <div class="mono news-meta">${a.date} // ${a.category}</div>
+                        <h2>${a.title}</h2>
+                        <p>${a.excerpt}</p>
+                        <a href="news/article.html?slug=${a.slug}" class="mono" style="color: var(--orbint-orange);">Read Article →</a>
+                    </article>
+                `).join('');
+            });
+        </script>
 
         <div id="footer-placeholder"></div>
     </div>

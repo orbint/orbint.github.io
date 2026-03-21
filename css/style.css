@@ -509,6 +509,23 @@ body.light-theme textarea:focus {
     background: #f0fff4;
 }
 
+/* --- ARTICLE IMAGES --- */
+
+.legal-content img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 2rem 0;
+}
+
+.legal-content .image-caption {
+    margin-top: -1.5rem;
+    margin-bottom: 2rem;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
 /* --- LEGAL PAGES (Privacy, Impressum) --- */
 
 .legal-content p {
