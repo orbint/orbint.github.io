@@ -452,6 +452,63 @@ body.light-theme blockquote span {
     display: inline-block;
 }
 
+/* --- CONTACT FORM (light theme) --- */
+
+.contact-section {
+    padding: 0 0 120px;
+}
+
+.contact-wrap {
+    max-width: 600px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    color: #444;
+}
+
+body.light-theme input,
+body.light-theme textarea {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #0b0e14;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    padding: 1rem;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+body.light-theme input:focus,
+body.light-theme textarea:focus {
+    border-color: var(--orbint-orange);
+    outline: none;
+}
+
+.form-feedback {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.form-error {
+    border-left: 3px solid #e53e3e;
+    color: #c53030;
+    background: #fff5f5;
+}
+
+.form-success {
+    border-left: 3px solid #38a169;
+    color: #276749;
+    background: #f0fff4;
+}
+
 /* --- LEGAL PAGES (Privacy, Impressum) --- */
 
 .legal-content p {
