@@ -270,6 +270,14 @@ footer { padding: 80px 0; text-align: center; opacity: 0.5; font-size: 0.7rem; }
     margin-top: 0.25rem;
 }
 
+body.light-theme .founder-name {
+    color: #0b0e14;
+}
+
+body.light-theme .founder-avatar {
+    border-color: var(--orbint-orange);
+}
+
 /* --- HAMBURGER BUTTON --- */
 
 .hamburger {
