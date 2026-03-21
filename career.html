@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News | Orbint | Orbital Intelligence</title>
+    <title>Career | Orbint | Orbital Intelligence</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +39,46 @@
             <div class="mono" style="margin-bottom: 1.5rem;">Job Board // We are hiring!</div>
         <h1 id="typewriter">Redefine how intelligence is delivered from space.</h1> 
         </section>
+
+        <section class="legal-content">
+            <h2>Our Mission</h2>
+            <p>Orbint is a spin-off from the SeRANIS program at the University of the Bundeswehr Munich, funded by dtec.bw. Orbint is building a new layer of intelligence in orbit: a distributed satellite system that detects, identifies and geolocates radio-frequency emitters worldwide in near real time. Our technology provides defence and security customers with an up-to-date operational picture and actionable intelligence across the electromagnetic spectrum.</p>
+        </section>
+
+        <section id="job-feed">
+            <div class="mono" style="opacity: 0.5;">Loading...</div>
+        </section>
+
+        <script>
+            const jobSlugs = [
+                'signal-processing-engineer',
+                'systems-engineer',
+                'mechanical-engineer',
+                'project-manager',
+                'embedded-software-developer',
+                'software-developer-ground',
+                'fpga-engineer',
+            ];
+
+            Promise.all(
+                jobSlugs.map(slug =>
+                    fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
+                )
+            ).then(jobs => {
+                document.getElementById('job-feed').innerHTML = jobs.map((j, i) => `
+                    ${i > 0 ? '<hr class="news-divider">' : ''}
+                    <article class="news-card">
+                        <div class="mono news-meta">${j.location} // ${j.type}</div>
+                        <h2>${j.title}</h2>
+                        <p>${j.excerpt}</p>
+                        <a href="jobs/job.html?slug=${j.slug}" class="mono" style="color: var(--orbint-orange);">View Position →</a>
+                    </article>
+                `).join('');
+            }).catch(() => {
+                document.getElementById('job-feed').innerHTML =
+                    '<p class="mono" style="opacity:0.5;">Could not load positions. If testing locally, run: <code>python3 -m http.server 8000</code></p>';
+            });
+        </script>
 
         <div id="footer-placeholder"></div>
     </div>
