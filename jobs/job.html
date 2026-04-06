@@ -7,7 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -15,7 +15,7 @@
     <nav>
         <div class="nav-content">
             <a href="../index.html" class="logo">
-                <img src="../assets/images/black_black_logo.png" alt="Orbint" style="height: 70px; width: auto;">
+                <img src="../assets/images/black_black_logo.png" alt="Orbint" style="height: 50px; width: auto;">
             </a>
             <div class="nav-links">
                 <a href="../index.html" class="mono">Mission</a>
@@ -53,7 +53,7 @@
                 })
                 .then(job => {
                     document.title = `${job.title} | Orbint`;
-                    document.getElementById('job-meta').textContent = `${job.location} // ${job.type}`;
+                    document.getElementById('job-meta').textContent = `${job.location} · ${job.type}`;
                     document.getElementById('job-title').textContent = job.title;
                     document.getElementById('job-body').innerHTML =
                         job.body + '<p style="margin-top:3rem"><a href="../career.html">← Back to Career</a></p>';
