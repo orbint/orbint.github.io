@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -21,7 +21,7 @@
     <nav>
         <div class="nav-content">        
             <a href="index.html" class="logo">
-                <img src="assets/images/black_black_logo.png" alt="Orbint" style="height: 70px; width: auto;">
+                <img src="assets/images/black_black_logo.png" alt="Orbint" style="height: 50px; width: auto;">
             </a>
             <div class="nav-links">
                 <a href="index.html" class="mono">Mission</a>
@@ -36,12 +36,12 @@
 
     <div class="container">
         <section class="hero">
-            <div class="mono" style="margin-bottom: 1.5rem;">Transmission Log // News</div>
         <h1 id="typewriter">Stay updated about Orbint's latest developments and achievements.</h1> 
         </section>
 
-        <section id="news-feed">
-            <div class="mono" style="opacity: 0.5;">Loading...</div>
+        <section id="news-feed-section">
+            <h2>Articles</h2>
+            <div id="news-feed"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
         </section>
 
         <script>
@@ -55,15 +55,9 @@
                     fetch(`news/articles/${slug}.json`).then(r => r.json()).then(a => ({ ...a, slug }))
                 )
             ).then(articles => {
-                document.getElementById('news-feed').innerHTML = articles.map((a, i) => `
-                    ${i > 0 ? '<hr class="news-divider">' : ''}
-                    <article class="news-card">
-                        <div class="mono news-meta">${a.date} // ${a.category}</div>
-                        <h2>${a.title}</h2>
-                        <p>${a.excerpt}</p>
-                        <a href="news/article.html?slug=${a.slug}" class="mono" style="color: var(--orbint-orange);">Read Article →</a>
-                    </article>
-                `).join('');
+                document.getElementById('news-feed').innerHTML = `<ul class="job-list">${articles.map(a => `
+                    <li><a href="news/article.html?slug=${a.slug}" class="job-list-item">${a.title}</a></li>
+                `).join('')}</ul>`;
             });
         </script>
 
