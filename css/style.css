@@ -56,23 +56,23 @@ body {
 }
 
 
-/* --- VIDEO BACKGROUND LAYER --- */
+/* --- GIF BACKGROUND LAYER --- */
 .video-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -2; /* Sits at the very bottom */
+    z-index: -2;
     overflow: hidden;
     pointer-events: none;
 }
 
-.video-background video {
+.video-background img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.6) grayscale(0.2); /* Helps text readability */
+    filter: brightness(0.6) grayscale(0.2);
 }
 
 /* --- OVERLAYS --- */
