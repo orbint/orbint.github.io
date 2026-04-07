@@ -126,41 +126,4 @@ const navFade = document.createElement('div');
 navFade.className = 'nav-fade';
 document.body.appendChild(navFade);
 
-// Cubesat visibility: single observer watching all cubesat sections
-const cubesatWrapper = document.getElementById('cubesat-fixed');
-if (cubesatWrapper) {
-    const cubesatSections = document.querySelectorAll('.cubesat-section');
-    const cubesatObserver = new IntersectionObserver(entries => {
-        entries.forEach(e => e.target.classList.toggle('cubesat-visible', e.isIntersecting));
-        cubesatWrapper.style.opacity = [...cubesatSections].some(s => s.classList.contains('cubesat-visible')) ? '1' : '0';
-    }, { threshold: 0.5 });
-    cubesatSections.forEach(s => cubesatObserver.observe(s));
-}
 
-// Arrow key / PageUp/PageDown navigation for snap-container
-const snapContainer = document.querySelector('.snap-container');
-if (snapContainer) {
-    const snapSections = Array.from(snapContainer.querySelectorAll('.snap-section'));
-    let currentIndex = 0;
-    let isScrolling = false;
-
-    document.addEventListener('keydown', (e) => {
-        if (!['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.key)) return;
-        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-
-        e.preventDefault();
-        if (isScrolling) return;
-
-        const goDown = e.key === 'ArrowDown' || e.key === 'PageDown';
-        const nextIndex = goDown
-            ? Math.min(currentIndex + 1, snapSections.length - 1)
-            : Math.max(currentIndex - 1, 0);
-
-        if (nextIndex === currentIndex) return;
-
-        isScrolling = true;
-        currentIndex = nextIndex;
-        snapContainer.scrollTo({ top: snapSections[currentIndex].offsetTop, behavior: 'smooth' });
-        setTimeout(() => { isScrolling = false; }, 800);
-    });
-}
