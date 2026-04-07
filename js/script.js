@@ -103,18 +103,53 @@ if (hamburger && navLinks) {
     });
 }
 
+const isLightTheme = document.body.classList.contains('light-theme');
+const footerLogo = isLightTheme
+    ? '/assets/images/black_black_logo.png'
+    : '/assets/images/white_white_logo.png';
+
 const footerTemplate = `
     <footer>
         <div class="container">
-            <div class="mono">© 2026 ORBINT GmbH</div>
-            <div class="mono" style="margin-top: 0.5rem;">
-                <a href="/index.html" class="footer-link">Home</a>
-                &nbsp;·&nbsp;
-                <a href="/privacy.html" class="footer-link">Privacy Policy</a>
-                &nbsp;·&nbsp;
-                <a href="/impressum.html" class="footer-link">Impressum</a>
-                &nbsp;·&nbsp;
-                <a href="/contact.html" class="footer-link">Contact</a>
+            <div class="accent-card footer-card">
+                <div class="footer-grid">
+                    <div class="footer-col footer-col-brand">
+                        <a href="/index.html">
+                            <img src="${footerLogo}" alt="Orbint" class="footer-logo">
+                        </a>
+                        <div class="footer-legal mono">© 2026 Orbint GmbH</div>
+                    </div>
+
+                    <div class="footer-col">
+                        <div class="footer-label mono">Sitemap</div>
+                        <div class="footer-nav">
+                            <a href="/index.html" class="footer-link footer-nav-link">Mission</a>
+                            <a href="/news.html" class="footer-link footer-nav-link">News</a>
+                            <a href="/career.html" class="footer-link footer-nav-link">Career</a>
+                            <a href="/company.html" class="footer-link footer-nav-link">About Us</a>
+                            <a href="/contact.html" class="footer-link footer-nav-link">Contact</a>
+                        </div>
+                    </div>
+
+                    <div class="footer-col">
+                        <div class="footer-label mono">Email</div>
+                        <a href="mailto:info@orbint.de" class="footer-link footer-value mono">info@orbint.de</a>
+
+                        <div class="footer-label mono" style="margin-top: 2rem;">Address</div>
+                        <div class="footer-value mono">
+                            Orbint GmbH<br>
+                            Lilienthalstr. 9<br>
+                            85579 Neubiberg<br>
+                            Germany
+                        </div>
+
+                        <div class="footer-meta mono">
+                            <a href="/privacy.html" class="footer-link">Privacy Policy</a>
+                            &nbsp;·&nbsp;
+                            <a href="/impressum.html" class="footer-link">Impressum</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
