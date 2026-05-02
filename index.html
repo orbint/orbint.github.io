@@ -7,40 +7,45 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="video-background">
-        <video autoplay muted loop playsinline disableremoteplayback disablepictureinpicture controlslist="nodownload" oncontextmenu="return false;" poster="assets/images/poster_dark.jpg">
+        <video id="video-dark" autoplay muted loop playsinline disableremoteplayback disablepictureinpicture controlslist="nodownload" oncontextmenu="return false;" poster="assets/images/poster_dark.jpg">
             <source src="assets/videos/60sLEO.mp4" type="video/mp4">
+        </video>
+        <video id="video-light" autoplay muted loop playsinline disableremoteplayback disablepictureinpicture controlslist="nodownload" oncontextmenu="return false;" poster="assets/images/poster_sketch.jpg">
+            <source src="assets/videos/60sLEO_sketch.mp4" type="video/mp4">
         </video>
         <img src="assets/images/poster_dark.jpg" alt="" class="bg-fallback">
     </div>
+
     <nav>
         <div class="nav-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/white_white_logo.png" alt="Orbint" style="height: 50px; width: auto;">
+            <a href="#mission" class="logo logo-crossfade">
+                <img id="nav-logo-dark" src="assets/images/white_white_logo.png" alt="Orbint">
+                <img id="nav-logo-light" src="assets/images/black_black_logo.png" alt="">
             </a>
             <div class="nav-links">
-                <a href="index.html" class="mono active">Mission</a>
-                <a href="news.html" class="mono">News</a>
-                <a href="career.html" class="mono">Career</a>
-                <a href="company.html" class="mono">About Us</a>
-                <a href="contact.html" class="mono">Contact</a>
+                <a href="#mission" class="mono active" data-section="mission">Mission</a>
+                <a href="#about" class="mono" data-section="about">About Us</a>
+                <a href="#career" class="mono" data-section="career">Career</a>
+                <a href="#news" class="mono" data-section="news">News</a>
+                <a href="#contact" class="mono" data-section="contact">Contact</a>
             </div>
             <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
         </div>
     </nav>
 
-
-    <div>
+    <!-- ── MISSION ─────────────────────────────────────────────── -->
+    <div id="mission">
         <section class="section-hero">
             <div class="container">
-                <div class="mono" style="margin-bottom: 1.5rem;">Orbital Intelligence</div>
+                <div class="mono hero-eyebrow">Orbital Intelligence</div>
                 <h1 id="typewriter">We detect, identify, and locate signals around the globe.</h1>
-                <a href="contact.html" class="btn" style="margin-top: 2rem;">Contact Us</a>
+                <a href="#contact" class="btn">Contact Us</a>
             </div>
         </section>
 
@@ -92,7 +97,7 @@
                     </div>
                     <div class="accent-card-body">
                         <h2>Sovereign by Design, European by Conviction.</h2>
-                        <p>Built in Europe, for Europe. From the University of the Bundeswehr Munich to our partnership with Rohde & Schwarz, we keep critical intelligence infrastructure and your data in European hands.</p>
+                        <p>Built in Europe, for Europe. From the University of the Bundeswehr Munich to our partnership with Rohde &amp; Schwarz, we keep critical intelligence infrastructure and your data in European hands.</p>
                     </div>
                 </div>
             </div>
@@ -112,19 +117,173 @@
                             <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" alt="Palladion"></a>
                         </div>
                     </div>
-                    <div class="accent-card-body" style="border-top: 1px solid var(--orbint-orange);">
+                    <div class="accent-card-body accent-card-body--bordered">
                         <h2>Backed by Strong Partners.</h2>
                         <p>Orbint is a spin-off from the SeRANIS project at University of the Bundeswehr Munich, funded by dtec.bw.</p>
                     </div>
                 </div>
             </div>
         </section>
+    </div>
 
-        <section class="page-section" id="footer-section">
-            <div id="footer-placeholder"></div>
+    <!-- ── ABOUT US ────────────────────────────────────────────── -->
+    <div id="about">
+        <section class="section-hero">
+            <div class="container">
+                <h1>Delivering actionable RF intelligence from orbit to secure a more informed world.</h1>
+            </div>
+        </section>
+
+        <section class="page-section" id="founders">
+            <div class="container">
+                <h2>Our Founders</h2>
+                <div class="founders-grid">
+                    <div class="founder-card">
+                        <img src="assets/images/founders/alexander-schmidt.jpg" alt="Alexander Schmidt" class="founder-avatar">
+                        <div>
+                            <div class="founder-name">Dr. Alexander Schmidt</div>
+                            <div class="mono founder-role">Co-Founder &amp; Co-CEO</div>
+                        </div>
+                    </div>
+                    <div class="founder-card">
+                        <img src="assets/images/founders/simon-heine.jpg" alt="Simon Heine" class="founder-avatar">
+                        <div>
+                            <div class="founder-name">Simon Heine</div>
+                            <div class="mono founder-role">Co-Founder &amp; Co-CEO</div>
+                        </div>
+                    </div>
+                    <div class="founder-card">
+                        <img src="assets/images/founders/daniel-weinzierl.jpg" alt="Daniel Weinzierl" class="founder-avatar">
+                        <div>
+                            <div class="founder-name">Daniel Weinzierl</div>
+                            <div class="mono founder-role">Co-Founder &amp; CTO</div>
+                        </div>
+                    </div>
+                    <div class="founder-card">
+                        <img src="assets/images/founders/winfried-stock.jpg" alt="Winfried Stock" class="founder-avatar">
+                        <div>
+                            <div class="founder-name">Winfried Stock</div>
+                            <div class="mono founder-role">Co-Founder &amp; CTO</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 
+    <!-- ── CAREER ────────────────────────────────────────────── -->
+    <div id="career">
+        <section class="page-section-hero">
+            <div class="container">
+                <h1>Redefine how intelligence is delivered from space.</h1>
+            </div>
+        </section>
+
+        <section class="page-section">
+            <div class="container">
+                <h2>Our Mission</h2>
+                <p>Orbint is a spin-off from the SeRANIS program at the University of the Bundeswehr Munich, funded by dtec.bw. Orbint is building a new layer of intelligence in orbit: a distributed satellite system that detects, identifies and geolocates radio-frequency emitters worldwide in near real time. Our technology provides defence and security customers with an up-to-date operational picture and actionable intelligence across the electromagnetic spectrum.</p>
+            </div>
+        </section>
+
+        <section class="page-section">
+            <div class="container">
+                <h2>Roles</h2>
+                <div id="job-feed"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
+                <p class="career-footnote">Don't see your role? We're always open to exceptional people. <a href="#contact" class="career-footnote-link">Reach out.</a></p>
+            </div>
+        </section>
+    </div>
+
+    <!-- ── NEWS ───────────────────────────────────────────────── -->
+    <div id="news">
+        <section class="page-section-hero">
+            <div class="container">
+                <h1>Stay updated about Orbint's latest developments and achievements.</h1>
+            </div>
+        </section>
+
+        <section class="page-section">
+            <div class="container">
+                <h2>Articles</h2>
+                <div id="news-feed"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ── CONTACT ─────────────────────────────────────────────── -->
+    <div id="contact">
+        <section class="section-hero">
+            <div class="container">
+                <h1>Connect With Our Team.</h1>
+            </div>
+        </section>
+
+        <section class="contact-section">
+            <div class="container">
+                <div class="contact-wrap">
+                    <form id="contact-form" novalidate>
+                        <div class="form-group">
+                            <label class="mono" for="contact-name">Name *</label>
+                            <input type="text" id="contact-name" name="name" placeholder="Your name" maxlength="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="mono" for="contact-email">Email *</label>
+                            <input type="email" id="contact-email" name="email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="mono" for="contact-phone">Phone</label>
+                            <input type="tel" id="contact-phone" name="phone" placeholder="+49 89 ..." maxlength="30">
+                        </div>
+                        <div class="form-group">
+                            <label class="mono" for="contact-message">Message *</label>
+                            <textarea id="contact-message" name="message" rows="6" placeholder="How can we help?" maxlength="2000" required></textarea>
+                        </div>
+                        <div id="form-error" class="form-feedback form-error" hidden></div>
+                        <div id="form-success" class="form-feedback form-success" hidden>
+                            Your message has been sent. We will get back to you shortly.
+                        </div>
+                        <button type="submit" class="btn" id="form-submit">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ── FOOTER ─────────────────────────────────────────────── -->
+    <section id="footer-section">
+        <div id="footer-placeholder"></div>
+    </section>
+
     <script src="js/script.js"></script>
+    <script>
+        // News articles
+        const newsSlugs = ['bdi-newspace-100th-member', 'tag-der-raumfahrt-space-cafe'];
+        Promise.all(newsSlugs.map(slug =>
+            fetch(`news/articles/${slug}.json`).then(r => r.json()).then(a => ({ ...a, slug }))
+        )).then(articles => {
+            document.getElementById('news-feed').innerHTML =
+                `<ul class="job-list">${articles.map(a =>
+                    `<li><a href="news/article.html?slug=${a.slug}" class="job-list-item">${a.title}</a></li>`
+                ).join('')}</ul>`;
+        }).catch(() => {});
+
+        // Job listings
+        const jobSlugs = [
+            'signal-processing-engineer', 'systems-engineer', 'mechanical-engineer',
+            'project-manager', 'embedded-software-developer', 'software-developer-ground', 'fpga-engineer',
+        ];
+        Promise.all(jobSlugs.map(slug =>
+            fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
+        )).then(jobs => {
+            document.getElementById('job-feed').innerHTML =
+                `<ul class="job-list">${jobs.map(j =>
+                    `<li><a href="jobs/job.html?slug=${j.slug}" class="job-list-item">${j.title}</a></li>`
+                ).join('')}</ul>`;
+        }).catch(() => {
+            document.getElementById('job-feed').innerHTML =
+                '<p class="mono" style="opacity:0.5;">Could not load positions. If testing locally, run: <code>python3 -m http.server 8000</code></p>';
+        });
+    </script>
 </body>
 </html>
