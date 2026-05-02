@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/nstyle.css">
+<title>Orbint Orbital Intelligence</title>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+    <div class="nav-content">
+        <a href="#mission" class="logo logo-crossfade">
+            <img id="nav-logo-dark" src="assets/images/white_white_logo.png" alt="Orbint">
+            <img id="nav-logo-light" src="assets/images/black_black_logo.png" alt="">
+        </a>
+        <div class="nav-links">
+            <a href="#mission" class="mono active" data-section="mission">Mission</a>
+            <a href="#about" class="mono" data-section="about">About Us</a>
+            <a href="#career" class="mono" data-section="career">Career</a>
+            <a href="#news" class="mono" data-section="news">News</a>
+            <a href="#contact" class="mono" data-section="contact">Contact</a>
+        </div>
+        <button id="hamburger" class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" class="mobile-menu">
+    <a href="#mission">Mission</a>
+    <a href="#about">About Us</a>
+    <a href="#career">Career</a>
+    <a href="#news">News</a>
+    <a href="#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="mission">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <canvas class="hero-canvas" id="hero-canvas"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-label fade-up visible">Orbital SIGINT / Electronic Warfare</div>
+    <h1 class="hero-headline fade-up visible">We detect, identify, and locate signals around the globe.</h1>
+    <p class="hero-sub fade-up visible">A software-defined intelligence layer in orbit. Continuous RF situational awareness for defence and security customers, anywhere on Earth, in near real time.</p>
+    <div class="hero-actions fade-up visible">
+      <a class="btn-primary" href="#contact">Request a demo</a>
+      <a class="btn-ghost" href="#technology">How it works →</a>
+    </div>
+
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-text">Scroll</div>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section class="section section-light" id="technology">
+  <div class="fade-up">
+    <div class="section-label">Technology</div>
+    <h2 class="section-title section-title--light">From orbit to operator in seconds.</h2>
+    <p class="section-sub section-sub--light">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
+  </div>
+  <div class="tech-grid fade-up">
+    <div class="tech-card">
+      <div class="tech-card-num">01</div>
+      <div class="tech-card-title">Space segment</div>
+      <div class="tech-card-body">Software-defined receivers aboard small LEO satellites intercept RF emissions across a broad spectrum from UHF through Ka-band with no gaps in global coverage.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-num">02</div>
+      <div class="tech-card-title">Signal processing</div>
+      <div class="tech-card-body">On-orbit signal fingerprinting isolates emitter characteristics modulation scheme, pulse repetition frequency, timing jitter before downlinking compressed intelligence data.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-num">03</div>
+      <div class="tech-card-title">Geolocation</div>
+      <div class="tech-card-body">Multi-satellite TDOA / FDOA geometry resolves emitter location to sub-kilometer accuracy. Results fuse with terrain models and prior tracks in near real time.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-num">04</div>
+      <div class="tech-card-title">Ground infrastructure</div>
+      <div class="tech-card-body">European sovereign ground stations receive, validate, and archive all downlink data. End-to-end encrypted. Operated under German jurisdiction.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-num">05</div>
+      <div class="tech-card-title">Expert Dashboard</div>
+      <div class="tech-card-body">The analyst interface delivers waterfall plots, signal cards, polar diagrams, and orbit tracks all live, all at expert density. Configurable alert thresholds per emitter class.</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-num">06</div>
+      <div class="tech-card-title">OrbTwin</div>
+      <div class="tech-card-body">A digital twin of the Orbint constellation enables mission planning, coverage simulation, and tasking optimisation before a satellite pass begins.</div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES (dark) -->
+<section class="section section-dark" id="usecases">
+  <div class="fade-up">
+    <div class="section-label">Use cases</div>
+    <h2 class="section-title section-title--dark">Intelligence for operators who cannot afford gaps.</h2>
+  </div>
+  <div class="usecases-layout fade-up">
+    <div class="usecase-list">
+      <div class="usecase-item active" data-uc="0">
+        <div class="usecase-num">01</div>
+        <div>
+          <div class="usecase-title">Electromagnetic Order of Battle</div>
+          <div class="usecase-body">Continuously catalogue and geolocate emitters of interest radar systems, communications infrastructure, and electronic warfare assets across denied and contested areas.</div>
+        </div>
+      </div>
+      <div class="usecase-item" data-uc="1">
+        <div class="usecase-num">02</div>
+        <div>
+          <div class="usecase-title">Maritime surveillance</div>
+          <div class="usecase-body">Detect vessels attempting to evade AIS tracking by correlating radar emissions and communications signatures against known vessel profiles.</div>
+        </div>
+      </div>
+      <div class="usecase-item" data-uc="2">
+        <div class="usecase-num">03</div>
+        <div>
+          <div class="usecase-title">Crisis early warning</div>
+          <div class="usecase-body">Anomalous RF activity new emitters, changed operating frequencies, unusual transmission cadence triggers automated alerts before kinetic events unfold.</div>
+        </div>
+      </div>
+      <div class="usecase-item" data-uc="3">
+        <div class="usecase-num">04</div>
+        <div>
+          <div class="usecase-title">Spectrum monitoring</div>
+          <div class="usecase-body">Identify interference sources, detect unlicensed transmitters, and enforce spectrum allocation across oceanic and polar regions beyond terrestrial monitoring reach.</div>
+        </div>
+      </div>
+    </div>
+    <div class="usecase-visual">
+      <canvas class="uc-canvas" id="uc-canvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT PREVIEW -->
+<section class="section section-warm" id="product">
+  <div class="product-layout">
+    <div class="fade-up">
+      <div class="section-label">Expert Dashboard</div>
+      <h2 class="section-title section-title--light">Built for trained analysts. Not for everyone.</h2>
+      <p class="section-sub section-sub--light">High-density telemetry, live waterfall plots, polar antenna diagrams, and orbit track data all in one interface designed to the exact density a SIGINT operator expects.</p>
+      <div style="margin-top: 32px; display: flex; flex-direction: column; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--orange); flex-shrink: 0;"></div>
+          <span style="font-size: 14px; color: var(--fg-sec-light);">Live signal waterfall at 437–438 MHz</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--orange); flex-shrink: 0;"></div>
+          <span style="font-size: 14px; color: var(--fg-sec-light);">Per-signal AOS / LOS tracking with polar diagram</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--orange); flex-shrink: 0;"></div>
+          <span style="font-size: 14px; color: var(--fg-sec-light);">Emitter classification and fingerprint database</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--orange); flex-shrink: 0;"></div>
+          <span style="font-size: 14px; color: var(--fg-sec-light);">Alert thresholds and mission-configurable tasking</span>
+        </div>
+      </div>
+      <div style="margin-top: 36px;">
+        <a class="btn-primary" href="#contact">Request a demo</a>
+      </div>
+    </div>
+    <div class="product-screen fade-up">
+      <div class="product-screen-bar">
+        <div class="product-screen-dot" style="background:#E05252;"></div>
+        <div class="product-screen-dot" style="background:#F2C94C;"></div>
+        <div class="product-screen-dot" style="background:#3DB87A;"></div>
+        <span class="product-screen-title">Orbint Expert Dashboard LIVE</span>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 5px;">
+          <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 1.5s ease-in-out infinite;"></div>
+          <span style="font-size: 10px; color: var(--success); font-weight: 500; letter-spacing: 0.08em;">TRACKING</span>
+        </div>
+      </div>
+      <div class="product-screen-body">
+        <div class="product-sidebar">
+          <div style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-ter-dark); margin-bottom: 6px; padding: 0 4px;">Navigation</div>
+          <div class="product-nav-item active">Dashboard</div>
+          <div class="product-nav-item">Signals</div>
+          <div class="product-nav-item">Satellites</div>
+          <div class="product-nav-item">OrbTwin</div>
+          <div class="product-nav-item">Archive</div>
+        </div>
+        <div class="product-main">
+          <div class="product-metric-row">
+            <div class="product-metric-tile">
+              <div class="lbl">Tracking</div>
+              <div class="val" style="color: var(--success);" id="metric-tracking">3</div>
+            </div>
+            <div class="product-metric-tile">
+              <div class="lbl">Acquiring</div>
+              <div class="val" style="color: var(--orange);" id="metric-acquiring">1</div>
+            </div>
+            <div class="product-metric-tile">
+              <div class="lbl">Scheduled</div>
+              <div class="val" style="color: var(--fg-sec-dark);">12</div>
+            </div>
+          </div>
+          <div class="signal-row-panel">
+            <div class="signal-row">
+              <div class="dot" style="background: var(--success);"></div>
+              <div class="name">NOAA-19</div>
+              <div class="freq">137.100 MHz</div>
+              <div style="font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: var(--success);">TRACKING</div>
+            </div>
+            <div class="signal-row">
+              <div class="dot" style="background: var(--success);"></div>
+              <div class="name">ISS (ZARYA)</div>
+              <div class="freq">437.525 MHz</div>
+              <div style="font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: var(--success);">TRACKING</div>
+            </div>
+            <div class="signal-row">
+              <div class="dot" style="background: var(--orange);"></div>
+              <div class="name">COSMOS-2570</div>
+              <div class="freq"> MHz</div>
+              <div style="font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: var(--orange);">ACQUIRING</div>
+            </div>
+          </div>
+          <div class="waterfall-panel">
+            <canvas id="waterfall-mini" style="width:100%; height:100%;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="section section-light" id="partners" style="padding-top: 64px; padding-bottom: 64px;">
+  <div class="fade-up" style="text-align: center; margin-bottom: 0;">
+    <div class="section-label" style="justify-content: center;">Partners &amp; institutions</div>
+    <p style="font-size: 14px; color: var(--fg-ter-light); margin-top: 8px;">Backed by European institutions. Built on validated research.</p>
+  </div>
+  <div class="partners-grid fade-up" style="margin-top: 32px;">
+    <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
+    <a href="https://www.unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" alt="Universität der Bundeswehr München"></a>
+    <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
+    <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
+    <a href="https://mcsc.io" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
+    <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
+    <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" alt="Palladion"></a>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section section-warm" id="about">
+  <div class="fade-up">
+    <div class="section-label">Team</div>
+    <h2 class="section-title section-title--light">Founded by researchers. Operated by practitioners.</h2>
+    <p class="section-sub section-sub--light">Orbint is a spin-off from the SeRANIS project at Universität der Bundeswehr München, funded by dtec.bw.</p>
+  </div>
+  <div class="team-grid fade-up">
+    <div class="team-card">
+      <div class="team-photo">
+        <img src="assets/images/founders/alexander-schmidt.jpg" alt="Alexander Schmidt" class="founder-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="team-info">
+        <div class="team-name">Dr. Alexander Schmidt</div>
+        <div class="team-role">Co-Founder &amp; Co-CEO</div>
+        <div class="team-bio">RF systems researcher and signals intelligence expert. Led the SeRANIS satellite receiver project at UniBw München.</div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-photo">
+        <img src="assets/images/founders/simon-heine.jpg" alt="Simon Heine" class="founder-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="team-info">
+        <div class="team-name">Simon Heine</div>
+        <div class="team-role">Co-Founder &amp; Co-CEO</div>
+        <div class="team-bio">Orbital systems and mission design specialist. Responsible for business development and European defence partnerships.</div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-photo">
+        <img src="assets/images/founders/daniel-weinzierl.jpg" alt="Daniel Weinzierl" class="founder-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="team-info">
+        <div class="team-name">Daniel Weinzierl</div>
+        <div class="team-role">Co-Founder &amp; CTO</div>
+        <div class="team-bio">Leads signal processing architecture and on-orbit software. Expert in software-defined radio and real-time embedded systems.</div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-photo">
+        <img src="assets/images/founders/winfried-stock.jpg" alt="Winfried Stock" class="founder-avatar" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div class="team-info">
+        <div class="team-name">Winfried Stock</div>
+        <div class="team-role">Co-Founder &amp; CTO</div>
+        <div class="team-bio">Ground segment and data infrastructure lead. Designed the end-to-end encrypted sovereign ground station architecture.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAREERS -->
+<section class="section section-light" id="career">
+  <div class="careers-layout">
+    <div class="careers-intro fade-up">
+      <div class="section-label">Careers</div>
+      <h2 class="section-title section-title--light">Build the intelligence layer for the next conflict-prevention era.</h2>
+      <p class="section-sub section-sub--light">We are a small, technically rigorous team. We hire for depth, not breadth. If you want to work on problems that matter in satellite systems, signal processing, or software read on.</p>
+      <div class="careers-values">
+        <div class="career-value-item">
+          <div class="career-value-num">01</div>
+          <div>
+            <div class="career-value-title">Technical depth over generalism</div>
+            <div class="career-value-body">We expect you to understand the problem at a fundamental level not just operate the toolchain.</div>
+          </div>
+        </div>
+        <div class="career-value-item">
+          <div class="career-value-num">02</div>
+          <div>
+            <div class="career-value-title">Sovereign &amp; European</div>
+            <div class="career-value-body">We build critical infrastructure for European defence. That comes with responsibility, clarity of purpose, and stable long-term backing.</div>
+          </div>
+        </div>
+        <div class="career-value-item">
+          <div class="career-value-num">03</div>
+          <div>
+            <div class="career-value-title">Small team, large scope</div>
+            <div class="career-value-body">You will own significant surface area. Decisions move fast. Results are visible and measurable.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="jobs-panel fade-up">
+      <div class="jobs-panel-header">Open positions</div>
+      <div id="job-feed"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
+      <div style="margin-top: 12px; padding: 16px 20px; background: var(--light-el); border-radius: 8px; border: 1px solid var(--light-border);">
+        <p style="font-size: 13px; color: var(--fg-sec-light); line-height: 1.55;">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="/cdn-cgi/l/email-protection#6300021106061110230c11010a0d174d0706" style="color: var(--orange); text-decoration: none;"><span class="__cf_email__" data-cfemail="5f3c3e2d3a3a2d2c1f302d3d36312b713b3a">[email&#160;protected]</span></a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="section section-light" id="news">
+  <div class="fade-up">
+    <div class="section-label">News</div>
+    <h2 class="section-title section-title--light">Stay updated about Orbint's latest developments.</h2>
+    <p class="section-sub section-sub--light">Our latest articles, press releases, and achievements in orbital intelligence.</p>
+  </div>
+  <div id="news-feed" class="fade-up" style="margin-top: 48px;"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
+</section>
+
+<!-- CONTACT -->
+<section class="section section-dark" id="contact">
+  <div class="contact-grid">
+    <div class="fade-up">
+      <div class="section-label">Contact</div>
+      <h2 class="section-title section-title--dark">Request access or learn more.</h2>
+      <p class="section-sub section-sub--dark">Whether you are evaluating Orbint for a procurement decision, interested in a research partnership, or want to join the team we will respond within one business day.</p>
+      <div class="contact-info" style="margin-top: 48px;">
+        <div class="contact-info-item">
+          <div class="contact-info-label">Email</div>
+          <div class="contact-info-value"><a href="/cdn-cgi/l/email-protection#73101c1d07121007331c01111a1d075d1716"><span class="__cf_email__" data-cfemail="fa9995948e9b998eba95889893948ed49e9f">[email&#160;protected]</span></a></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-label">Headquarters</div>
+          <div class="contact-info-value">Universität der Bundeswehr München<br>Werner-Heisenberg-Weg 39<br>85577 Neubiberg, Germany</div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-label">Classification</div>
+          <div class="contact-info-value" style="font-size: 12px; color: var(--fg-ter-dark);">All communications are unclassified. For classified enquiries, contact via secure channel through your national authority.</div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-up">
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input class="form-input" type="text" placeholder="First name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input class="form-input" type="text" placeholder="Last name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Work email</label>
+          <input class="form-input" type="email" placeholder="you@organisation.gov" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organisation</label>
+          <input class="form-input" type="text" placeholder="Organisation / agency">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Enquiry type</label>
+          <select class="form-select">
+            <option>Product demonstration</option>
+            <option>Procurement / evaluation</option>
+            <option>Research partnership</option>
+            <option>Career enquiry</option>
+            <option>Press / media</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Describe your use case or question"></textarea>
+        </div>
+        <button class="btn-primary" type="submit" id="submit-btn" style="align-self: flex-start;">Send message</button>
+        <div id="form-success" style="display:none; padding: 12px 16px; background: rgba(61,184,122,0.1); border: 1px solid rgba(61,184,122,0.3); border-radius: 4px; font-size: 13px; color: var(--success);">Message sent. We will be in touch within one business day.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<section id="footer-section">
+  <div id="footer-placeholder"></div>
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="js/nscript.js"></script>
+<script>
+    // News articles
+    const newsSlugs = ['bdi-newspace-100th-member', 'tag-der-raumfahrt-space-cafe'];
+    Promise.all(newsSlugs.map(slug =>
+        fetch(`news/articles/${slug}.json`).then(r => r.json()).then(a => ({ ...a, slug }))
+    )).then(articles => {
+        document.getElementById('news-feed').innerHTML =
+            `<ul class="job-list">${articles.map(a =>
+                `<li><a href="news/article.html?slug=${a.slug}" class="job-list-item">${a.title}</a></li>`
+            ).join('')}</ul>`;
+    }).catch(() => {});
+
+    // Job listings
+    const jobSlugs = [
+        'signal-processing-engineer', 'systems-engineer', 'mechanical-engineer',
+        'project-manager', 'embedded-software-developer', 'software-developer-ground', 'fpga-engineer',
+    ];
+    Promise.all(jobSlugs.map(slug =>
+        fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
+    )).then(jobs => {
+        document.getElementById('job-feed').innerHTML =
+            `<ul class="job-list">${jobs.map(j =>
+                `<li><a href="jobs/job.html?slug=${j.slug}" class="job-list-item">${j.title}</a></li>`
+            ).join('')}</ul>`;
+    }).catch(() => {
+        document.getElementById('job-feed').innerHTML =
+            '<p class="mono" style="opacity:0.5;">Could not load positions. If testing locally, run: <code>python3 -m http.server 8000</code></p>';
+    });
+</script>
+
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+"accentColor": "#F2641C",
+"heroHeadline": "We detect, identify, and locate signals around the globe.",
+"showScrollIndicator": true,
+"sectionSpacing": 96,
+"darkNavOpacity": 92
+}/*EDITMODE-END*/;
+
+function OrbintTweaks() {
+const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+
+React.useEffect(() => {
+document.documentElement.style.setProperty('--orange', tweaks.accentColor);
+document.documentElement.style.setProperty('--orange-dark', tweaks.accentColor);
+}, [tweaks.accentColor]);
+
+React.useEffect(() => {
+document.documentElement.style.setProperty('--nav-bg-opacity', tweaks.darkNavOpacity / 100);
+}, [tweaks.darkNavOpacity]);
+
+React.useEffect(() => {
+const h = document.querySelector('.hero-headline');
+if (h) h.textContent = tweaks.heroHeadline;
+}, [tweaks.heroHeadline]);
+
+React.useEffect(() => {
+const si = document.querySelector('.scroll-indicator');
+if (si) si.style.display = tweaks.showScrollIndicator ? 'flex' : 'none';
+}, [tweaks.showScrollIndicator]);
+
+React.useEffect(() => {
+document.querySelectorAll('.section').forEach(s => {
+  s.style.paddingTop = tweaks.sectionSpacing + 'px';
+  s.style.paddingBottom = tweaks.sectionSpacing + 'px';
+});
+}, [tweaks.sectionSpacing]);
+
+const { TweaksPanel, TweakSection, TweakColor, TweakText, TweakToggle, TweakSlider } = window;
+
+return (
+<TweaksPanel title="Orbint Website">
+  <TweakSection title="Brand">
+    <TweakColor label="Accent color" value={tweaks.accentColor} onChange={v => setTweak('accentColor', v)} />
+  </TweakSection>
+  <TweakSection title="Hero">
+    <TweakText label="Headline" value={tweaks.heroHeadline} onChange={v => setTweak('heroHeadline', v)} />
+    <TweakToggle label="Scroll indicator" value={tweaks.showScrollIndicator} onChange={v => setTweak('showScrollIndicator', v)} />
+  </TweakSection>
+  <TweakSection title="Layout">
+    <TweakSlider label="Section spacing" min={48} max={160} step={8} value={tweaks.sectionSpacing} onChange={v => setTweak('sectionSpacing', v)} />
+    <TweakSlider label="Nav opacity %" min={50} max={100} step={1} value={tweaks.darkNavOpacity} onChange={v => setTweak('darkNavOpacity', v)} />
+  </TweakSection>
+</TweaksPanel>
+);
+}
+
+ReactDOM.createRoot(document.createElement('div')).render(<OrbintTweaks />);
+</script>
+</body>
+</html>

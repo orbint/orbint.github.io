@@ -1,0 +1,388 @@
+// ── HERO CANVAS animated orbit paths + satellite dots ──
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  if (!canvas) return;
+  let W, H, raf;
+  const ORANGE = '#F2641C';
+  const DIM_ORANGE = 'rgba(242,100,28,0.15)';
+
+  // Satellites: [angle, speed, orbitRx, orbitRy, tilt, phase, pingTimer, pingMax]
+  const sats = [
+    { a: 0,    speed: 0.0007, rx: 0.38, ry: 0.14, tilt: -18, phase: 0,   ping: 0, pingMax: 180, pings: [] },
+    { a: 2.1,  speed: 0.0005, rx: 0.42, ry: 0.18, tilt: 12,  phase: 1.2, ping: 60, pingMax: 220, pings: [] },
+    { a: 4.5,  speed: 0.0009, rx: 0.36, ry: 0.12, tilt: -6,  phase: 2.8, ping: 120, pingMax: 160, pings: [] },
+  ];
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function orbitPoint(sat, a, cx, cy) {
+    const rx = sat.rx * W;
+    const ry = sat.ry * H;
+    const rad = sat.tilt * Math.PI / 180;
+    const x0 = Math.cos(a) * rx;
+    const y0 = Math.sin(a) * ry;
+    return {
+      x: cx + x0 * Math.cos(rad) - y0 * Math.sin(rad),
+      y: cy + x0 * Math.sin(rad) + y0 * Math.cos(rad)
+    };
+  }
+
+  function draw(t) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    const cx = W * 0.62, cy = H * 0.38;
+
+    sats.forEach(sat => {
+      sat.a += sat.speed;
+      const rx = sat.rx * W, ry = sat.ry * H;
+      const rad = sat.tilt * Math.PI / 180;
+
+      // Draw orbit ellipse
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rad);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(242,100,28,0.12)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+
+      // Draw satellite
+      const pos = orbitPoint(sat, sat.a, cx, cy);
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = ORANGE;
+      ctx.fill();
+
+      // Ping
+      sat.ping++;
+      if (sat.ping >= sat.pingMax) {
+        sat.ping = 0;
+        sat.pings.push({ x: pos.x, y: pos.y, r: 0, alpha: 1 });
+      }
+      sat.pings = sat.pings.filter(p => p.alpha > 0.01);
+      sat.pings.forEach(p => {
+        p.r += 0.8;
+        p.alpha *= 0.96;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(242,100,28,${p.alpha})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+
+      // Tail
+      for (let i = 1; i <= 20; i++) {
+        const ta = sat.a - i * 0.018;
+        const tp = orbitPoint(sat, ta, cx, cy);
+        ctx.beginPath();
+        ctx.arc(tp.x, tp.y, 1, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(242,100,28,${0.25 * (1 - i/20)})`;
+        ctx.fill();
+      }
+    });
+
+    // Signal lines between closest pair
+    const pos0 = orbitPoint(sats[0], sats[0].a, cx, cy);
+    const pos1 = orbitPoint(sats[1], sats[1].a, cx, cy);
+    const dist = Math.hypot(pos0.x - pos1.x, pos0.y - pos1.y);
+    if (dist < 200) {
+      const alpha = (1 - dist / 200) * 0.3;
+      ctx.beginPath();
+      ctx.moveTo(pos0.x, pos0.y);
+      ctx.lineTo(pos1.x, pos1.y);
+      ctx.strokeStyle = `rgba(242,100,28,${alpha})`;
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([4, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    raf = requestAnimationFrame(draw);
+  }
+  raf = requestAnimationFrame(draw);
+})();
+
+// ── USE CASE CANVAS animated waterfall / emitter map ──
+(function() {
+  const canvas = document.getElementById('uc-canvas');
+  if (!canvas) return;
+  let W, H, rows = [], frame = 0;
+  const COLORS = ['#2A2724','#3A2E28','#5C3A1E','#8B4513','#C45A1A','#F2641C','#FFD700'];
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth || 400;
+    H = canvas.height = canvas.offsetHeight || 300;
+    rows = [];
+  }
+  resize();
+
+  // Signal emitters (freq bands)
+  const emitters = [
+    { freqFrac: 0.3, width: 0.04, power: 0.9, active: true },
+    { freqFrac: 0.55, width: 0.02, power: 0.6, active: true },
+    { freqFrac: 0.72, width: 0.06, power: 0.4, active: true },
+  ];
+
+  function makeRow() {
+    const row = new Float32Array(Math.floor(W));
+    // Base noise
+    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.08;
+    // Emitter signals
+    emitters.forEach(e => {
+      if (!e.active) return;
+      const cx = Math.floor(e.freqFrac * W);
+      const hw = Math.floor(e.width * W / 2);
+      for (let i = cx - hw * 3; i <= cx + hw * 3; i++) {
+        if (i < 0 || i >= row.length) continue;
+        const d = Math.abs(i - cx) / hw;
+        row[i] += e.power * Math.exp(-d * d * 0.8) * (0.85 + Math.random() * 0.15);
+      }
+    });
+    return row;
+  }
+
+  const MAX_ROWS = 120;
+
+  function draw() {
+    frame++;
+    if (frame % 3 === 0) {
+      rows.unshift(makeRow());
+      if (rows.length > MAX_ROWS) rows.pop();
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+
+    const rowH = H / MAX_ROWS;
+    rows.forEach((row, ri) => {
+      for (let xi = 0; xi < row.length; xi++) {
+        const v = Math.min(1, row[xi]);
+        const ci = Math.floor(v * (COLORS.length - 1));
+        const cf = v * (COLORS.length - 1) - ci;
+        // Simple color interp using CSS parse
+        ctx.fillStyle = COLORS[Math.min(ci, COLORS.length - 1)];
+        ctx.fillRect(xi, ri * rowH, 1, rowH + 1);
+      }
+    });
+
+    // Frequency axis labels
+    ctx.font = '9px "IBM Plex Sans", monospace';
+    ctx.fillStyle = 'rgba(158,150,144,0.7)';
+    ['437.0', '437.5', '438.0'].forEach((label, i) => {
+      ctx.fillText(label, 10 + i * (W / 3) - 14, H - 6);
+    });
+
+    // Highlight boxes on emitters
+    emitters.forEach(e => {
+      const ex = e.freqFrac * W;
+      const ew = e.width * W * 3;
+      ctx.strokeStyle = `rgba(242,100,28,0.35)`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(ex - ew / 2, 0, ew, H - 16);
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── WATERFALL MINI (product section) ──
+(function() {
+  const canvas = document.getElementById('waterfall-mini');
+  if (!canvas) return;
+  let W = 0, H = 0, rows = [], frame = 0;
+  const COLORS = ['#121110','#1C1A18','#3A2E28','#8B4513','#F2641C','#FFD700'];
+
+  function resize() {
+    const parent = canvas.parentElement;
+    const w = parent.offsetWidth;
+    const h = parent.offsetHeight;
+    if (w < 4 || h < 4) return; // not laid out yet
+    if (w === W && h === H) return;
+    W = canvas.width = w;
+    H = canvas.height = h;
+    rows = []; // reset on resize
+  }
+
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(canvas.parentElement);
+  // Also try after a short delay in case layout isn't settled
+  setTimeout(resize, 100);
+  resize();
+
+  function makeRow() {
+    const row = new Float32Array(Math.floor(W));
+    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.05;
+    const cx = Math.floor(W * 0.45);
+    for (let i = cx - 20; i <= cx + 20; i++) {
+      if (i < 0 || i >= row.length) continue;
+      const d = Math.abs(i - cx) / 12;
+      row[i] += 0.85 * Math.exp(-d * d) * (0.9 + Math.random() * 0.1);
+    }
+    return row;
+  }
+
+  const MAX = 60;
+
+  function draw() {
+    requestAnimationFrame(draw);
+    if (W < 4 || H < 4) return; // not ready yet
+    frame++;
+    if (frame % 2 === 0) {
+      rows.unshift(makeRow());
+      if (rows.length > MAX) rows.pop();
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    const rh = H / MAX;
+    rows.forEach((row, ri) => {
+      for (let xi = 0; xi < row.length; xi++) {
+        const v = Math.min(1, row[xi]);
+        const ci = Math.floor(v * (COLORS.length - 1));
+        ctx.fillStyle = COLORS[Math.min(ci, COLORS.length - 1)];
+        ctx.fillRect(xi, ri * rh, 1, rh + 1);
+      }
+    });
+
+    ctx.font = '8px IBM Plex Sans, monospace';
+    ctx.fillStyle = 'rgba(158,150,144,0.6)';
+    ctx.fillText('437.525 MHz  LIVE', 8, H - 5);
+  }
+  draw();
+})();
+
+// ── SCROLL FADE-IN ──
+(function() {
+  const els = document.querySelectorAll('.fade-up:not(.visible)');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 0);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+})();
+
+// ── USE CASE TABS ──
+(function() {
+  const items = document.querySelectorAll('.usecase-item');
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      items.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+})();
+
+// ── FORM SUBMIT ──
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const success = document.getElementById('form-success');
+  btn.textContent = 'Sending…';
+  btn.style.opacity = '0.6';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => {
+    btn.style.display = 'none';
+    success.style.display = 'block';
+  }, 1200);
+}
+
+// ── LIVE metric ticker ──
+(function() {
+  function tick() {
+    const t = document.getElementById('metric-tracking');
+    const a = document.getElementById('metric-acquiring');
+    if (t) t.textContent = (2 + Math.floor(Math.random() * 3));
+    if (a) a.textContent = Math.floor(Math.random() * 2);
+  }
+  setInterval(tick, 3000);
+})();
+
+// ── CSS pulse animation ──
+const style = document.createElement('style');
+style.textContent = `@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }`;
+document.head.appendChild(style);
+
+// ── HAMBURGER MENU ──
+(function() {
+  const btn = document.getElementById('hamburger');
+  const menu = document.getElementById('mobile-menu');
+  if (!btn || !menu) return;
+
+  function toggleMenu(open) {
+    btn.classList.toggle('open', open);
+    menu.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  btn.addEventListener('click', () => toggleMenu(!menu.classList.contains('open')));
+
+  // Close on link click
+  menu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => toggleMenu(false));
+  });
+
+  // Close on resize to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) toggleMenu(false);
+  });
+})();
+
+// ── NAVBAR SCROLL & SCROLL SPY ──
+(function() {
+  const nav = document.getElementById('main-nav');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const mobileLinks = document.querySelectorAll('.mobile-menu a');
+  const sections = Array.from(navLinks).map(link => {
+    const id = link.getAttribute('href').substring(1);
+    return document.getElementById(id);
+  }).filter(s => s);
+
+  if (!nav) return;
+
+  function updateActiveLink() {
+    const scrollPos = window.scrollY + 100; // Offset for nav height
+
+    // Update nav background
+    if (window.scrollY > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+
+    // Scroll spy logic: find the last section that started above the current scroll position
+    let currentSectionId = '';
+    sections.forEach(section => {
+      if (scrollPos >= section.offsetTop) {
+        currentSectionId = section.getAttribute('id');
+      }
+    });
+
+    // Special case for bottom of page
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 20) {
+      currentSectionId = sections[sections.length - 1].getAttribute('id');
+    }
+
+    if (currentSectionId) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`);
+      });
+      mobileLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`);
+      });
+    }
+  }
+
+  window.addEventListener('scroll', updateActiveLink);
+  // Initial check
+  updateActiveLink();
+})();
