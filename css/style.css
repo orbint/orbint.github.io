@@ -4,6 +4,17 @@
     --launch-white: #EAECEE;
     --orbint-orange: #EC6E00;
     --border-subtle: rgba(226, 232, 240, 0.1);
+
+    /* Scroll-driven theme interpolation (set by JS on index.html) */
+    --page-bg: #0B0E14;
+    --page-text: #E2E8F0;
+    --page-heading: #EAECEE;
+    --page-nav-link: #E2E8F0;
+    --page-nav-link-opacity: 0.6;
+    --page-hamburger: #E2E8F0;
+    --page-overlay-opacity: 1;
+    --dark-video-opacity: 1;
+    --light-video-opacity: 0;
 }
 
 * {
@@ -21,6 +32,28 @@ html {
     padding-top: 80px;
     display: flex;
     align-items: center;
+}
+
+.page-section-hero {
+    padding-top: 160px;
+    padding-bottom: 2rem;
+}
+
+.hero-eyebrow {
+    margin-bottom: 1.5rem;
+}
+
+.accent-card-body--bordered {
+    border-top: 1px solid var(--orbint-orange);
+}
+
+.career-footnote {
+    margin-top: 2rem;
+    opacity: 0.6;
+}
+
+.career-footnote-link {
+    color: inherit;
 }
 
 .accent-card {
@@ -48,9 +81,14 @@ html {
     padding: 2.5rem;
 }
 
+html {
+    background-color: var(--page-bg);
+    transition: background-color 0.05s linear;
+}
+
 body {
-    background-color: var(--deep-space);
-    color: var(--satellite-grey);
+    background-color: transparent;
+    color: var(--page-text);
     font-family: 'JetBrains Mono', monospace;
     font-weight: 300;
     line-height: 1.6;
@@ -80,7 +118,16 @@ body {
     height: 100%;
     object-fit: cover;
     object-position: center;
+}
+
+#video-dark {
     filter: brightness(0.6) grayscale(0.2);
+    opacity: var(--dark-video-opacity);
+}
+
+#video-light {
+    filter: none;
+    opacity: var(--light-video-opacity);
 }
 
 /* Mobile / reduced-motion: use GIF fallback, hide video */
@@ -110,6 +157,7 @@ body::before {
     background: radial-gradient(circle at center, rgba(11, 14, 20, 0.4) 0%, rgba(11, 14, 20, 0.9) 100%);
     z-index: -1;
     pointer-events: none;
+    opacity: var(--page-overlay-opacity);
 }
 
 /* Technical Scanline Effect (Sits on top of everything) */
@@ -117,20 +165,26 @@ body::after {
     content: "";
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
                 linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
     background-size: 100% 4px, 3px 100%;
     pointer-events: none;
     z-index: 100;
-    opacity: 0.3;
+    opacity: calc(0.3 * var(--page-overlay-opacity));
 }
 
 /* --- TYPOGRAPHY & LAYOUT --- */
 
 
-h1, h2, h3 { color: var(--launch-white); font-weight: 700; text-transform: uppercase; }
+h1, h2, h3 { color: var(--page-heading); font-weight: 700; text-transform: uppercase; }
 h1 { padding-top: 3rem; }
-h2 { font-size: 1.1rem; }
+h2 { font-size: 1.4rem; }
+
+p {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+}
 
 .mono {
     font-family: 'JetBrains Mono', monospace;
@@ -161,13 +215,34 @@ section {
     left: 0;
     right: 0;
     height: 160px;
-    background: linear-gradient(to bottom, var(--deep-space) 0px, var(--deep-space) 80px, transparent 160px);
+    background: linear-gradient(to bottom, var(--page-bg) 0px, var(--page-bg) 80px, transparent 160px);
     z-index: 50;
     pointer-events: none;
 }
 
 body.light-theme .nav-fade {
     background: linear-gradient(to bottom, var(--launch-white) 0px, var(--launch-white) 80px, transparent 160px);
+}
+
+.logo-crossfade {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.logo-crossfade img {
+    height: 50px;
+    width: auto;
+}
+
+#nav-logo-light {
+    position: absolute;
+    left: 0;
+    opacity: 0;
+}
+
+#nav-logo-dark {
+    opacity: 1;
 }
 
 /* --- NAVIGATION --- */
@@ -206,10 +281,10 @@ nav {
 
 .nav-links a {
     text-decoration: none;
-    color: var(--satellite-grey);
+    color: var(--page-nav-link);
     font-size: 0.75rem;
-    transition: 0.3s;
-    opacity: 0.6;
+    transition: color 0.3s, opacity 0.3s;
+    opacity: var(--page-nav-link-opacity);
     white-space: nowrap;
 }
 
@@ -254,10 +329,24 @@ nav {
     text-decoration: none;
     display: inline-block;
     cursor: pointer;
+    border: 1px solid currentColor;
+    padding: 0.75rem 1.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .btn:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    background: var(--orbint-orange);
+    border-color: var(--orbint-orange);
+    color: var(--deep-space);
+}
+
+.section-hero .btn {
+    margin-top: 2rem;
 }
 
 /* --- CONTACT FORM --- */
@@ -268,13 +357,13 @@ form { display: flex; flex-direction: column; gap: 1rem; }
 
 input, textarea {
     background: rgba(11, 14, 20, 0.8);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid rgba(226, 232, 240, 0.3);
     padding: 1.2rem;
     color: white;
     font-family: 'JetBrains Mono', monospace;
 }
 
-input:focus { border-color: var(--orbint-orange); outline: none; }
+input:focus, textarea:focus { border-color: var(--orbint-orange); outline: none; }
 
 /* --- PARTNERS --- */
 
@@ -437,7 +526,7 @@ footer { padding: 0; }
 
 .founder-name {
     font-weight: 600;
-    color: var(--launch-white);
+    color: var(--page-heading);
     font-size: 1rem;
 }
 
@@ -474,8 +563,8 @@ body.light-theme .founder-avatar {
     display: block;
     width: 24px;
     height: 2px;
-    background: var(--satellite-grey);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    background: var(--page-hamburger);
+    transition: transform 0.3s ease, opacity 0.3s ease, background 0.3s ease;
 }
 
 body.light-theme .hamburger span {
@@ -537,11 +626,20 @@ body.light-theme .hamburger span {
     color: var(--launch-white);
 }
 
-video {
+#video-dark {
     animation: fadeIn 3s ease-in;
 }
 
-body.light-theme video {
+#video-light {
+    animation: none;
+}
+
+/* Standalone pages (single un-ID'd video) */
+.video-background video:not(#video-dark):not(#video-light) {
+    animation: fadeIn 3s ease-in;
+}
+
+body.light-theme .video-background video {
     animation: none;
 }
 
@@ -552,13 +650,22 @@ body.light-theme video {
 
 /* --- NEWS PAGE / LIGHT THEME OVERRIDES --- */
 
-:root:has(body.light-theme) {
-    background-color: var(--launch-white);
+/* Standalone light-theme pages (news.html, career.html, etc.) */
+body.light-theme {
+    --page-bg: var(--launch-white);
+    --page-text: #1a1a1a;
+    --page-heading: #0b0e14;
+    --page-nav-link: #444;
+    --page-nav-link-opacity: 0.8;
+    --page-hamburger: #0b0e14;
+    --page-overlay-opacity: 0;
+    --dark-video-opacity: 0;
+    --light-video-opacity: 0.35;
+    color: #1a1a1a;
 }
 
-body.light-theme {
-    background-color: transparent;
-    color: #1a1a1a;
+html:has(body.light-theme) {
+    background-color: var(--launch-white);
 }
 
 body.light-theme .video-background video,
@@ -574,7 +681,8 @@ body.light-theme footer .accent-card {
 
 body.light-theme::before,
 body.light-theme::after {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Adjust navigation for the light background */
@@ -611,7 +719,7 @@ body.light-theme .nav-links a.active {
 .job-list-item {
     font-size: 1rem;
     font-weight: 300;
-    color: #0b0e14;
+    color: var(--page-heading);
     text-decoration: none;
 }
 

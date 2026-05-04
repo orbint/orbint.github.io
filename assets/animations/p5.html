@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+    <meta charset="utf-8" />
+    <style>
+        :root {
+            --col: rgb(255,165,0);
+            --col-faint: rgba(255,165,0,0.3);
+            --col-08: rgba(255,165,0,0.08);
+        }
+        body { margin: 0; padding: 0; background-color: #000; overflow: hidden; }
+        canvas { display: block; }
+
+        /* ── Bottom controls ── */
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            background: var(--col-08);
+            border: 1px solid var(--col-faint);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-family: monospace;
+            color: var(--col);
+            font-size: 13px;
+        }
+        .control { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 160px;
+            height: 2px;
+            background: var(--col-faint);
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--col);
+            cursor: pointer;
+        }
+
+        /* ── Color picker panel ── */
+        #colorPanel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.75);
+            border: 1px solid var(--col-faint);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: monospace;
+            color: var(--col);
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 190px;
+        }
+        #colorPanel .header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        #swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            background: rgb(255,165,0);
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .rgb-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rgb-row label { width: 10px; }
+        .rgb-row input[type=range] { width: 120px; }
+        .rgb-row span { width: 26px; text-align: right; }
+        #hexRow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #hexRow label { opacity: 0.6; }
+        #hexInput {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--col-faint);
+            color: var(--col);
+            font-family: monospace;
+            font-size: 12px;
+            width: 68px;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #hexInput.invalid { border-bottom-color: #f55; color: #f55; }
+    </style>
+</head>
+<body>
+    <div id="colorPanel">
+        <div class="header">
+            <div id="swatch"></div>
+            <span>Color</span>
+        </div>
+        <div class="rgb-row">
+            <label>R</label>
+            <input type="range" id="rSlider" min="0" max="255" value="255">
+            <span id="rVal">255</span>
+        </div>
+        <div class="rgb-row">
+            <label>G</label>
+            <input type="range" id="gSlider" min="0" max="255" value="165">
+            <span id="gVal">165</span>
+        </div>
+        <div class="rgb-row">
+            <label>B</label>
+            <input type="range" id="bSlider" min="0" max="255" value="0">
+            <span id="bVal">0</span>
+        </div>
+        <div id="hexRow">
+            <label>#</label>
+            <input type="text" id="hexInput" maxlength="6" value="FFA500" spellcheck="false">
+        </div>
+        <div style="border-top: 1px solid var(--col-faint); margin-top: 4px; padding-top: 8px; font-size: 13px; font-weight: bold;">Globe</div>
+        <div class="rgb-row">
+            <label style="width:24px">Lon</label>
+            <input type="range" id="lonSlider" min="-180" max="180" value="10">
+            <span id="lonVal" style="width:32px">10</span>
+        </div>
+        <div class="rgb-row">
+            <label style="width:24px">Lat</label>
+            <input type="range" id="latSlider" min="-90" max="90" value="45">
+            <span id="latVal" style="width:32px">45</span>
+        </div>
+        <div style="border-top:1px solid var(--col-faint);margin-top:4px;padding-top:8px;font-size:13px;font-weight:bold;">Ground Stations</div>
+        <div id="gsList"></div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:4px;">
+            <input type="number" id="gsAngleInput" value="0" min="-360" max="360"
+                style="background:transparent;border:none;border-bottom:1px solid var(--col-faint);color:var(--col);font-family:monospace;font-size:12px;width:44px;outline:none;text-align:right;">
+            <span style="opacity:0.6">°</span>
+            <button id="gsAddBtn"
+                style="background:transparent;border:1px solid var(--col-faint);color:var(--col);font-family:monospace;font-size:14px;cursor:pointer;padding:1px 8px;border-radius:4px;line-height:1.4;">+</button>
+        </div>
+    </div>
+
+    <div id="controls">
+        <div class="control">
+            <label>Speed</label>
+            <input type="range" id="speedSlider" min="0" max="100" value="50">
+            <span id="speedVal">1,000x</span>
+        </div>
+        <div class="control">
+            <label>Orbit Height</label>
+            <input type="range" id="orbitSlider" min="0" max="100" value="30">
+            <span id="orbitVal">613 km</span>
+        </div>
+    </div>
+
+    <script>
+        let angle = 0;
+        const earthRadius = 80;
+        let camX = 0, camY = 0, camZoom = 1;
+        const PAN_SPEED = 5;
+        let earthGlobeCanvas = null;
+        let worldBorders = null;
+        const globeRes = 512;
+
+        function renderGlobe(lon, lat) {
+            if (!worldBorders) return;
+            const off = document.createElement('canvas');
+            off.width = globeRes;
+            off.height = globeRes;
+            const ctx = off.getContext('2d');
+
+            const projection = d3.geoOrthographic()
+                .scale(globeRes / 2 - 1)
+                .translate([globeRes / 2, globeRes / 2])
+                .clipAngle(90)
+                .rotate([-lon, -lat]);
+
+            const path = d3.geoPath(projection, ctx);
+
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            path({ type: 'Sphere' });
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgb(255,165,0)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            path(worldBorders);
+            ctx.stroke();
+
+            earthGlobeCanvas = off;
+        }
+
+        async function initGlobe() {
+            const lon = parseInt(document.getElementById('lonSlider').value);
+            const lat = parseInt(document.getElementById('latSlider').value);
+            const world = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+                .then(r => r.json());
+            worldBorders = topojson.mesh(world, world.objects.countries);
+            renderGlobe(lon, lat);
+        }
+
+        document.getElementById('lonSlider').addEventListener('input', function() {
+            document.getElementById('lonVal').textContent = this.value;
+            renderGlobe(parseInt(this.value), parseInt(document.getElementById('latSlider').value));
+        });
+        document.getElementById('latSlider').addEventListener('input', function() {
+            document.getElementById('latVal').textContent = this.value;
+            renderGlobe(parseInt(document.getElementById('lonSlider').value), parseInt(this.value));
+        });
+
+        initGlobe();
+
+        let groundStations = [];
+        let vicActiveIndex = -1;
+
+        function addGroundStation(deg, vicinity = 100, elevMin = 5) {
+            const rad = -deg * Math.PI / 180;
+            groundStations.push({
+                angleDeg: deg,
+                x: Math.cos(rad) * earthRadius,
+                y: Math.sin(rad) * earthRadius,
+                surfaceAngle: rad,
+                vicinity,
+                elevMin
+            });
+            renderGsList();
+        }
+
+        function removeGroundStation(i) {
+            groundStations.splice(i, 1);
+            renderGsList();
+        }
+
+        function renderGsList() {
+            const list = document.getElementById('gsList');
+            list.innerHTML = '';
+            groundStations.forEach((gs, i) => {
+                const el = document.createElement('div');
+                el.style.cssText = 'border-top:1px solid var(--col-faint);padding-top:6px;margin-top:4px;';
+                el.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                        <span style="font-size:12px">${gs.angleDeg}°</span>
+                        <button onclick="removeGroundStation(${i})"
+                            style="background:transparent;border:none;color:var(--col);font-family:monospace;font-size:14px;cursor:pointer;opacity:0.7;padding:0 4px;line-height:1;">×</button>
+                    </div>
+                    <div class="rgb-row">
+                        <label style="width:28px;font-size:11px">Vic</label>
+                        <input type="range" min="20" max="300" value="${gs.vicinity}" style="width:100px"
+                            oninput="groundStations[${i}].vicinity=parseInt(this.value);this.nextElementSibling.textContent=this.value"
+                            onpointerdown="vicActiveIndex=${i}" onpointerup="vicActiveIndex=-1">
+                        <span style="width:28px">${gs.vicinity}</span>
+                    </div>
+                    <div class="rgb-row">
+                        <label style="width:28px;font-size:11px">Elev</label>
+                        <input type="range" min="0" max="90" value="${gs.elevMin}" style="width:100px"
+                            oninput="groundStations[${i}].elevMin=parseInt(this.value);this.nextElementSibling.textContent=this.value+'°'">
+                        <span style="width:28px">${gs.elevMin}°</span>
+                    </div>`;
+                list.appendChild(el);
+            });
+        }
+
+        function getElevation(satX, satY, gs) {
+            const nx = Math.cos(gs.surfaceAngle), ny = Math.sin(gs.surfaceAngle);
+            const dx = satX - gs.x, dy = satY - gs.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d === 0) return 0;
+            return Math.asin(Math.max(-1, Math.min(1, (dx * nx + dy * ny) / d))) * 180 / Math.PI;
+        }
+
+        let speedSlider, orbitSlider;
+        let speedVal, orbitVal;
+
+        let currentColor = { r: 255, g: 165, b: 0 };
+
+        // ── Color picker wiring ──────────────────────────────────────
+        function toHex(n) { return n.toString(16).padStart(2, '0').toUpperCase(); }
+
+        function applyColor(r, g, b) {
+            currentColor = { r, g, b };
+            const rgb   = `rgb(${r},${g},${b})`;
+            const faint = `rgba(${r},${g},${b},0.3)`;
+            const bg08  = `rgba(${r},${g},${b},0.08)`;
+            document.documentElement.style.setProperty('--col',       rgb);
+            document.documentElement.style.setProperty('--col-faint', faint);
+            document.documentElement.style.setProperty('--col-08',    bg08);
+            document.getElementById('swatch').style.background = rgb;
+        }
+
+        function syncFromSliders() {
+            const r = parseInt(document.getElementById('rSlider').value);
+            const g = parseInt(document.getElementById('gSlider').value);
+            const b = parseInt(document.getElementById('bSlider').value);
+            document.getElementById('rVal').textContent = r;
+            document.getElementById('gVal').textContent = g;
+            document.getElementById('bVal').textContent = b;
+            const hex = toHex(r) + toHex(g) + toHex(b);
+            const hexInput = document.getElementById('hexInput');
+            hexInput.value = hex;
+            hexInput.classList.remove('invalid');
+            applyColor(r, g, b);
+        }
+
+        function syncFromHex(raw) {
+            const hexInput = document.getElementById('hexInput');
+            const cleaned = raw.replace(/[^0-9a-fA-F]/g, '');
+            if (cleaned.length !== 6) { hexInput.classList.add('invalid'); return; }
+            hexInput.classList.remove('invalid');
+            const r = parseInt(cleaned.slice(0,2), 16);
+            const g = parseInt(cleaned.slice(2,4), 16);
+            const b = parseInt(cleaned.slice(4,6), 16);
+            document.getElementById('rSlider').value = r;
+            document.getElementById('gSlider').value = g;
+            document.getElementById('bSlider').value = b;
+            document.getElementById('rVal').textContent = r;
+            document.getElementById('gVal').textContent = g;
+            document.getElementById('bVal').textContent = b;
+            applyColor(r, g, b);
+        }
+
+        document.getElementById('rSlider').addEventListener('input', syncFromSliders);
+        document.getElementById('gSlider').addEventListener('input', syncFromSliders);
+        document.getElementById('bSlider').addEventListener('input', syncFromSliders);
+        document.getElementById('hexInput').addEventListener('input', e => syncFromHex(e.target.value));
+
+        // ── p5 sketch ────────────────────────────────────────────────
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+
+            addGroundStation(90);
+
+            document.getElementById('gsAddBtn').addEventListener('click', () => {
+                const deg = parseFloat(document.getElementById('gsAngleInput').value) || 0;
+                addGroundStation(deg);
+            });
+
+            speedSlider = document.getElementById('speedSlider');
+            orbitSlider = document.getElementById('orbitSlider');
+            speedVal    = document.getElementById('speedVal');
+            orbitVal    = document.getElementById('orbitVal');
+
+            // Zoom so default orbit fills ~85% of the shorter screen edge
+            const initOrbitKm = 100 * Math.pow(422, parseInt(document.getElementById('orbitSlider').value) / 100);
+            const initOrbitRadius = earthRadius + initOrbitKm * earthRadius / 6371;
+            camZoom = min(width, height) / 2 * 0.85 / initOrbitRadius;
+
+            speedSlider.addEventListener('input', () => {
+                const v = parseInt(speedSlider.value);
+                const s = v === 0 ? 0 : Math.round(Math.pow(10, 1 + v / 100 * 4));
+                speedVal.textContent = s.toLocaleString() + 'x';
+            });
+            orbitSlider.addEventListener('input', () => {
+                const km = Math.round(100 * Math.pow(422, parseInt(orbitSlider.value) / 100));
+                orbitVal.textContent = km.toLocaleString() + ' km';
+            });
+        }
+
+        function draw() {
+            const PX_TO_M = 6371000 / earthRadius;
+            const orbitKm = 100 * Math.pow(422, parseInt(orbitSlider.value) / 100);
+            let orbitRadius = earthRadius + orbitKm * earthRadius / 6371;
+            const r_m = orbitRadius * PX_TO_M;
+            const omega = Math.sqrt(3.986004418e14 / (r_m * r_m * r_m)); // rad/s
+            const sv = parseInt(speedSlider.value);
+            const simSpeed = sv === 0 ? 0 : Math.pow(10, 1 + sv / 100 * 4);
+            let orbitSpeed = omega * simSpeed / 60; // rad/frame at 60 fps
+            let { r, g, b } = currentColor;
+
+            // WASD pan + +/- zoom (skip when an input is focused)
+            if (document.activeElement.tagName !== 'INPUT') {
+                if (keyIsDown(87)) camY += PAN_SPEED; // W
+                if (keyIsDown(83)) camY -= PAN_SPEED; // S
+                if (keyIsDown(65)) camX += PAN_SPEED; // A
+                if (keyIsDown(68)) camX -= PAN_SPEED; // D
+                if (keyIsDown(187) || keyIsDown(61))  camZoom = constrain(camZoom * 1.02, 0.1, 20); // +
+                if (keyIsDown(189) || keyIsDown(173)) camZoom = constrain(camZoom * 0.98, 0.1, 20); // -
+            }
+
+            background(0);
+            translate(width / 2 + camX, height / 2 + camY);
+            scale(camZoom);
+
+            // 1. Draw Earth
+            if (earthGlobeCanvas) {
+                drawingContext.save();
+                drawingContext.beginPath();
+                drawingContext.arc(0, 0, earthRadius, 0, Math.PI * 2);
+                drawingContext.clip();
+                drawingContext.drawImage(earthGlobeCanvas, -earthRadius, -earthRadius, earthRadius * 2, earthRadius * 2);
+                drawingContext.restore();
+            } else {
+                noFill();
+            }
+            stroke(r, g, b);
+            strokeWeight(1.5 * (earthRadius * 2) / globeRes);
+            noFill();
+            circle(0, 0, earthRadius * 2);
+
+            // 2. Draw Ground Stations
+            for (let i = 0; i < groundStations.length; i++) {
+                const gs = groundStations[i];
+                drawDish(gs.x, gs.y, gs.surfaceAngle, r, g, b);
+                if (vicActiveIndex === i) {
+                    noFill();
+                    stroke(r, g, b, 80);
+                    strokeWeight(1);
+                    circle(gs.x, gs.y, gs.vicinity * 2);
+                }
+            }
+
+            // 3. Calculate Satellite Position
+            let satX = cos(angle) * orbitRadius;
+            let satY = sin(angle) * orbitRadius;
+
+            // 4. Draw Orbit Path (Faint)
+            noFill();
+            stroke(r, g, b, 50);
+            strokeWeight(1.5 * (earthRadius * 2) / globeRes);
+            circle(0, 0, orbitRadius * 2);
+
+            // 5. Check Proximity & Elevation, Draw Signal
+            for (const gs of groundStations) {
+                const d = dist(satX, satY, gs.x, gs.y);
+                const elev = getElevation(satX, satY, gs);
+                if (d < gs.vicinity && elev >= gs.elevMin) {
+                    const tipX = Math.cos(gs.surfaceAngle) * (earthRadius + 2.5);
+                    const tipY = Math.sin(gs.surfaceAngle) * (earthRadius + 2.5);
+                    drawDashedLine(satX, satY, tipX, tipY, r, g, b);
+                }
+            }
+
+            // 6. Draw Satellite
+            fill(r, g, b);
+            noStroke();
+            rectMode(CENTER);
+            square(satX, satY, 2.5);
+
+            angle += orbitSpeed;
+        }
+
+        function drawDish(x, y, surfaceAngle, r, g, b) {
+            push();
+            translate(x, y);
+            // outward normal points away from Earth center
+            rotate(surfaceAngle + HALF_PI);
+            fill(r, g, b);
+            noStroke();
+
+            // triangular base: flat edge on Earth surface (y=0), apex toward space
+            triangle(-1.5, 0, 1.5, 0, 0, -2.5);
+
+            // dish sitting at top of triangle, open toward space
+            arc(0, -2.5, 3, 3, 0, PI, CHORD);
+            pop();
+        }
+
+        function drawDashedLine(x1, y1, x2, y2, r, g, b) {
+            stroke(r, g, b);
+            strokeWeight(1);
+            const dashLen = 1, gapLen = 3;
+            const d = dist(x1, y1, x2, y2);
+            if (d === 0) return;
+            const dx = (x2 - x1) / d, dy = (y2 - y1) / d;
+            let pos = 0;
+            while (pos < d) {
+                const end = min(pos + dashLen, d);
+                line(x1 + dx * pos, y1 + dy * pos, x1 + dx * end, y1 + dy * end);
+                pos += dashLen + gapLen;
+            }
+        }
+
+        function mouseWheel(event) {
+            const zoomFactor = event.delta > 0 ? 0.9 : 1.1;
+            const worldX = (mouseX - width / 2 - camX) / camZoom;
+            const worldY = (mouseY - height / 2 - camY) / camZoom;
+            camZoom = constrain(camZoom * zoomFactor, 0.1, 20);
+            camX = mouseX - width / 2 - worldX * camZoom;
+            camY = mouseY - height / 2 - worldY * camZoom;
+            return false; // prevent page scroll
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>
