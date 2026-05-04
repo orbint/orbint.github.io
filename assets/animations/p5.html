@@ -174,55 +174,22 @@
         const earthRadius = 80;
         let camX = 0, camY = 0, camZoom = 1;
         const PAN_SPEED = 5;
-        let earthGlobeCanvas = null;
         let worldBorders = null;
-        const globeRes = 512;
-
-        function renderGlobe(lon, lat) {
-            if (!worldBorders) return;
-            const off = document.createElement('canvas');
-            off.width = globeRes;
-            off.height = globeRes;
-            const ctx = off.getContext('2d');
-
-            const projection = d3.geoOrthographic()
-                .scale(globeRes / 2 - 1)
-                .translate([globeRes / 2, globeRes / 2])
-                .clipAngle(90)
-                .rotate([-lon, -lat]);
-
-            const path = d3.geoPath(projection, ctx);
-
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            path({ type: 'Sphere' });
-            ctx.fill();
-
-            ctx.strokeStyle = 'rgb(255,165,0)';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            path(worldBorders);
-            ctx.stroke();
-
-            earthGlobeCanvas = off;
-        }
+        let globeLon = 10, globeLat = 45;
 
         async function initGlobe() {
-            const lon = parseInt(document.getElementById('lonSlider').value);
-            const lat = parseInt(document.getElementById('latSlider').value);
             const world = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
                 .then(r => r.json());
             worldBorders = topojson.mesh(world, world.objects.countries);
-            renderGlobe(lon, lat);
         }
 
         document.getElementById('lonSlider').addEventListener('input', function() {
             document.getElementById('lonVal').textContent = this.value;
-            renderGlobe(parseInt(this.value), parseInt(document.getElementById('latSlider').value));
+            globeLon = parseInt(this.value);
         });
         document.getElementById('latSlider').addEventListener('input', function() {
             document.getElementById('latVal').textContent = this.value;
-            renderGlobe(parseInt(document.getElementById('lonSlider').value), parseInt(this.value));
+            globeLat = parseInt(this.value);
         });
 
         initGlobe();
@@ -398,18 +365,23 @@
             scale(camZoom);
 
             // 1. Draw Earth
-            if (earthGlobeCanvas) {
+            if (worldBorders) {
+                const proj = d3.geoOrthographic()
+                    .scale(earthRadius)
+                    .translate([0, 0])
+                    .clipAngle(90)
+                    .rotate([-globeLon, -globeLat]);
+                const geoPath = d3.geoPath(proj, drawingContext);
                 drawingContext.save();
-                drawingContext.beginPath();
-                drawingContext.arc(0, 0, earthRadius, 0, Math.PI * 2);
-                drawingContext.clip();
-                drawingContext.drawImage(earthGlobeCanvas, -earthRadius, -earthRadius, earthRadius * 2, earthRadius * 2);
+                drawingContext.fillStyle = '#000';
+                drawingContext.beginPath(); geoPath({ type: 'Sphere' }); drawingContext.fill();
+                drawingContext.strokeStyle = `rgb(${r},${g},${b})`;
+                drawingContext.lineWidth = 1;
+                drawingContext.beginPath(); geoPath(worldBorders); drawingContext.stroke();
                 drawingContext.restore();
-            } else {
-                noFill();
             }
             stroke(r, g, b);
-            strokeWeight(1.5 * (earthRadius * 2) / globeRes);
+            strokeWeight(1);
             noFill();
             circle(0, 0, earthRadius * 2);
 
@@ -432,7 +404,7 @@
             // 4. Draw Orbit Path (Faint)
             noFill();
             stroke(r, g, b, 50);
-            strokeWeight(1.5 * (earthRadius * 2) / globeRes);
+            strokeWeight(1);
             circle(0, 0, orbitRadius * 2);
 
             // 5. Check Proximity & Elevation, Draw Signal
