@@ -4,13 +4,12 @@
   if (!canvas) return;
   let W, H, raf;
   const ORANGE = '#F2641C';
-  const DIM_ORANGE = 'rgba(242,100,28,0.15)';
 
-  // Satellites: [angle, speed, orbitRx, orbitRy, tilt, phase, pingTimer, pingMax]
+  // Stationary points above the hero title
   const sats = [
-    { a: 0,    speed: 0.0007, rx: 0.38, ry: 0.14, tilt: -18, phase: 0,   ping: 0, pingMax: 180, pings: [] },
-    { a: 2.1,  speed: 0.0005, rx: 0.42, ry: 0.18, tilt: 12,  phase: 1.2, ping: 60, pingMax: 220, pings: [] },
-    { a: 4.5,  speed: 0.0009, rx: 0.36, ry: 0.12, tilt: -6,  phase: 2.8, ping: 120, pingMax: 160, pings: [] },
+    { x: 0.15, y: 0.55, ping: 0,   pingMax: 180, pings: [] },
+    { x: 0.35, y: 0.48, ping: 60,  pingMax: 220, pings: [] },
+    { x: 0.55, y: 0.52, ping: 120, pingMax: 160, pings: [] },
   ];
 
   function resize() {
@@ -20,43 +19,17 @@
   window.addEventListener('resize', resize);
   resize();
 
-  function orbitPoint(sat, a, cx, cy) {
-    const rx = sat.rx * W;
-    const ry = sat.ry * H;
-    const rad = sat.tilt * Math.PI / 180;
-    const x0 = Math.cos(a) * rx;
-    const y0 = Math.sin(a) * ry;
-    return {
-      x: cx + x0 * Math.cos(rad) - y0 * Math.sin(rad),
-      y: cy + x0 * Math.sin(rad) + y0 * Math.cos(rad)
-    };
-  }
-
   function draw(t) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, W, H);
-    const cx = W * 0.62, cy = H * 0.38;
 
     sats.forEach(sat => {
-      sat.a += sat.speed;
-      const rx = sat.rx * W, ry = sat.ry * H;
-      const rad = sat.tilt * Math.PI / 180;
+      const px = sat.x * W;
+      const py = sat.y * H;
 
-      // Draw orbit ellipse
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(rad);
+      // Draw satellite (stationary)
       ctx.beginPath();
-      ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(242,100,28,0.12)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.restore();
-
-      // Draw satellite
-      const pos = orbitPoint(sat, sat.a, cx, cy);
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 2.5, 0, Math.PI * 2);
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
       ctx.fillStyle = ORANGE;
       ctx.fill();
 
@@ -64,7 +37,7 @@
       sat.ping++;
       if (sat.ping >= sat.pingMax) {
         sat.ping = 0;
-        sat.pings.push({ x: pos.x, y: pos.y, r: 0, alpha: 1 });
+        sat.pings.push({ x: px, y: py, r: 0, alpha: 1 });
       }
       sat.pings = sat.pings.filter(p => p.alpha > 0.01);
       sat.pings.forEach(p => {
@@ -76,33 +49,24 @@
         ctx.lineWidth = 1;
         ctx.stroke();
       });
-
-      // Tail
-      for (let i = 1; i <= 20; i++) {
-        const ta = sat.a - i * 0.018;
-        const tp = orbitPoint(sat, ta, cx, cy);
-        ctx.beginPath();
-        ctx.arc(tp.x, tp.y, 1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(242,100,28,${0.25 * (1 - i/20)})`;
-        ctx.fill();
-      }
     });
 
-    // Signal lines between closest pair
-    const pos0 = orbitPoint(sats[0], sats[0].a, cx, cy);
-    const pos1 = orbitPoint(sats[1], sats[1].a, cx, cy);
-    const dist = Math.hypot(pos0.x - pos1.x, pos0.y - pos1.y);
-    if (dist < 200) {
-      const alpha = (1 - dist / 200) * 0.3;
+    // Signal lines between satellites
+    const pairs = [[0,1], [1,2], [2,0]];
+    pairs.forEach(([i, j]) => {
+      const p0 = { x: sats[i].x * W, y: sats[i].y * H };
+      const p1 = { x: sats[j].x * W, y: sats[j].y * H };
+      const dist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
+      const alpha = 0.15; // Constant subtle alpha for stationary lines
       ctx.beginPath();
-      ctx.moveTo(pos0.x, pos0.y);
-      ctx.lineTo(pos1.x, pos1.y);
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
       ctx.strokeStyle = `rgba(242,100,28,${alpha})`;
       ctx.lineWidth = 0.8;
       ctx.setLineDash([4, 6]);
       ctx.stroke();
       ctx.setLineDash([]);
-    }
+    });
 
     raf = requestAnimationFrame(draw);
   }
