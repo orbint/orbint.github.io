@@ -34,8 +34,7 @@
         }
 
         function setup() {
-            // Width: 534px (1/3 smaller than 800), Height: 400px
-            createCanvas(534, 400);
+            createCanvas(534, 350);
             angleMode(DEGREES);
             textFont('Inter');
             loadWorldData();
@@ -62,7 +61,7 @@
             noFill();
             arc(cx, cy, (R + H) * 2, (R + H) * 2, 255, 285);
 
-            // 3. ANIMATION LOGIC - Speed decreased by 2x (0.04 -> 0.02)
+            // 3. ANIMATION LOGIC
             satAngle += 0.03; 
             if (satAngle > END_ANG) satAngle = START_ANG; 
 
@@ -75,9 +74,9 @@
                 satAlpha = map(currentProgress, totalRange * 0.9, totalRange, 255, 0);
             }
 
-            // 4. ICONS
-            drawIcon(cx, cy, 84, 'emitter'); 
-            drawIcon(cx, cy, 96, 'dish');    
+            // 4. STATIONARY ICONS (Emitter & Ground Station)
+            drawEmitter(cx, cy, 84); 
+            drawGroundStation(cx, cy, 96);    
 
             // 5. DATA LINK
             if (abs(satAngle - 96) < 3.5) {
@@ -129,48 +128,32 @@
             textSize(12);
             textStyle(BOLD);
 
-            // --- 1. LEO SATELLITE FORMATION (Back to original relative pos) ---
             let introAlpha = 0;
             if (satAngle > 76 && satAngle < 90) {
-                if (satAngle < 84) {
-                    introAlpha = map(satAngle, 76, 84, 0, 255);
-                } else if (satAngle > 86) {
-                    introAlpha = map(satAngle, 86, 90, 255, 0);
-                } else {
-                    introAlpha = 255;
-                }
+                if (satAngle < 84) introAlpha = map(satAngle, 76, 84, 0, 255);
+                else if (satAngle > 86) introAlpha = map(satAngle, 86, 90, 255, 0);
+                else introAlpha = 255;
             }
             fill(COL[0], COL[1], COL[2], introAlpha);
             textAlign(LEFT, BOTTOM);
             let entryX = cx + cos(255) * (R + H);
             let entryY = cy + sin(255) * (R + H);
-            // entryX+210 ensures it fits in the 534px width while appearing on the left
             text("LEO SATELLITE FORMATION", entryX + 210, entryY - 100);
 
-            // --- 2. EMITTER IDENTIFIED (Right of icon) ---
             const eTarget = 84;
             let eAlpha = 0;
             if (satAngle > eTarget - 4 && satAngle < eTarget + 6) {
-                if (satAngle < eTarget) {
-                    eAlpha = map(satAngle, eTarget - 4, eTarget, 0, 255);
-                } else {
-                    eAlpha = map(satAngle, eTarget, eTarget + 6, 255, 0);
-                }
+                eAlpha = (satAngle < eTarget) ? map(satAngle, eTarget - 4, eTarget, 0, 255) : map(satAngle, eTarget, eTarget + 6, 255, 0);
             }
             fill(COL[0], COL[1], COL[2], eAlpha);
             textAlign(LEFT, BOTTOM); 
             let [ex, ey] = getSurfacePos(cx, cy, eTarget);
             text("EMITTER IDENTIFIED", ex + 15, ey - 25);
 
-            // --- 3. GROUND STATION DATA TRANSFER (Left of icon) ---
             const gTarget = 96;
             let gAlpha = 0;
             if (satAngle > gTarget - 4 && satAngle < gTarget + 8) {
-                if (satAngle < gTarget) {
-                    gAlpha = map(satAngle, gTarget - 4, gTarget, 0, 255);
-                } else {
-                    gAlpha = map(satAngle, gTarget, gTarget + 8, 255, 0);
-                }
+                gAlpha = (satAngle < gTarget) ? map(satAngle, gTarget - 4, gTarget, 0, 255) : map(satAngle, gTarget, gTarget + 8, 255, 0);
             }
             fill(COL[0], COL[1], COL[2], gAlpha);
             textAlign(RIGHT, BOTTOM); 
@@ -198,33 +181,72 @@
             return [x, y];
         }
 
-        function drawIcon(cx, cy, ang, type) {
+        /**
+         * Separate function for drawing the Signal Emitter
+         */
+        function drawEmitter(cx, cy, ang) {
             let [x, y] = getSurfacePos(cx, cy, ang);
             push();
             translate(x, y);
             rotate(ang - 90);
+            
+            // Style settings
             stroke(COL);
             strokeWeight(2);
-            if (type === 'emitter') {
-                line(0, 0, 0, -20);
-                line(-7, -13, 7, -13);
-                noFill();
+            noFill(); // Ensures both the triangle and circle are outlines only
+            
+            // Tower Structure
+            // Triangle: base points at (-10, 0) and (10, 0), peak at (0, -20)
+            triangle(-10, 0, 10, 0, 0, -20); 
+            
+            // Circle: centered at the triangle's peak
+            circle(0, -20, 8); 
+            
+            // Signal Waves
+            for (let i = 0; i < 6; i++) {
+                let cycle = 180; 
+                let p = ((frameCount + (i * 30)) % cycle) / cycle; 
+                let waveDist = p * (H * 1.8); 
                 
-                // Changed loop to 6 for 2x more waves
-                for (let i = 0; i < 6; i++) {
-                    let cycle = 180; 
-                    // Changed offset to 30 (180 / 6) to make them denser
-                    let p = ((frameCount + (i * 30)) % cycle) / cycle; 
-                    let waveDist = p * (H * 1.8); 
-                    stroke(COL[0], COL[1], COL[2], (1 - p) * 200);
-                    arc(0, -20, waveDist * 1.2, waveDist, 230, 310);
-                }
-            } else {
-                line(0, 0, 0, -5); 
-                noFill();
-                arc(0, -15, 24, 14, 0, 180); 
-                line(0, -15, 0, -5); 
+                // Dynamic transparency for the waves
+                stroke(COL[0], COL[1], COL[2], (1 - p) * 200);
+                arc(0, -20, waveDist * 1.2, waveDist, 230, 310);
             }
+            pop();
+        }
+
+        /**
+         * Separate function for drawing the Ground Station (Dish)
+         */
+        function drawGroundStation(cx, cy, ang) {
+            let [x, y] = getSurfacePos(cx, cy, ang);
+            push();
+            translate(x, y);
+            rotate(ang - 90);
+            
+            // Style settings
+            stroke(COL);
+            strokeWeight(2);
+            noFill();
+            
+            // 1. Small Triangle Base (points at surface)
+            // Base at (0,0), peak at (0,-8)
+            triangle(-8, 0, 8, 0, 0, -8); 
+            
+            // 2. Circle on top of the triangle
+            // Centered on the triangle's peak
+            //circle(0, -8, 6);
+            
+            // 3. Satellite Dish (pointing upwards/away from the planet)
+            // Using 180 to 360 degrees to make it a bowl shape facing the sky
+            arc(0, -16, 26, 16, 0, 180); 
+
+            arc(0, -16, 26, 5, 0, 180); 
+            
+            // 4. Small Antenna (Feed horn) inside the dish
+            // A small line extending from the center of the dish
+            line(0, -10, 0, -20); 
+            
             pop();
         }
 
