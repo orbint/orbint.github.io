@@ -504,6 +504,19 @@ footer { padding: 80px 0; }
 .scroll-text { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(230,228,226,0.35); }
 .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(242,100,28,0.6), transparent); }
 
+/* ── ARTICLE PAGE ── */
+.article-content { padding: 72px 80px 96px; max-width: 860px; margin: 0 auto; }
+.article-body h2 { font-size: 19px; font-weight: 700; color: #fff; margin: 40px 0 12px; letter-spacing: -0.01em; }
+.article-body h3 { font-size: 15px; font-weight: 600; color: var(--fg-dark); margin: 24px 0 8px; }
+.article-body p { font-size: 15px; line-height: 1.75; color: var(--fg-sec-dark); margin-bottom: 14px; }
+.article-body ul, .article-body ol { padding-left: 20px; margin-bottom: 16px; }
+.article-body li { font-size: 15px; line-height: 1.7; color: var(--fg-sec-dark); margin-bottom: 6px; }
+.article-body strong { color: var(--fg-dark); font-weight: 600; }
+.article-body a { color: var(--orange); text-decoration: none; }
+.article-body a:hover { text-decoration: underline; }
+.article-body img { width: 100%; border-radius: 6px; margin: 24px 0; display: block; border: 1px solid var(--dark-border); }
+.article-body blockquote { border-left: 3px solid var(--orange); padding: 12px 0 12px 20px; margin: 24px 0; font-size: 16px; color: var(--fg-dark); font-style: italic; }
+
 /* ── JOB PAGE ── */
 .page-header {
   padding: 130px 80px 72px;
@@ -573,6 +586,7 @@ footer { padding: 80px 0; }
 }
 @media (max-width: 768px) {
   .page-header { padding: 110px 24px 48px; }
+  .article-content { padding: 48px 24px 64px; }
   .job-content { padding: 48px 24px 64px; }
   .site-footer { padding: 40px 24px; flex-direction: column; gap: 16px; align-items: center; text-align: center; }
   .site-footer-links { justify-content: center; }

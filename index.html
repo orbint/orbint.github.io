@@ -239,7 +239,50 @@
     <h2 class="section-title section-title--light">Stay updated about Orbint's latest developments.</h2>
     <p class="section-sub section-sub--light">Our latest articles, press releases, and achievements in orbital intelligence.</p>
   </div>
-  <div id="news-feed" class="fade-up" style="margin-top: 48px;"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
+  <div id="news-feed" class="fade-up" style="margin-top: 48px;">
+    <div class="carousel-wrapper">
+      <div class="news-grid">
+        <a href="news/seranis-space-tech-expo-2025.html" class="news-card">
+          <div class="news-image"><img src="/news/articles/assets/seranis.jpeg" alt="SeRANIS and Orbint at Space Tech Expo 2025"></div>
+          <div class="news-content">
+            <div class="news-meta"><span class="news-category">EVENT</span><span class="news-date">Nov 18, 2025</span></div>
+            <h3 class="news-title">SeRANIS and Orbint at Space Tech Expo 2025</h3>
+            <p class="news-excerpt">Leonhard Kessler and Daniel Weinzierl from Universität der Bundeswehr München presented SeRANIS and Orbint at the Space Tech Expo Europe in Bremen.</p>
+            <div class="news-more">Read full story</div>
+          </div>
+        </a>
+        <a href="news/rohde-schwarz-investment.html" class="news-card">
+          <div class="news-image"><img src="/news/articles/assets/rohde.jpg" alt="Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signal Intelligence"></div>
+          <div class="news-content">
+            <div class="news-meta"><span class="news-category">MILESTONE</span><span class="news-date">Nov 13, 2025</span></div>
+            <h3 class="news-title">Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signal Intelligence</h3>
+            <p class="news-excerpt">Technology group Rohde &amp; Schwarz has invested in Orbint GmbH, joining forces to advance satellite-based signal intelligence and strengthen Germany's and Europe's technological sovereignty in space.</p>
+            <div class="news-more">Read full story</div>
+          </div>
+        </a>
+        <a href="news/bdi-newspace-100th-member.html" class="news-card">
+          <div class="news-image"><img src="/news/articles/assets/founders.jpg" alt="Orbint becomes 100th Member of BDI NewSpace Initiative"></div>
+          <div class="news-content">
+            <div class="news-meta"><span class="news-category">MILESTONE</span><span class="news-date">Jul 15, 2025</span></div>
+            <h3 class="news-title">Orbint becomes 100th Member of BDI NewSpace Initiative</h3>
+            <p class="news-excerpt">Orbint GmbH joins the BDI NewSpace Initiative as its 100th member, bringing space-based signal intelligence to Germany's leading industry network.</p>
+            <div class="news-more">Read full story</div>
+          </div>
+        </a>
+        <a href="news/tag-der-raumfahrt-space-cafe.html" class="news-card">
+          <div class="news-image"><img src="/news/articles/assets/tag-der-raumfahrt.jpg" alt="&quot;Tag der Raumfahrt&quot; in Berlin: Space Cafe Clip"></div>
+          <div class="news-content">
+            <div class="news-meta"><span class="news-category">BROADCAST</span><span class="news-date">Mar 31, 2025</span></div>
+            <h3 class="news-title">"Tag der Raumfahrt" in Berlin: Space Cafe Clip</h3>
+            <p class="news-excerpt">Alexander Schmidt, co-founder of Orbint GmbH, sat down with SpaceWatch.Global TV to discuss the future of satellite-based signal intelligence and Orbint's mission.</p>
+            <div class="news-more">Read full story</div>
+          </div>
+        </a>
+      </div>
+      <button class="carousel-arrow carousel-arrow--left" id="news-arrow-left" aria-label="Scroll left" hidden>&#8249;</button>
+      <button class="carousel-arrow carousel-arrow--right" id="news-arrow-right" aria-label="Scroll right">&#8250;</button>
+    </div>
+  </div>
 </section>
 
 <!-- CONTACT -->
@@ -318,39 +361,13 @@
 
 <script src="js/nscript.js"></script>
 <script>
-    // News articles
-    const newsSlugs = ['rohde-schwarz-investment', 'bdi-newspace-100th-member', 'seranis-space-tech-expo-2025', 'tag-der-raumfahrt-space-cafe'];
-    Promise.all(newsSlugs.map(slug =>
-        fetch(`news/articles/${slug}.json`).then(r => r.json()).then(a => ({ ...a, slug }))
-    )).then(articles => {
-        articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-        document.getElementById('news-feed').innerHTML =
-            `<div class="carousel-wrapper"><div class="news-grid">${articles.map(a => {
-                const imgMatch = a.body.match(/<img[^>]+src="([^">]+)"/);
-                const imgSrc = imgMatch ? imgMatch[1] : null;
-                return `
-                <a href="news/article.html?slug=${a.slug}" class="news-card">
-                  <div class="news-image">
-                    ${imgSrc ? `<img src="${imgSrc}" alt="${a.title}">` : ''}
-                  </div>
-                  <div class="news-content">
-                    <div class="news-meta">
-                      <span class="news-category">${a.category || 'News'}</span>
-                      <span class="news-date">${a.date}</span>
-                    </div>
-                    <h3 class="news-title">${a.title}</h3>
-                    <p class="news-excerpt">${a.excerpt}</p>
-                    <div class="news-more">Read full story</div>
-                  </div>
-                </a>`;
-            }).join('')}</div><button class="carousel-arrow carousel-arrow--left" id="news-arrow-left" aria-label="Scroll left" hidden>&#8249;</button><button class="carousel-arrow carousel-arrow--right" id="news-arrow-right" aria-label="Scroll right">&#8250;</button></div>`;
-        const newsGrid = document.querySelector('.news-grid');
-        const newsArrowRight = document.getElementById('news-arrow-right');
-        const newsArrowLeft = document.getElementById('news-arrow-left');
-        if (newsGrid && newsArrowRight && typeof initCarouselArrow === 'function') {
-            initCarouselArrow(newsGrid, newsArrowRight, newsArrowLeft);
-        }
-    }).catch(() => {});
+    // News carousel
+    const newsGrid = document.querySelector('.news-grid');
+    const newsArrowRight = document.getElementById('news-arrow-right');
+    const newsArrowLeft = document.getElementById('news-arrow-left');
+    if (newsGrid && newsArrowRight && typeof initCarouselArrow === 'function') {
+        initCarouselArrow(newsGrid, newsArrowRight, newsArrowLeft);
+    }
 
     // Job listings
     const jobSlugs = [
