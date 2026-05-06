@@ -7,7 +7,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<title>Orbint Orbital Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>Orbint</title>
 </head>
 <body>
 
@@ -41,8 +42,10 @@
 <!-- HERO -->
 <section class="hero" id="mission">
   <div class="hero-bg"></div>
+  <video class="hero-video" autoplay muted loop playsinline disablePictureInPicture poster="assets/images/poster_dark.jpg" oncontextmenu="return false;">
+    <source src="assets/videos/60sLEO.mp4" type="video/mp4">
+  </video>
   <div class="hero-overlay"></div>
-  <canvas class="hero-canvas" id="hero-canvas"></canvas>
 
   <div class="hero-content">
     <h1 class="hero-headline fade-up visible">We detect, identify, and locate signals around the globe.</h1>
@@ -125,21 +128,21 @@
   </div>
     <div class="partners-carousel fade-up" style="margin-top: 32px;">
       <div class="partners-track">
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/unibw.png" alt="University of the Bundeswehr Munich"></a>
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
-        <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
-        <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img class="partner-primary" src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
-        <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
-        <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/palladion.png" alt="Palladion"></a>
-        <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
+        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" style="height: 55px;" alt="University of the Bundeswehr Munich"></a>
+        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" style="height: 50px;" alt="MCSC"></a>
+        <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" style="height: 61px;" alt="dtec.bw"></a>
+        <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" style="height: 65px;" alt="Rohde &amp; Schwarz"></a>
+        <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" style="height: 47px;" alt="ESA BIC"></a>
+        <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" style="height: 54px;" alt="Palladion"></a>
+        <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" style="height: 91px;" alt="New Space BDI"></a>
         <!-- duplicate for seamless loop -->
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/unibw.png" alt="University of the Bundeswehr Munich"></a>
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
-        <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
-        <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img class="partner-primary" src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
-        <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
-        <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/palladion.png" alt="Palladion"></a>
-        <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
+        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" style="height: 55px;" alt="University of the Bundeswehr Munich"></a>
+        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" style="height: 50px;" alt="MCSC"></a>
+        <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" style="height: 61px;" alt="dtec.bw"></a>
+        <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" style="height: 65px;" alt="Rohde &amp; Schwarz"></a>
+        <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" style="height: 47px;" alt="ESA BIC"></a>
+        <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" style="height: 54px;" alt="Palladion"></a>
+        <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" style="height: 91px;" alt="New Space BDI"></a>
       </div>
     </div>
 </section>
@@ -382,8 +385,8 @@
     // Job listings
     const jobSlugs = [
         'signal-processing-engineer', 'systems-engineer', 'mechanical-engineer',
-        'embedded-software-developer', 'software-developer-ground', 'software-developer-working-student',
-        'operations-associate',
+        'fpga-engineer', 'embedded-software-developer', 'software-developer-ground',
+        'software-developer-working-student', 'project-manager', 'operations-associate',
     ];
     Promise.all(jobSlugs.map(slug =>
         fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
