@@ -299,3 +299,46 @@ document.head.appendChild(style);
   // Initial check
   updateActiveLink();
 })();
+
+// ── CAROUSEL SLIDERS ──
+function initCarouselSlider(grid, slider) {
+  const thumb = slider.querySelector('.carousel-slider-thumb');
+
+  function update() {
+    const scrollable = grid.scrollWidth - grid.clientWidth;
+    if (scrollable <= 0) { slider.style.visibility = 'hidden'; return; }
+    slider.style.visibility = '';
+    const ratio = grid.scrollLeft / scrollable;
+    const thumbPct = (grid.clientWidth / grid.scrollWidth) * 100;
+    thumb.style.width = thumbPct + '%';
+    thumb.style.left = ratio * (100 - thumbPct) + '%';
+  }
+
+  grid.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+
+  let dragging = false, startX = 0, startScrollLeft = 0;
+  slider.addEventListener('pointerdown', e => {
+    dragging = true;
+    startX = e.clientX;
+    startScrollLeft = grid.scrollLeft;
+    slider.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  slider.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const dx = e.clientX - startX;
+    const scrollable = grid.scrollWidth - grid.clientWidth;
+    const thumbW = (grid.clientWidth / grid.scrollWidth) * slider.clientWidth;
+    grid.scrollLeft = startScrollLeft + dx * (scrollable / (slider.clientWidth - thumbW));
+  });
+  slider.addEventListener('pointerup', () => { dragging = false; });
+  slider.addEventListener('pointercancel', () => { dragging = false; });
+}
+
+(function() {
+  const teamGrid = document.querySelector('.team-grid');
+  const teamSlider = document.getElementById('team-slider');
+  if (teamGrid && teamSlider) initCarouselSlider(teamGrid, teamSlider);
+})();

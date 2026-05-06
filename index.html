@@ -61,7 +61,7 @@
 <section class="section section-dark" id="technology">
   <div class="fade-up">
     <div class="section-label">Technology</div>
-    <h2 class="section-title section-title--dark">Intelligence for operators who cannot afford gaps.</h2>
+    <h2 class="section-title section-title--dark">Signal intelligence for operators who cannot afford gaps.</h2>
     <p class="section-sub section-sub--dark">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
   </div>
   <div class="usecases-layout fade-up">
@@ -279,6 +279,7 @@
       </div>
     </div>
   </div>
+  <div class="carousel-slider" id="team-slider"><div class="carousel-slider-thumb"></div></div>
 </section>
 
 <!-- CAREERS -->
@@ -407,10 +408,11 @@
 <script src="js/nscript.js"></script>
 <script>
     // News articles
-    const newsSlugs = ['bdi-newspace-100th-member', 'tag-der-raumfahrt-space-cafe'];
+    const newsSlugs = ['rohde-schwarz-investment', 'bdi-newspace-100th-member', 'seranis-space-tech-expo-2025', 'tag-der-raumfahrt-space-cafe'];
     Promise.all(newsSlugs.map(slug =>
         fetch(`news/articles/${slug}.json`).then(r => r.json()).then(a => ({ ...a, slug }))
     )).then(articles => {
+        articles.sort((a, b) => new Date(b.date) - new Date(a.date));
         document.getElementById('news-feed').innerHTML =
             `<div class="news-grid">${articles.map(a => {
                 const imgMatch = a.body.match(/<img[^>]+src="([^">]+)"/);
@@ -430,7 +432,12 @@
                     <div class="news-more">Read full story</div>
                   </div>
                 </a>`;
-            }).join('')}</div>`;
+            }).join('')}</div><div class="carousel-slider" id="news-slider"><div class="carousel-slider-thumb"></div></div>`;
+        const newsGrid = document.querySelector('.news-grid');
+        const newsSlider = document.getElementById('news-slider');
+        if (newsGrid && newsSlider && typeof initCarouselSlider === 'function') {
+            initCarouselSlider(newsGrid, newsSlider);
+        }
     }).catch(() => {});
 
     // Job listings
