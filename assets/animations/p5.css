@@ -1,0 +1,101 @@
+:root {
+    --col: rgb(255,165,0);
+    --col-faint: rgba(255,165,0,0.3);
+    --col-08: rgba(255,165,0,0.08);
+}
+body { margin: 0; padding: 0; background-color: #000; overflow: hidden; }
+canvas { display: block; }
+
+/* ── Bottom controls ── */
+#controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;
+    background: var(--col-08);
+    border: 1px solid var(--col-faint);
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: monospace;
+    color: var(--col);
+    font-size: 13px;
+}
+.control { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 160px;
+    height: 2px;
+    background: var(--col-faint);
+    outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--col);
+    cursor: pointer;
+}
+
+/* ── Color picker panel ── */
+#colorPanel {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid var(--col-faint);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: monospace;
+    color: var(--col);
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 190px;
+}
+#colorPanel .header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+#swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    background: rgb(255,165,0);
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.rgb-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.rgb-row label { width: 10px; }
+.rgb-row input[type=range] { width: 120px; }
+.rgb-row span { width: 26px; text-align: right; }
+#hexRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#hexRow label { opacity: 0.6; }
+#hexInput {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--col-faint);
+    color: var(--col);
+    font-family: monospace;
+    font-size: 12px;
+    width: 68px;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+#hexInput.invalid { border-bottom-color: #f55; color: #f55; }

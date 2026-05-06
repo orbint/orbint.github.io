@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/nstyle.css">
+<link rel="stylesheet" href="css/style.css">
 <title>Orbint Orbital Intelligence</title>
 </head>
 <body>
@@ -58,51 +58,11 @@
 </section>
 
 <!-- TECHNOLOGY -->
-<section class="section section-light" id="technology">
+<section class="section section-dark" id="technology">
   <div class="fade-up">
     <div class="section-label">Technology</div>
-    <h2 class="section-title section-title--light">From orbit to operator in seconds.</h2>
-    <p class="section-sub section-sub--light">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
-  </div>
-  <div class="tech-grid fade-up">
-    <div class="tech-card">
-      <div class="tech-card-num">01</div>
-      <div class="tech-card-title">Space segment</div>
-      <div class="tech-card-body">Software-defined receivers aboard small LEO satellites intercept RF emissions across a broad spectrum from UHF through Ka-band with no gaps in global coverage.</div>
-    </div>
-    <div class="tech-card">
-      <div class="tech-card-num">02</div>
-      <div class="tech-card-title">Signal processing</div>
-      <div class="tech-card-body">On-orbit signal fingerprinting isolates emitter characteristics modulation scheme, pulse repetition frequency, timing jitter before downlinking compressed intelligence data.</div>
-    </div>
-    <div class="tech-card">
-      <div class="tech-card-num">03</div>
-      <div class="tech-card-title">Geolocation</div>
-      <div class="tech-card-body">Multi-satellite TDOA / FDOA geometry resolves emitter location to sub-kilometer accuracy. Results fuse with terrain models and prior tracks in near real time.</div>
-    </div>
-    <div class="tech-card">
-      <div class="tech-card-num">04</div>
-      <div class="tech-card-title">Ground infrastructure</div>
-      <div class="tech-card-body">European sovereign ground stations receive, validate, and archive all downlink data. End-to-end encrypted. Operated under German jurisdiction.</div>
-    </div>
-    <div class="tech-card">
-      <div class="tech-card-num">05</div>
-      <div class="tech-card-title">Expert Dashboard</div>
-      <div class="tech-card-body">The analyst interface delivers waterfall plots, signal cards, polar diagrams, and orbit tracks all live, all at expert density. Configurable alert thresholds per emitter class.</div>
-    </div>
-    <div class="tech-card">
-      <div class="tech-card-num">06</div>
-      <div class="tech-card-title">OrbTwin</div>
-      <div class="tech-card-body">A digital twin of the Orbint constellation enables mission planning, coverage simulation, and tasking optimisation before a satellite pass begins.</div>
-    </div>
-  </div>
-</section>
-
-<!-- USE CASES (dark) -->
-<section class="section section-dark" id="usecases">
-  <div class="fade-up">
-    <div class="section-label">Use cases</div>
     <h2 class="section-title section-title--dark">Intelligence for operators who cannot afford gaps.</h2>
+    <p class="section-sub section-sub--dark">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
   </div>
   <div class="usecases-layout fade-up">
     <div class="usecase-list">
@@ -110,35 +70,56 @@
         <div class="usecase-num">01</div>
         <div>
           <div class="usecase-title">Electromagnetic Order of Battle</div>
-          <div class="usecase-body">Continuously catalogue and geolocate emitters of interest radar systems, communications infrastructure, and electronic warfare assets across denied and contested areas.</div>
+          <div class="usecase-body">Build and maintain a live picture of radar systems, communications infrastructure, and electronic warfare assets across denied and contested areas. Multi-satellite TDOA/FDOA resolves each emitter to sub-kilometer accuracy while on-orbit fingerprinting captures its modulation scheme, pulse repetition frequency, and timing jitter.</div>
         </div>
       </div>
       <div class="usecase-item" data-uc="1">
         <div class="usecase-num">02</div>
         <div>
           <div class="usecase-title">Maritime surveillance</div>
-          <div class="usecase-body">Detect vessels attempting to evade AIS tracking by correlating radar emissions and communications signatures against known vessel profiles.</div>
+          <div class="usecase-body">Ships that go dark by disabling their AIS transponder still radiate. Orbint correlates radar emissions and communications signatures against fingerprint profiles to resolve position to sub-kilometer accuracy, fused with prior tracks and terrain models in near real time.</div>
         </div>
       </div>
       <div class="usecase-item" data-uc="2">
         <div class="usecase-num">03</div>
         <div>
           <div class="usecase-title">Crisis early warning</div>
-          <div class="usecase-body">Anomalous RF activity new emitters, changed operating frequencies, unusual transmission cadence triggers automated alerts before kinetic events unfold.</div>
+          <div class="usecase-body">A new emitter appearing overnight, a radar shifting frequency, a transmitter changing its pulse rhythm: these are the signals that precede action. Orbint flags the change the moment a satellite pass captures it, before the situation on the ground becomes visible.</div>
         </div>
       </div>
       <div class="usecase-item" data-uc="3">
         <div class="usecase-num">04</div>
         <div>
           <div class="usecase-title">Spectrum monitoring</div>
-          <div class="usecase-body">Identify interference sources, detect unlicensed transmitters, and enforce spectrum allocation across oceanic and polar regions beyond terrestrial monitoring reach.</div>
+          <div class="usecase-body">Oceanic and polar regions fall outside any terrestrial monitoring network. Orbint covers the full spectrum from UHF through Ka-band globally from LEO, with all collected data archived end-to-end encrypted under European sovereign ground infrastructure and German jurisdiction.</div>
         </div>
       </div>
     </div>
     <div class="usecase-visual">
-      <canvas class="uc-canvas" id="uc-canvas"></canvas>
+      <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:contain;display:block;">
+        <source src="assets/animations/focused.webm" type="video/webm">
+      </video>
     </div>
   </div>
+</section>
+
+<!-- PARTNERS -->
+ <section class="section section-dark" id="technology">
+  <div class="fade-up">
+    <div class="section-label">Partners &amp; institutions</div>
+    <h2 class="section-title section-title--dark">Backed by European institutions.</h2>
+    <p class="section-sub section-sub--dark">Co-developed and validated by the institutions that operate critical European infrastructure.</p>
+  </div>
+    <div class="partners-grid fade-up" style="margin-top: 32px;">
+    <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img class="partner-primary" src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
+    <a href="https://www.unibw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/unibw.png" alt="Universität der Bundeswehr München"></a>
+    <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
+    <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
+    <a href="https://mcsc.io" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
+    <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
+    <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img class="partner-secondary" src="assets/images/partners/palladion.png" alt="Palladion"></a>
+  </div>
+</section>
 </section>
 
 <!-- PRODUCT PREVIEW -->
@@ -234,22 +215,7 @@
   </div>
 </section>
 
-<!-- PARTNERS -->
-<section class="section section-light" id="partners" style="padding-top: 64px; padding-bottom: 64px;">
-  <div class="fade-up" style="text-align: center; margin-bottom: 0;">
-    <div class="section-label" style="justify-content: center;">Partners &amp; institutions</div>
-    <p style="font-size: 14px; color: var(--fg-ter-light); margin-top: 8px;">Backed by European institutions. Built on validated research.</p>
-  </div>
-  <div class="partners-grid fade-up" style="margin-top: 32px;">
-    <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
-    <a href="https://www.unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" alt="Universität der Bundeswehr München"></a>
-    <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
-    <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
-    <a href="https://mcsc.io" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
-    <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
-    <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" alt="Palladion"></a>
-  </div>
-</section>
+
 
 <!-- TEAM -->
 <section class="section section-warm" id="about">
@@ -295,8 +261,8 @@
       </div>
       <div class="team-info">
         <div class="team-name">Winfried Stock</div>
-        <div class="team-role">Co-Founder &amp; CTO</div>
-        <div class="team-bio">Ground segment and data infrastructure lead. Designed the end-to-end encrypted sovereign ground station architecture.</div>
+        <div class="team-role">Co-Founder &amp; CPO</div>
+        <div class="team-bio">Defines product vision and roadmap from orbit to application layer. Translates customer needs and market insights into satellite-powered data products.</div>
       </div>
     </div>
   </div>
@@ -336,9 +302,7 @@
     <div class="jobs-panel fade-up">
       <div class="jobs-panel-header">Open positions</div>
       <div id="job-feed"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
-      <div style="margin-top: 12px; padding: 16px 20px; background: var(--light-el); border-radius: 8px; border: 1px solid var(--light-border);">
-        <p style="font-size: 13px; color: var(--fg-sec-light); line-height: 1.55;">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="/cdn-cgi/l/email-protection#6300021106061110230c11010a0d174d0706" style="color: var(--orange); text-decoration: none;"><span class="__cf_email__" data-cfemail="5f3c3e2d3a3a2d2c1f302d3d36312b713b3a">[email&#160;protected]</span></a>.</p>
-      </div>
+      <p style="margin-top: 16px; font-size: 12px; color: var(--fg-ter-light); line-height: 1.55;">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="mailto:info@orbint.de" style="color: inherit; text-decoration: none;">info@orbint.de</a>.</p>
     </div>
   </div>
 </section>
@@ -363,7 +327,7 @@
       <div class="contact-info" style="margin-top: 48px;">
         <div class="contact-info-item">
           <div class="contact-info-label">Email</div>
-          <div class="contact-info-value"><a href="/cdn-cgi/l/email-protection#73101c1d07121007331c01111a1d075d1716"><span class="__cf_email__" data-cfemail="fa9995948e9b998eba95889893948ed49e9f">[email&#160;protected]</span></a></div>
+          <div class="contact-info-value"><a href="mailto:info@orbint.de">info@orbint.de</a></div>
         </div>
         <div class="contact-info-item">
           <div class="contact-info-label">Headquarters</div>
@@ -422,9 +386,6 @@
   <div id="footer-placeholder"></div>
 </section>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script src="js/nscript.js"></script>
 <script>
     // News articles
@@ -472,65 +433,5 @@
     });
 </script>
 
-
-<script type="text/babel">
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-"accentColor": "#F2641C",
-"heroHeadline": "We detect, identify, and locate signals around the globe.",
-"showScrollIndicator": true,
-"sectionSpacing": 96,
-"darkNavOpacity": 92
-}/*EDITMODE-END*/;
-
-function OrbintTweaks() {
-const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
-
-React.useEffect(() => {
-document.documentElement.style.setProperty('--orange', tweaks.accentColor);
-document.documentElement.style.setProperty('--orange-dark', tweaks.accentColor);
-}, [tweaks.accentColor]);
-
-React.useEffect(() => {
-document.documentElement.style.setProperty('--nav-bg-opacity', tweaks.darkNavOpacity / 100);
-}, [tweaks.darkNavOpacity]);
-
-React.useEffect(() => {
-const h = document.querySelector('.hero-headline');
-if (h) h.textContent = tweaks.heroHeadline;
-}, [tweaks.heroHeadline]);
-
-React.useEffect(() => {
-const si = document.querySelector('.scroll-indicator');
-if (si) si.style.display = tweaks.showScrollIndicator ? 'flex' : 'none';
-}, [tweaks.showScrollIndicator]);
-
-React.useEffect(() => {
-document.querySelectorAll('.section').forEach(s => {
-  s.style.paddingTop = tweaks.sectionSpacing + 'px';
-  s.style.paddingBottom = tweaks.sectionSpacing + 'px';
-});
-}, [tweaks.sectionSpacing]);
-
-const { TweaksPanel, TweakSection, TweakColor, TweakText, TweakToggle, TweakSlider } = window;
-
-return (
-<TweaksPanel title="Orbint Website">
-  <TweakSection title="Brand">
-    <TweakColor label="Accent color" value={tweaks.accentColor} onChange={v => setTweak('accentColor', v)} />
-  </TweakSection>
-  <TweakSection title="Hero">
-    <TweakText label="Headline" value={tweaks.heroHeadline} onChange={v => setTweak('heroHeadline', v)} />
-    <TweakToggle label="Scroll indicator" value={tweaks.showScrollIndicator} onChange={v => setTweak('showScrollIndicator', v)} />
-  </TweakSection>
-  <TweakSection title="Layout">
-    <TweakSlider label="Section spacing" min={48} max={160} step={8} value={tweaks.sectionSpacing} onChange={v => setTweak('sectionSpacing', v)} />
-    <TweakSlider label="Nav opacity %" min={50} max={100} step={1} value={tweaks.darkNavOpacity} onChange={v => setTweak('darkNavOpacity', v)} />
-  </TweakSection>
-</TweaksPanel>
-);
-}
-
-ReactDOM.createRoot(document.createElement('div')).render(<OrbintTweaks />);
-</script>
 </body>
 </html>
