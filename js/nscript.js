@@ -300,45 +300,30 @@ document.head.appendChild(style);
   updateActiveLink();
 })();
 
-// ── CAROUSEL SLIDERS ──
-function initCarouselSlider(grid, slider) {
-  const thumb = slider.querySelector('.carousel-slider-thumb');
-
+// ── CAROUSEL ARROWS ──
+function initCarouselArrow(grid, arrowRight, arrowLeft) {
   function update() {
-    const scrollable = grid.scrollWidth - grid.clientWidth;
-    if (scrollable <= 0) { slider.style.visibility = 'hidden'; return; }
-    slider.style.visibility = '';
-    const ratio = grid.scrollLeft / scrollable;
-    const thumbPct = (grid.clientWidth / grid.scrollWidth) * 100;
-    thumb.style.width = thumbPct + '%';
-    thumb.style.left = ratio * (100 - thumbPct) + '%';
+    const atStart = grid.scrollLeft <= 4;
+    const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 4;
+    arrowRight.hidden = atEnd;
+    if (arrowLeft) arrowLeft.hidden = atStart;
   }
-
   grid.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
   update();
-
-  let dragging = false, startX = 0, startScrollLeft = 0;
-  slider.addEventListener('pointerdown', e => {
-    dragging = true;
-    startX = e.clientX;
-    startScrollLeft = grid.scrollLeft;
-    slider.setPointerCapture(e.pointerId);
-    e.preventDefault();
+  arrowRight.addEventListener('click', () => {
+    grid.scrollBy({ left: grid.clientWidth * 0.75, behavior: 'smooth' });
   });
-  slider.addEventListener('pointermove', e => {
-    if (!dragging) return;
-    const dx = e.clientX - startX;
-    const scrollable = grid.scrollWidth - grid.clientWidth;
-    const thumbW = (grid.clientWidth / grid.scrollWidth) * slider.clientWidth;
-    grid.scrollLeft = startScrollLeft + dx * (scrollable / (slider.clientWidth - thumbW));
-  });
-  slider.addEventListener('pointerup', () => { dragging = false; });
-  slider.addEventListener('pointercancel', () => { dragging = false; });
+  if (arrowLeft) {
+    arrowLeft.addEventListener('click', () => {
+      grid.scrollBy({ left: -grid.clientWidth * 0.75, behavior: 'smooth' });
+    });
+  }
 }
 
 (function() {
   const teamGrid = document.querySelector('.team-grid');
-  const teamSlider = document.getElementById('team-slider');
-  if (teamGrid && teamSlider) initCarouselSlider(teamGrid, teamSlider);
+  const teamArrowRight = document.getElementById('team-arrow-right');
+  const teamArrowLeft = document.getElementById('team-arrow-left');
+  if (teamGrid && teamArrowRight) initCarouselArrow(teamGrid, teamArrowRight, teamArrowLeft);
 })();

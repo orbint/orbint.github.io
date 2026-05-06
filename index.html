@@ -237,6 +237,7 @@
     <h2 class="section-title section-title--light">Founded by researchers. Operated by practitioners.</h2>
     <p class="section-sub section-sub--light">Orbint is a spin-off from the SeRANIS project at Universität der Bundeswehr München, funded by dtec.bw.</p>
   </div>
+  <div class="carousel-wrapper">
   <div class="team-grid fade-up">
     <div class="team-card">
       <div class="team-photo">
@@ -279,7 +280,9 @@
       </div>
     </div>
   </div>
-  <div class="carousel-slider" id="team-slider"><div class="carousel-slider-thumb"></div></div>
+  <button class="carousel-arrow carousel-arrow--left" id="team-arrow-left" aria-label="Scroll left" hidden>&#8249;</button>
+  <button class="carousel-arrow carousel-arrow--right" id="team-arrow-right" aria-label="Scroll right">&#8250;</button>
+  </div>
 </section>
 
 <!-- CAREERS -->
@@ -414,7 +417,7 @@
     )).then(articles => {
         articles.sort((a, b) => new Date(b.date) - new Date(a.date));
         document.getElementById('news-feed').innerHTML =
-            `<div class="news-grid">${articles.map(a => {
+            `<div class="carousel-wrapper"><div class="news-grid">${articles.map(a => {
                 const imgMatch = a.body.match(/<img[^>]+src="([^">]+)"/);
                 const imgSrc = imgMatch ? imgMatch[1] : null;
                 return `
@@ -432,11 +435,12 @@
                     <div class="news-more">Read full story</div>
                   </div>
                 </a>`;
-            }).join('')}</div><div class="carousel-slider" id="news-slider"><div class="carousel-slider-thumb"></div></div>`;
+            }).join('')}</div><button class="carousel-arrow carousel-arrow--left" id="news-arrow-left" aria-label="Scroll left" hidden>&#8249;</button><button class="carousel-arrow carousel-arrow--right" id="news-arrow-right" aria-label="Scroll right">&#8250;</button></div>`;
         const newsGrid = document.querySelector('.news-grid');
-        const newsSlider = document.getElementById('news-slider');
-        if (newsGrid && newsSlider && typeof initCarouselSlider === 'function') {
-            initCarouselSlider(newsGrid, newsSlider);
+        const newsArrowRight = document.getElementById('news-arrow-right');
+        const newsArrowLeft = document.getElementById('news-arrow-left');
+        if (newsGrid && newsArrowRight && typeof initCarouselArrow === 'function') {
+            initCarouselArrow(newsGrid, newsArrowRight, newsArrowLeft);
         }
     }).catch(() => {});
 
