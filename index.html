@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/nstyle.css">
+<link rel="stylesheet" href="css/style.css">
 <title>Orbint Orbital Intelligence</title>
 </head>
 <body>
@@ -58,24 +58,11 @@
 </section>
 
 <!-- TECHNOLOGY -->
-<section class="section section-light" id="technology">
+<section class="section section-dark" id="technology">
   <div class="fade-up">
     <div class="section-label">Technology</div>
-    <h2 class="section-title section-title--light">From orbit to operator in seconds.</h2>
-    <p class="section-sub section-sub--light">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
-  </div>
-  <div class="animation-embed fade-up">
-    <video autoplay loop muted playsinline style="width:534px;height:350px;display:block;margin:0 auto;">
-      <source src="assets/animations/focused.webm" type="video/webm">
-    </video>
-  </div>
-</section>
-
-<!-- USE CASES (dark) -->
-<section class="section section-dark" id="usecases">
-  <div class="fade-up">
-    <div class="section-label">Use cases</div>
     <h2 class="section-title section-title--dark">Intelligence for operators who cannot afford gaps.</h2>
+    <p class="section-sub section-sub--dark">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
   </div>
   <div class="usecases-layout fade-up">
     <div class="usecase-list">
@@ -109,9 +96,38 @@
       </div>
     </div>
     <div class="usecase-visual">
-      <canvas class="uc-canvas" id="uc-canvas"></canvas>
+      <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:contain;display:block;">
+        <source src="assets/animations/focused.webm" type="video/webm">
+      </video>
     </div>
   </div>
+</section>
+
+<!-- PARTNERS -->
+ <section class="section section-dark" id="technology">
+  <div class="fade-up">
+    <div class="section-label">Partners &amp; institutions</div>
+    <h2 class="section-title section-title--dark">Backed by European institutions. Built on validated research.</h2>
+    <p class="section-sub section-sub--dark">Orbint builds the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
+  </div>
+    <div class="partners-grid fade-up" style="margin-top: 32px;">
+    <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
+    <a href="https://www.unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" alt="Universität der Bundeswehr München"></a>
+    <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
+    <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
+    <a href="https://mcsc.io" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
+    <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
+    <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" alt="Palladion"></a>
+  </div>
+</section>
+
+
+<section class="section section-light" id="partners" style="padding-top: 64px; padding-bottom: 64px;">
+  <div class="fade-up" style="text-align: center; margin-bottom: 0;">
+    <div class="section-label" style="justify-content: center;"></div>
+    <p style="font-size: 14px; color: var(--fg-ter-light); margin-top: 8px;"></p>
+  </div>
+
 </section>
 
 <!-- PRODUCT PREVIEW -->
@@ -207,22 +223,7 @@
   </div>
 </section>
 
-<!-- PARTNERS -->
-<section class="section section-light" id="partners" style="padding-top: 64px; padding-bottom: 64px;">
-  <div class="fade-up" style="text-align: center; margin-bottom: 0;">
-    <div class="section-label" style="justify-content: center;">Partners &amp; institutions</div>
-    <p style="font-size: 14px; color: var(--fg-ter-light); margin-top: 8px;">Backed by European institutions. Built on validated research.</p>
-  </div>
-  <div class="partners-grid fade-up" style="margin-top: 32px;">
-    <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" alt="dtec.bw"></a>
-    <a href="https://www.unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" alt="Universität der Bundeswehr München"></a>
-    <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" alt="Rohde &amp; Schwarz"></a>
-    <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" alt="ESA BIC"></a>
-    <a href="https://mcsc.io" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" alt="MCSC"></a>
-    <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" alt="New Space BDI"></a>
-    <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" alt="Palladion"></a>
-  </div>
-</section>
+
 
 <!-- TEAM -->
 <section class="section section-warm" id="about">
@@ -313,6 +314,9 @@
         <p style="font-size: 13px; color: var(--fg-sec-light); line-height: 1.55;">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="/cdn-cgi/l/email-protection#6300021106061110230c11010a0d174d0706" style="color: var(--orange); text-decoration: none;"><span class="__cf_email__" data-cfemail="5f3c3e2d3a3a2d2c1f302d3d36312b713b3a">[email&#160;protected]</span></a>.</p>
       </div>
     </div>
+  </div>
+  <div class="fade-up" style="margin-top: 48px; border: 1px solid var(--light-border); border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; max-width: 640px;">
+    <canvas class="uc-canvas" id="uc-canvas"></canvas>
   </div>
 </section>
 

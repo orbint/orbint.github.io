@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #000; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 12px; }
+        body { margin: 0; background: transparent; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 12px; }
         canvas { border: 1px solid #333; }
         #status { color: #ffa500; font-family: monospace; font-size: 13px; }
     </style>
@@ -87,7 +87,7 @@
         }
 
         function draw() {
-            background(0);
+            clear();
             const cx = width / 2;
             const cy = height + 1510;
 
@@ -237,9 +237,12 @@
         function startVideoRecording() {
             const canvasEl = document.querySelector('canvas');
             const stream = canvasEl.captureStream(24);
-            const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
-                .find(m => MediaRecorder.isTypeSupported(m));
-            const recorder = new MediaRecorder(stream, { mimeType: mime });
+            const mime = 'video/webm;codecs=vp9';
+            if (!MediaRecorder.isTypeSupported(mime)) {
+                document.getElementById('status').textContent = 'VP9 not supported — transparent WebM requires Chrome.';
+                return;
+            }
+            const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8000000 });
             const chunks = [];
             recorder.ondataavailable = e => chunks.push(e.data);
             recorder.onstop = () => {
