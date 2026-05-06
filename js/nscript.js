@@ -299,3 +299,31 @@ document.head.appendChild(style);
   // Initial check
   updateActiveLink();
 })();
+
+// ── CAROUSEL ARROWS ──
+function initCarouselArrow(grid, arrowRight, arrowLeft) {
+  function update() {
+    const atStart = grid.scrollLeft <= 4;
+    const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 4;
+    arrowRight.hidden = atEnd;
+    if (arrowLeft) arrowLeft.hidden = atStart;
+  }
+  grid.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+  arrowRight.addEventListener('click', () => {
+    grid.scrollBy({ left: grid.clientWidth * 0.75, behavior: 'smooth' });
+  });
+  if (arrowLeft) {
+    arrowLeft.addEventListener('click', () => {
+      grid.scrollBy({ left: -grid.clientWidth * 0.75, behavior: 'smooth' });
+    });
+  }
+}
+
+(function() {
+  const teamGrid = document.querySelector('.team-grid');
+  const teamArrowRight = document.getElementById('team-arrow-right');
+  const teamArrowLeft = document.getElementById('team-arrow-left');
+  if (teamGrid && teamArrowRight) initCarouselArrow(teamGrid, teamArrowRight, teamArrowLeft);
+})();
