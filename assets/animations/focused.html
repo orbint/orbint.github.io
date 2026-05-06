@@ -16,8 +16,8 @@
         const COL = [255, 165, 0];
         const R = 1600;       
         const H = 140;        
-        const START_ANG = 72;
-        const END_ANG = 108;
+        const START_ANG = 76;
+        const END_ANG = 104;
         let satAngle = START_ANG;    
 
         let worldBorders = null;
@@ -34,7 +34,8 @@
         }
 
         function setup() {
-            createCanvas(800, 400);
+            // Width: 534px (1/3 smaller than 800), Height: 400px
+            createCanvas(534, 400);
             angleMode(DEGREES);
             textFont('Inter');
             loadWorldData();
@@ -61,8 +62,8 @@
             noFill();
             arc(cx, cy, (R + H) * 2, (R + H) * 2, 255, 285);
 
-            // 3. ANIMATION LOGIC
-            satAngle += 0.04; 
+            // 3. ANIMATION LOGIC - Speed decreased by 2x (0.04 -> 0.02)
+            satAngle += 0.03; 
             if (satAngle > END_ANG) satAngle = START_ANG; 
 
             let satAlpha = 255;
@@ -125,29 +126,28 @@
 
         function drawDynamicLabels(cx, cy) {
             noStroke();
-            textSize(10);
+            textSize(12);
             textStyle(BOLD);
 
-            // --- 1. LEO SATELLITE FORMATION (Intro Label) ---
-            // Fades in at start (73), out as it hits the emitter area (84)
+            // --- 1. LEO SATELLITE FORMATION (Back to original relative pos) ---
             let introAlpha = 0;
-            if (satAngle > 73 && satAngle < 86) {
-                if (satAngle < 78) {
-                    introAlpha = map(satAngle, 73, 78, 0, 255);
-                } else if (satAngle > 82) {
-                    introAlpha = map(satAngle, 82, 86, 255, 0);
+            if (satAngle > 76 && satAngle < 90) {
+                if (satAngle < 84) {
+                    introAlpha = map(satAngle, 76, 84, 0, 255);
+                } else if (satAngle > 86) {
+                    introAlpha = map(satAngle, 86, 90, 255, 0);
                 } else {
                     introAlpha = 255;
                 }
             }
             fill(COL[0], COL[1], COL[2], introAlpha);
             textAlign(LEFT, BOTTOM);
-            // entryX is the start point of the orbit arc
             let entryX = cx + cos(255) * (R + H);
             let entryY = cy + sin(255) * (R + H);
-            text("LEO SATELLITE FORMATION", entryX + 80, entryY - 100);
+            // entryX+210 ensures it fits in the 534px width while appearing on the left
+            text("LEO SATELLITE FORMATION", entryX + 210, entryY - 100);
 
-            // --- 2. EMITTER IDENTIFIED ---
+            // --- 2. EMITTER IDENTIFIED (Right of icon) ---
             const eTarget = 84;
             let eAlpha = 0;
             if (satAngle > eTarget - 4 && satAngle < eTarget + 6) {
@@ -158,11 +158,11 @@
                 }
             }
             fill(COL[0], COL[1], COL[2], eAlpha);
-            textAlign(RIGHT, BOTTOM);
+            textAlign(LEFT, BOTTOM); 
             let [ex, ey] = getSurfacePos(cx, cy, eTarget);
-            text("EMITTER IDENTIFIED", ex - 15, ey - 25);
+            text("EMITTER IDENTIFIED", ex + 15, ey - 25);
 
-            // --- 3. GROUND STATION DATA TRANSFER ---
+            // --- 3. GROUND STATION DATA TRANSFER (Left of icon) ---
             const gTarget = 96;
             let gAlpha = 0;
             if (satAngle > gTarget - 4 && satAngle < gTarget + 8) {
@@ -173,9 +173,9 @@
                 }
             }
             fill(COL[0], COL[1], COL[2], gAlpha);
-            textAlign(LEFT, BOTTOM);
+            textAlign(RIGHT, BOTTOM); 
             let [gx, gy] = getSurfacePos(cx, cy, gTarget);
-            text("DATA TRANSFER TO GROUND STATION", gx + 20, gy - 20);
+            text("DATA TRANSFER TO GROUND STATION", gx - 15, gy - 20);
         }
 
         function drawSatellite(x, y, angle, alpha) {
@@ -209,9 +209,12 @@
                 line(0, 0, 0, -20);
                 line(-7, -13, 7, -13);
                 noFill();
-                for (let i = 0; i < 3; i++) {
+                
+                // Changed loop to 6 for 2x more waves
+                for (let i = 0; i < 6; i++) {
                     let cycle = 180; 
-                    let p = ((frameCount + (i * 60)) % cycle) / cycle; 
+                    // Changed offset to 30 (180 / 6) to make them denser
+                    let p = ((frameCount + (i * 30)) % cycle) / cycle; 
                     let waveDist = p * (H * 1.8); 
                     stroke(COL[0], COL[1], COL[2], (1 - p) * 200);
                     arc(0, -20, waveDist * 1.2, waveDist, 230, 310);
