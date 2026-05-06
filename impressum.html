@@ -1,68 +1,79 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impressum | Orbint</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impressum | Orbint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body class="light-theme">
-    <nav>
-        <div class="nav-content">
-            <a href="index.html" class="logo">
-                <img src="assets/images/black_black_logo.png" alt="Orbint" style="height: 50px; width: auto;">
-            </a>
-            <div class="nav-links">
-                <a href="index.html" class="mono">Mission</a>
-                <a href="news.html" class="mono">News</a>
-                <a href="career.html" class="mono">Career</a>
-                <a href="company.html" class="mono">About Us</a>
-                <a href="contact.html" class="mono">Contact</a>
-            </div>
-            <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-        </div>
-    </nav>
+<body>
 
-    <div class="container">
-        <section class="hero">
-            <h1>Impressum</h1>
-        </section>
-
-        <section class="legal-content">
-            <p>
-                Orbint GmbH<br>
-                Lilienthalstr. 9<br>
-                85579 Neubiberg
-            </p>
-            <p>
-                Handelsregister: HRB 301039<br>
-                Registergericht: München
-            </p>
-            <p>
-                USt-IdNr.: DE 454224846
-            </p>
-
-            <h2>Vertreten durch</h2>
-            <p>Dr. Alexander Schmidt, Simon Heine und Dr. Steffen Bittner</p>
-
-            <h2>Kontakt</h2>
-            <p>Email: <a href="mailto:info@orbint.de">info@orbint.de</a></p>
-
-            <h2>Verbraucherstreitbeilegung / Universalschlichtungsstelle</h2>
-            <p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
-
-            <h2>Disclaimer</h2>
-            <p>Die auf dieser Website bereitgestellten Inhalte dienen ausschließlich allgemeinen Informationszwecken. Obwohl wir uns um Genauigkeit bemühen, übernehmen wir keine Garantie für die Vollständigkeit oder Richtigkeit der bereitgestellten Informationen.</p>
-        </section>
-
-        <div id="footer-placeholder"></div>
+<!-- NAV -->
+<nav id="main-nav" class="nav-opaque">
+  <div class="nav-content">
+    <a href="index.html" class="logo-crossfade">
+      <img id="nav-logo-dark" src="assets/images/white_white_logo.png" alt="Orbint">
+      <img id="nav-logo-light" src="assets/images/black_black_logo.png" alt="">
+    </a>
+    <div class="nav-links">
+      <a href="index.html#mission" class="mono">Mission</a>
+      <a href="index.html#about" class="mono">About Us</a>
+      <a href="index.html#career" class="mono">Career</a>
+      <a href="index.html#news" class="mono">News</a>
+      <a href="index.html#contact" class="mono">Contact</a>
     </div>
+    <button id="hamburger" class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
 
-    <script src="js/script.js"></script>
+<!-- MOBILE MENU -->
+<div id="mobile-menu" class="mobile-menu">
+  <a href="index.html#mission">Mission</a>
+  <a href="index.html#about">About Us</a>
+  <a href="index.html#career">Career</a>
+  <a href="index.html#news">News</a>
+  <a href="index.html#contact">Contact</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="legal-header">
+  <a href="index.html" class="page-back">← Back</a>
+  <div class="section-label">Legal</div>
+  <h1 class="page-header-title">Impressum</h1>
+</div>
+
+<!-- CONTENT -->
+<div class="legal-body">
+  <p>
+    Orbint GmbH<br>
+    Lilienthalstr. 9<br>
+    85579 Neubiberg
+  </p>
+  <p>
+    Handelsregister: HRB 301039<br>
+    Registergericht: München
+  </p>
+  <p>USt-IdNr.: DE 454224846</p>
+
+  <h2>Vertreten durch</h2>
+  <p>Dr. Alexander Schmidt, Simon Heine und Dr. Steffen Bittner</p>
+
+  <h2>Kontakt</h2>
+  <p>Email: <a href="mailto:info@orbint.de">info@orbint.de</a></p>
+
+  <h2>Verbraucherstreitbeilegung / Universalschlichtungsstelle</h2>
+  <p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+
+  <h2>Disclaimer</h2>
+  <p>Die auf dieser Website bereitgestellten Inhalte dienen ausschließlich allgemeinen Informationszwecken. Obwohl wir uns um Genauigkeit bemühen, übernehmen wir keine Garantie für die Vollständigkeit oder Richtigkeit der bereitgestellten Informationen.</p>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-placeholder"></div>
+
+<script src="js/nscript.js"></script>
 </body>
 </html>

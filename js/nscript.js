@@ -227,6 +227,29 @@ document.head.appendChild(style);
   });
 })();
 
+// ── HERO HEADLINE AUTOSCALE ────────────────────────────────────────────────────
+(function() {
+  function fitHeroHeadline() {
+    const el = document.querySelector('.hero-headline');
+    const hero = document.querySelector('.hero');
+    if (!el || !hero) return;
+
+    const targetH = hero.offsetHeight / 4;
+    let lo = 10, hi = 400;
+
+    for (let i = 0; i < 30; i++) {
+      const mid = (lo + hi) / 2;
+      el.style.fontSize = mid + 'px';
+      if (el.offsetHeight <= targetH) lo = mid;
+      else hi = mid;
+    }
+    el.style.fontSize = lo + 'px';
+  }
+
+  fitHeroHeadline();
+  window.addEventListener('resize', fitHeroHeadline);
+})();
+
 // ── NAVBAR SCROLL & SCROLL SPY ──
 (function() {
   const nav = document.getElementById('main-nav');
