@@ -8,121 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <title>Career | Orbint</title>
-    <style>
-        #main-nav.scrolled,
-        #main-nav {
-            background: rgba(18, 17, 16, 0.98);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .page-header {
-            padding: 130px 80px 72px;
-            border-bottom: 1px solid var(--dark-border);
-        }
-        .page-back {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
-            color: var(--fg-ter-dark); text-decoration: none;
-            text-transform: uppercase;
-            font-family: 'JetBrains Mono', monospace;
-            transition: color 150ms;
-            margin-bottom: 40px;
-        }
-        .page-back:hover { color: var(--orange); }
-
-        .page-header-title {
-            font-size: clamp(28px, 4vw, 56px); font-weight: 700;
-            color: #fff; line-height: 1.1; letter-spacing: -0.02em;
-            max-width: 720px; margin-top: 12px;
-        }
-        .page-header-sub {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px; color: var(--fg-sec-dark);
-            letter-spacing: 0.08em; margin-top: 16px;
-        }
-
-        .job-content {
-            padding: 72px 80px 96px;
-        }
-        .job-layout {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 80px;
-            max-width: 1100px;
-            margin: 0 auto;
-            align-items: start;
-        }
-
-        .job-body h2 {
-            font-size: 19px; font-weight: 700; color: #fff;
-            margin: 40px 0 12px; letter-spacing: -0.01em;
-        }
-        .job-body h3 {
-            font-size: 15px; font-weight: 600; color: var(--fg-dark);
-            margin: 24px 0 8px;
-        }
-        .job-body p {
-            font-size: 15px; line-height: 1.75; color: var(--fg-sec-dark);
-            margin-bottom: 14px;
-        }
-        .job-body ul, .job-body ol {
-            padding-left: 20px; margin-bottom: 16px;
-        }
-        .job-body li {
-            font-size: 15px; line-height: 1.7; color: var(--fg-sec-dark);
-            margin-bottom: 6px;
-        }
-        .job-body strong { color: var(--fg-dark); font-weight: 600; }
-        .job-body a { color: var(--orange); text-decoration: none; }
-        .job-body a:hover { text-decoration: underline; }
-
-        .job-sidebar {
-            position: sticky; top: 96px;
-        }
-        .job-card {
-            background: var(--dark-el); border: 1px solid var(--dark-border);
-            border-radius: 8px; padding: 28px; margin-bottom: 16px;
-        }
-        .job-card-label {
-            font-size: 10px; font-weight: 600; letter-spacing: 0.14em;
-            text-transform: uppercase; color: var(--fg-ter-dark); margin-bottom: 8px;
-        }
-        .job-card-value {
-            font-size: 14px; color: var(--fg-dark); font-weight: 500;
-        }
-        .job-card-value + .job-card-label { margin-top: 20px; }
-
-        .site-footer {
-            padding: 48px 80px;
-            border-top: 1px solid var(--dark-border);
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 24px; flex-wrap: wrap;
-        }
-        .site-footer-logo { height: 30px; width: auto; opacity: 0.7; }
-        .site-footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-        .site-footer-link {
-            font-size: 11px; color: var(--fg-ter-dark); text-decoration: none;
-            font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em;
-            text-transform: uppercase; transition: color 150ms;
-        }
-        .site-footer-link:hover { color: var(--orange); }
-        .site-footer-copy {
-            font-size: 11px; color: var(--fg-ter-dark);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        @media (max-width: 900px) {
-            .job-layout { grid-template-columns: 1fr; gap: 48px; }
-            .job-sidebar { position: static; }
-        }
-        @media (max-width: 768px) {
-            .page-header { padding: 110px 24px 48px; }
-            .job-content { padding: 48px 24px 64px; }
-            .site-footer { padding: 40px 24px; flex-direction: column; gap: 16px; align-items: flex-start; }
-        }
-    </style>
 </head>
 <body>
 
@@ -181,9 +66,6 @@
 <footer class="site-footer">
     <img src="../assets/images/white_white_logo.png" alt="Orbint" class="site-footer-logo">
     <div class="site-footer-links">
-        <a href="../index.html#mission" class="site-footer-link">Mission</a>
-        <a href="../index.html#career" class="site-footer-link">Careers</a>
-        <a href="../index.html#contact" class="site-footer-link">Contact</a>
         <a href="../impressum.html" class="site-footer-link">Impressum</a>
         <a href="../privacy.html" class="site-footer-link">Privacy</a>
     </div>

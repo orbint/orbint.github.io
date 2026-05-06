@@ -10,6 +10,8 @@
         body { margin: 0; background: transparent; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 12px; }
         canvas { border: 1px solid #333; }
         #status { color: #ffa500; font-family: monospace; font-size: 13px; }
+        body.embed-mode canvas { border: none; }
+        body.embed-mode #status { display: none; }
     </style>
 </head>
 <body>
@@ -23,6 +25,9 @@
         // One cycle = (104-76) / 0.3 = 93.3 frames at 24 fps ≈ 3.9 s → record 4 s
         const STEP = 0.1; // same visual speed as 0.12 @ 60 fps
         const REC_SECONDS = 12;
+
+        const EMBED_MODE = new URLSearchParams(location.search).has('embed');
+        if (EMBED_MODE) document.body.classList.add('embed-mode');
 
         let satAngle = START_ANG;
         let worldBorders = null;
@@ -97,7 +102,7 @@
             if (worldBorders && !recStarted) {
                 recStarted = true;
                 satAngle = START_ANG;
-                startVideoRecording();
+                if (!EMBED_MODE) startVideoRecording();
             }
 
             stroke(COL[0], COL[1], COL[2], 30);

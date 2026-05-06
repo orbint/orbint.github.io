@@ -96,9 +96,22 @@
       </div>
     </div>
     <div class="usecase-visual">
-      <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:contain;display:block;">
-        <source src="assets/animations/focused.webm" type="video/webm">
-      </video>
+      <div id="anim-wrap" style="width:100%;position:relative;overflow:hidden;">
+        <iframe id="anim-iframe" src="assets/animations/focused-capture.html?embed" scrolling="no" allowtransparency="true" style="position:absolute;top:0;left:0;width:534px;height:350px;border:none;background:transparent;transform-origin:top left;"></iframe>
+      </div>
+      <script>
+        (function () {
+          var wrap = document.getElementById('anim-wrap');
+          var iframe = document.getElementById('anim-iframe');
+          function resize() {
+            var scale = wrap.offsetWidth / 534;
+            iframe.style.transform = 'scale(' + scale + ')';
+            wrap.style.height = (350 * scale) + 'px';
+          }
+          resize();
+          new ResizeObserver(resize).observe(wrap);
+        })();
+      </script>
     </div>
   </div>
 </section>
@@ -382,9 +395,14 @@
 </section>
 
 <!-- FOOTER -->
-<section id="footer-section">
-  <div id="footer-placeholder"></div>
-</section>
+<footer class="site-footer">
+    <img src="../assets/images/white_white_logo.png" alt="Orbint" class="site-footer-logo">
+    <div class="site-footer-links">
+        <a href="../impressum.html" class="site-footer-link">Impressum</a>
+        <a href="../privacy.html" class="site-footer-link">Privacy</a>
+    </div>
+    <div class="site-footer-copy">© 2026 Orbint GmbH</div>
+</footer>
 
 <script src="js/nscript.js"></script>
 <script>

@@ -245,3 +245,25 @@ if (isSinglePage) {
     applyTheme(getThemeT());
     updateNavActive();
 }
+
+// ── HERO HEADLINE AUTOSCALE ────────────────────────────────────────────────────
+function fitHeroHeadline() {
+    const el = document.querySelector('.hero-headline');
+    const hero = document.querySelector('.hero');
+    if (!el || !hero) return;
+
+    const targetH = hero.offsetHeight * 2 / 3;
+    let lo = 10, hi = 400;
+
+    // Binary search for font-size where text block height ≈ targetH
+    for (let i = 0; i < 30; i++) {
+        const mid = (lo + hi) / 2;
+        el.style.fontSize = mid + 'px';
+        if (el.offsetHeight <= targetH) lo = mid;
+        else hi = mid;
+    }
+    el.style.fontSize = lo + 'px';
+}
+
+fitHeroHeadline();
+window.addEventListener('resize', fitHeroHeadline);
