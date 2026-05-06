@@ -261,8 +261,8 @@
       </div>
       <div class="team-info">
         <div class="team-name">Winfried Stock</div>
-        <div class="team-role">Co-Founder &amp; CTO</div>
-        <div class="team-bio">Ground segment and data infrastructure lead. Designed the end-to-end encrypted sovereign ground station architecture.</div>
+        <div class="team-role">Co-Founder &amp; CPO</div>
+        <div class="team-bio">Defines product vision and roadmap from orbit to application layer. Translates customer needs and market insights into satellite-powered data products.</div>
       </div>
     </div>
   </div>
@@ -386,9 +386,6 @@
   <div id="footer-placeholder"></div>
 </section>
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script src="js/nscript.js"></script>
 <script>
     // News articles
@@ -436,65 +433,5 @@
     });
 </script>
 
-
-<script type="text/babel">
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-"accentColor": "#F2641C",
-"heroHeadline": "We detect, identify, and locate signals around the globe.",
-"showScrollIndicator": true,
-"sectionSpacing": 96,
-"darkNavOpacity": 92
-}/*EDITMODE-END*/;
-
-function OrbintTweaks() {
-const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
-
-React.useEffect(() => {
-document.documentElement.style.setProperty('--orange', tweaks.accentColor);
-document.documentElement.style.setProperty('--orange-dark', tweaks.accentColor);
-}, [tweaks.accentColor]);
-
-React.useEffect(() => {
-document.documentElement.style.setProperty('--nav-bg-opacity', tweaks.darkNavOpacity / 100);
-}, [tweaks.darkNavOpacity]);
-
-React.useEffect(() => {
-const h = document.querySelector('.hero-headline');
-if (h) h.textContent = tweaks.heroHeadline;
-}, [tweaks.heroHeadline]);
-
-React.useEffect(() => {
-const si = document.querySelector('.scroll-indicator');
-if (si) si.style.display = tweaks.showScrollIndicator ? 'flex' : 'none';
-}, [tweaks.showScrollIndicator]);
-
-React.useEffect(() => {
-document.querySelectorAll('.section').forEach(s => {
-  s.style.paddingTop = tweaks.sectionSpacing + 'px';
-  s.style.paddingBottom = tweaks.sectionSpacing + 'px';
-});
-}, [tweaks.sectionSpacing]);
-
-const { TweaksPanel, TweakSection, TweakColor, TweakText, TweakToggle, TweakSlider } = window;
-
-return (
-<TweaksPanel title="Orbint Website">
-  <TweakSection title="Brand">
-    <TweakColor label="Accent color" value={tweaks.accentColor} onChange={v => setTweak('accentColor', v)} />
-  </TweakSection>
-  <TweakSection title="Hero">
-    <TweakText label="Headline" value={tweaks.heroHeadline} onChange={v => setTweak('heroHeadline', v)} />
-    <TweakToggle label="Scroll indicator" value={tweaks.showScrollIndicator} onChange={v => setTweak('showScrollIndicator', v)} />
-  </TweakSection>
-  <TweakSection title="Layout">
-    <TweakSlider label="Section spacing" min={48} max={160} step={8} value={tweaks.sectionSpacing} onChange={v => setTweak('sectionSpacing', v)} />
-    <TweakSlider label="Nav opacity %" min={50} max={100} step={1} value={tweaks.darkNavOpacity} onChange={v => setTweak('darkNavOpacity', v)} />
-  </TweakSection>
-</TweaksPanel>
-);
-}
-
-ReactDOM.createRoot(document.createElement('div')).render(<OrbintTweaks />);
-</script>
 </body>
 </html>
