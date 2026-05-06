@@ -69,9 +69,7 @@ nav.scrolled {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .nav-content {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 80px;
   display: flex;
   align-items: center;
   width: 100%;
@@ -316,10 +314,12 @@ nav.scrolled {
   margin-top: 48px;
 }
 .partners-grid img {
-    height: 28px; width: auto; object-fit: contain;
+    height: 58px; width: auto; object-fit: contain;
     filter: grayscale(1) invert(1); opacity: 0.5; transition: all 0.2s ease;
 }
-.partners-grid img:hover { filter: none; opacity: 1; }
+.partners-grid img:hover { opacity: 1; }
+.partners-grid img.partner-primary { height: 72px; }
+.partners-grid img.partner-secondary { height: 44px; }
 
 /* ── TEAM ── */
 .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 56px; }
@@ -445,7 +445,7 @@ footer { padding: 80px 0; border-top: 1px solid var(--dark-border); }
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   nav { height: 60px; }
-  .nav-content { padding: 0 1rem; }
+  .nav-content { padding: 0 24px; }
   .nav-links { display: none; }
   .hamburger { display: flex; margin-left: auto; }
   .section { padding: 64px 24px; }
