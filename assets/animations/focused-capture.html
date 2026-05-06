@@ -7,21 +7,27 @@
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        body { margin: 0; background: #000; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 12px; }
         canvas { border: 1px solid #333; }
+        #status { color: #ffa500; font-family: monospace; font-size: 13px; }
     </style>
 </head>
 <body>
+    <div id="status">Waiting for world data…</div>
     <script>
-        const COL = [255, 165, 0];
-        const R = 1600;       
-        const H = 140;        
+        const COL = [242, 100, 28];
+        const R = 1600;
+        const H = 140;
         const START_ANG = 76;
         const END_ANG = 104;
-        let satAngle = START_ANG;    
+        // One cycle = (104-76) / 0.3 = 93.3 frames at 24 fps ≈ 3.9 s → record 4 s
+        const STEP = 0.1; // same visual speed as 0.12 @ 60 fps
+        const REC_SECONDS = 12;
 
+        let satAngle = START_ANG;
         let worldBorders = null;
         let globeBuffer = null;
+        let recStarted = false;
 
         const VIEW_LON = 90;
         const VIEW_LAT = -5;
@@ -63,14 +69,17 @@
         }
 
         async function loadWorldData() {
+            document.getElementById('status').textContent = 'Loading world data…';
             const response = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
             const data = await response.json();
             worldBorders = topojson.mesh(data, data.objects.countries);
             renderGlobeToBuffer();
+            document.getElementById('status').textContent = 'Ready — starting capture…';
         }
 
         function setup() {
             createCanvas(534, 350);
+            frameRate(24);
             angleMode(DEGREES);
             textFont('Inter');
             renderGlobeToBuffer();
@@ -82,18 +91,22 @@
             const cx = width / 2;
             const cy = height + 1510;
 
-            // 1. GLOBE
             if (globeBuffer) image(globeBuffer, 0, 0);
 
-            // 2. ORBIT PATH
+            // Start recording once globe is ready, reset to cycle start
+            if (worldBorders && !recStarted) {
+                recStarted = true;
+                satAngle = START_ANG;
+                startVideoRecording();
+            }
+
             stroke(COL[0], COL[1], COL[2], 30);
             strokeWeight(1);
             noFill();
             arc(cx, cy, (R + H) * 2, (R + H) * 2, 255, 285);
 
-            // 3. ANIMATION LOGIC
-            satAngle += 0.12;
-            if (satAngle > END_ANG) satAngle = START_ANG; 
+            satAngle += STEP;
+            if (satAngle > END_ANG) satAngle = START_ANG;
 
             let satAlpha = 255;
             let currentProgress = satAngle - START_ANG;
@@ -104,11 +117,9 @@
                 satAlpha = map(currentProgress, totalRange * 0.9, totalRange, 255, 0);
             }
 
-            // 4. STATIONARY ICONS (Emitter & Ground Station)
-            drawEmitter(cx, cy, 84); 
-            drawGroundStation(cx, cy, 96);    
+            drawEmitter(cx, cy, 84);
+            drawGroundStation(cx, cy, 96);
 
-            // 5. DATA LINK
             if (abs(satAngle - 96) < 3.5) {
                 let [tx, ty] = getSurfacePos(cx, cy, 96);
                 let lx = cx + cos(270 + (satAngle - 90)) * (R + H);
@@ -116,7 +127,6 @@
                 drawDashedLine(lx, ly, tx, ty, satAlpha);
             }
 
-            // 6. SATELLITE FORMATION
             let formation = [
                 { a: satAngle, h: H },
                 { a: satAngle - 1.2, h: H + 12 },
@@ -128,29 +138,7 @@
                 drawSatellite(sx, sy, sat.a, satAlpha);
             });
 
-            // 7. LABELS
             drawDynamicLabels(cx, cy);
-        }
-
-        function drawGlobe(cx, cy) {
-            if (worldBorders) {
-                stroke(COL[0], COL[1], COL[2], 120);
-                strokeWeight(1.5);
-                noFill();
-                drawingContext.beginPath();
-                geoPath(worldBorders);
-                drawingContext.stroke();
-            }
-            stroke(COL[0], COL[1], COL[2], 40);
-            strokeWeight(0.5);
-            drawingContext.beginPath();
-            geoPath(d3.geoGraticule()());
-            drawingContext.stroke();
-            stroke(COL);
-            strokeWeight(2.5);
-            drawingContext.beginPath();
-            geoPath({type: "Sphere"});
-            drawingContext.stroke();
         }
 
         function drawDynamicLabels(cx, cy) {
@@ -176,7 +164,7 @@
                 eAlpha = (satAngle < eTarget) ? map(satAngle, eTarget - 4, eTarget, 0, 255) : map(satAngle, eTarget, eTarget + 6, 255, 0);
             }
             fill(COL[0], COL[1], COL[2], eAlpha);
-            textAlign(LEFT, BOTTOM); 
+            textAlign(LEFT, BOTTOM);
             let [ex, ey] = getSurfacePos(cx, cy, eTarget);
             text("EMITTER IDENTIFIED", ex + 15, ey - 25);
 
@@ -186,7 +174,7 @@
                 gAlpha = (satAngle < gTarget) ? map(satAngle, gTarget - 4, gTarget, 0, 255) : map(satAngle, gTarget, gTarget + 8, 255, 0);
             }
             fill(COL[0], COL[1], COL[2], gAlpha);
-            textAlign(RIGHT, BOTTOM); 
+            textAlign(RIGHT, BOTTOM);
             let [gx, gy] = getSurfacePos(cx, cy, gTarget);
             text("DATA TRANSFER TO GROUND STATION", gx - 15, gy - 20);
         }
@@ -198,10 +186,10 @@
             fill(COL[0], COL[1], COL[2], alpha);
             noStroke();
             rectMode(CENTER);
-            square(0, 0, 7); 
+            square(0, 0, 7);
             stroke(COL[0], COL[1], COL[2], alpha);
             strokeWeight(2);
-            line(-12, 0, 12, 0); 
+            line(-12, 0, 12, 0);
             pop();
         }
 
@@ -211,81 +199,69 @@
             return [x, y];
         }
 
-        /**
-         * Separate function for drawing the Signal Emitter
-         */
         function drawEmitter(cx, cy, ang) {
             let [x, y] = getSurfacePos(cx, cy, ang);
             push();
             translate(x, y);
             rotate(ang - 90);
-            
-            // Style settings
             stroke(COL);
             strokeWeight(2);
-            noFill(); // Ensures both the triangle and circle are outlines only
-            
-            // Tower Structure
-            // Triangle: base points at (-10, 0) and (10, 0), peak at (0, -20)
-            triangle(-10, 0, 10, 0, 0, -20); 
-            
-            // Circle: centered at the triangle's peak
-            circle(0, -20, 8); 
-            
-            // Signal Waves
+            noFill();
+            triangle(-10, 0, 10, 0, 0, -20);
+            circle(0, -20, 8);
             for (let i = 0; i < 6; i++) {
-                let cycle = 180; 
-                let p = ((frameCount + (i * 30)) % cycle) / cycle; 
-                let waveDist = p * (H * 1.8); 
-                
-                // Dynamic transparency for the waves
+                let cycle = 180;
+                let p = ((frameCount + (i * 30)) % cycle) / cycle;
+                let waveDist = p * (H * 1.8);
                 stroke(COL[0], COL[1], COL[2], (1 - p) * 200);
                 arc(0, -20, waveDist * 1.2, waveDist, 230, 310);
             }
             pop();
         }
 
-        /**
-         * Separate function for drawing the Ground Station (Dish)
-         */
         function drawGroundStation(cx, cy, ang) {
             let [x, y] = getSurfacePos(cx, cy, ang);
             push();
             translate(x, y);
             rotate(ang - 90);
-            
-            // Style settings
             stroke(COL);
             strokeWeight(2);
             noFill();
-            
-            // 1. Small Triangle Base (points at surface)
-            // Base at (0,0), peak at (0,-8)
-            triangle(-8, 0, 8, 0, 0, -8); 
-            
-            // 2. Circle on top of the triangle
-            // Centered on the triangle's peak
-            //circle(0, -8, 6);
-            
-            // 3. Satellite Dish (pointing upwards/away from the planet)
-            // Using 180 to 360 degrees to make it a bowl shape facing the sky
-            arc(0, -16, 26, 16, 0, 180); 
-
-            arc(0, -16, 26, 5, 0, 180); 
-            
-            // 4. Small Antenna (Feed horn) inside the dish
-            // A small line extending from the center of the dish
-            line(0, -10, 0, -20); 
-            
+            triangle(-8, 0, 8, 0, 0, -8);
+            arc(0, -16, 26, 16, 0, 180);
+            arc(0, -16, 26, 5, 0, 180);
+            line(0, -10, 0, -20);
             pop();
+        }
+
+        function startVideoRecording() {
+            const canvasEl = document.querySelector('canvas');
+            const stream = canvasEl.captureStream(24);
+            const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
+                .find(m => MediaRecorder.isTypeSupported(m));
+            const recorder = new MediaRecorder(stream, { mimeType: mime });
+            const chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: mime });
+                const a = Object.assign(document.createElement('a'), {
+                    href: URL.createObjectURL(blob),
+                    download: 'focused.webm'
+                });
+                a.click();
+                document.getElementById('status').textContent = 'Done! focused.webm downloaded.';
+            };
+            recorder.start();
+            document.getElementById('status').textContent = `Recording ${REC_SECONDS}s video…`;
+            setTimeout(() => recorder.stop(), REC_SECONDS * 1000);
         }
 
         function drawDashedLine(x1, y1, x2, y2, alpha) {
             const numSegments = 10;
-            const speed = frameCount * 0.15; 
+            const speed = frameCount * 0.15;
             for (let i = 0; i < numSegments; i++) {
                 let tStart = (i / numSegments + speed) % 1;
-                let tEnd = tStart + 0.03; 
+                let tEnd = tStart + 0.03;
                 if (tEnd <= 1.0) {
                     let px1 = lerp(x1, x2, tStart);
                     let py1 = lerp(y1, y2, tStart);
