@@ -89,32 +89,104 @@
   let W = 0, H = 0, rows = [], frame = 0;
   const COLORS = ['#121110','#1C1A18','#3A2E28','#8B4513','#F2641C','#FFD700'];
 
+  // Signal definitions. baud = rows per symbol period.
+  // FSK:  two tones alternating; shift = half-separation in px at reference width 800
+  // MFSK: N evenly-spaced tones, one active per symbol
+  // PSK:  very narrow; phase reversals create periodic amplitude nulls (diamond idle)
+  // DV:   flat wideband block (digital voice / vocoder); pulse = PTT keying
+  const SIGS = [
+    { type:'fsk',  frac:0.08, shift:10, spread:2,   power:0.70, baud:7  },
+    { type:'mfsk', frac:0.22, tones:8,  gap:6,  spread:1.5, power:0.68, baud:4 },
+    { type:'psk',  frac:0.38, spread:1.5, power:0.92, baud:3  },
+    { type:'dv',   frac:0.54, width:28,  power:0.55, pulse:{on:40,off:22} },
+    { type:'fsk',  frac:0.67, shift:16, spread:2.5, power:0.64, baud:5  },
+    { type:'psk',  frac:0.78, spread:1,  power:0.48, baud:2  },
+    { type:'mfsk', frac:0.90, tones:4,  gap:8,  spread:2,   power:0.52, baud:6 },
+  ];
+
+  // Runtime state per signal
+  const st = SIGS.map(() => ({ tone: 0, timer: 0, null_: false }));
+
   function resize() {
     const parent = canvas.parentElement;
     const w = parent.offsetWidth;
     const h = parent.offsetHeight;
-    if (w < 4 || h < 4) return; // not laid out yet
+    if (w < 4 || h < 4) return;
     if (w === W && h === H) return;
     W = canvas.width = w;
     H = canvas.height = h;
-    rows = []; // reset on resize
+    rows = [];
   }
 
   const ro = new ResizeObserver(() => resize());
   ro.observe(canvas.parentElement);
-  // Also try after a short delay in case layout isn't settled
   setTimeout(resize, 100);
   resize();
 
+  function gauss(row, cx, spread, power) {
+    const r = Math.ceil(spread * 4);
+    for (let i = Math.max(0, cx - r); i <= Math.min(row.length - 1, cx + r); i++) {
+      const d = (i - cx) / spread;
+      row[i] += power * Math.exp(-d * d) * (0.88 + Math.random() * 0.12);
+    }
+  }
+
   function makeRow() {
     const row = new Float32Array(Math.floor(W));
-    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.05;
-    const cx = Math.floor(W * 0.45);
-    for (let i = cx - 20; i <= cx + 20; i++) {
-      if (i < 0 || i >= row.length) continue;
-      const d = Math.abs(i - cx) / 12;
-      row[i] += 0.85 * Math.exp(-d * d) * (0.9 + Math.random() * 0.1);
-    }
+    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.05 + 0.01;
+
+    // Scale shift/gap/width from reference width 800 to actual W
+    const scale = W / 800;
+
+    SIGS.forEach((sig, si) => {
+      const s = st[si];
+
+      // PTT / pulse gating for DV
+      if (sig.pulse) {
+        const cyc = sig.pulse.on + sig.pulse.off;
+        if (frame % cyc >= sig.pulse.on) return;
+      }
+
+      // Advance symbol clock
+      s.timer++;
+      if (s.timer >= sig.baud) {
+        s.timer = 0;
+        if (sig.type === 'fsk')  s.tone = 1 - s.tone;
+        if (sig.type === 'mfsk') s.tone = Math.floor(Math.random() * sig.tones);
+        if (sig.type === 'psk')  s.null_ = Math.random() < 0.25; // phase reversal → null
+      }
+
+      const cx = Math.floor(sig.frac * W);
+
+      if (sig.type === 'fsk') {
+        // Two tones; the inactive one bleeds through faintly (realistic)
+        const off = Math.round((sig.shift * scale) / 2);
+        gauss(row, cx + (s.tone ? off : -off), sig.spread * scale, sig.power);
+        gauss(row, cx + (s.tone ? -off : off), sig.spread * scale, sig.power * 0.08);
+
+      } else if (sig.type === 'mfsk') {
+        // All tones faintly present; active tone at full power
+        const totalW = (sig.tones - 1) * sig.gap * scale;
+        const t0 = cx - totalW / 2;
+        for (let t = 0; t < sig.tones; t++) {
+          const tx = Math.round(t0 + t * sig.gap * scale);
+          gauss(row, tx, sig.spread * scale, t === s.tone ? sig.power : sig.power * 0.06);
+        }
+
+      } else if (sig.type === 'psk') {
+        // Phase reversal: brief amplitude null visible in waterfall
+        if (!s.null_) gauss(row, cx, sig.spread * scale, sig.power);
+
+      } else if (sig.type === 'dv') {
+        // Flat rectangular block with tapered edges — typical vocoder spectrum
+        const hw = Math.round(sig.width * scale / 2);
+        for (let i = Math.max(0, cx - hw); i <= Math.min(row.length - 1, cx + hw); i++) {
+          const edge = Math.min(1, (hw - Math.abs(i - cx)) / (3 * scale));
+          row[i] += sig.power * edge * (0.65 + Math.random() * 0.35);
+        }
+      }
+    });
+
     return row;
   }
 
@@ -122,9 +194,9 @@
 
   function draw() {
     requestAnimationFrame(draw);
-    if (W < 4 || H < 4) return; // not ready yet
+    if (W < 4 || H < 4) return;
     frame++;
-    if (frame % 2 === 0) {
+    if (frame % 4 === 0) {
       rows.unshift(makeRow());
       if (rows.length > MAX) rows.pop();
     }
