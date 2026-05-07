@@ -316,17 +316,34 @@
 })();
 
 // ── FORM SUBMIT ──
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
   const btn = document.getElementById('submit-btn');
   const success = document.getElementById('form-success');
+  const error = document.getElementById('form-error');
   btn.textContent = 'Sending…';
   btn.style.opacity = '0.6';
   btn.style.pointerEvents = 'none';
-  setTimeout(() => {
-    btn.style.display = 'none';
-    success.style.display = 'block';
-  }, 1200);
+  error.style.display = 'none';
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: new FormData(e.target),
+    });
+    const json = await res.json();
+    if (json.success) {
+      btn.style.display = 'none';
+      success.style.display = 'block';
+    } else {
+      throw new Error(json.message);
+    }
+  } catch {
+    btn.textContent = 'Send message';
+    btn.style.opacity = '';
+    btn.style.pointerEvents = '';
+    error.style.display = 'block';
+  }
 }
 
 // ── LIVE metric ticker ──
