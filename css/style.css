@@ -10,6 +10,7 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+::selection { background: var(--orange); color: #fff; }
 
 :root {
   --orange:        #F2641C;
