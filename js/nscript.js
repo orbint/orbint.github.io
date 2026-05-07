@@ -95,14 +95,42 @@
   // PSK:  very narrow; phase reversals create periodic amplitude nulls (diamond idle)
   // DV:   flat wideband block (digital voice / vocoder); pulse = PTT keying
   const SIGS = [
-    { type:'fsk',  frac:0.08, shift:10, spread:2,   power:0.70, baud:7  },
-    { type:'mfsk', frac:0.22, tones:8,  gap:6,  spread:1.5, power:0.68, baud:4 },
-    { type:'psk',  frac:0.38, spread:1.5, power:0.92, baud:3  },
-    { type:'dv',   frac:0.54, width:28,  power:0.55, pulse:{on:40,off:22} },
-    { type:'fsk',  frac:0.67, shift:16, spread:2.5, power:0.64, baud:5  },
-    { type:'psk',  frac:0.78, spread:1,  power:0.48, baud:2  },
-    { type:'mfsk', frac:0.90, tones:4,  gap:8,  spread:2,   power:0.52, baud:6 },
+    { type:'fsk',  frac:0.08, shift:10, spread:2,   power:0.70, baud:7,  label:'RTTY · FSK-170'  },
+    { type:'mfsk', frac:0.22, tones:8,  gap:6,  spread:1.5, power:0.68, baud:4, label:'MFSK16'         },
+    { type:'psk',  frac:0.38, spread:1.5, power:0.92, baud:3,  label:'PSK31'          },
+    { type:'dv',   frac:0.54, width:28,  power:0.55, pulse:{on:40,off:22}, label:'DMR · Tier II'  },
+    { type:'fsk',  frac:0.67, shift:16, spread:2.5, power:0.64, baud:5,  label:'FSK · ALE'        },
+    { type:'psk',  frac:0.78, spread:1,  power:0.48, baud:2,  label:'BPSK63'         },
+    { type:'mfsk', frac:0.90, tones:4,  gap:8,  spread:2,   power:0.52, baud:6, label:'Olivia 4/500' },
   ];
+
+  // Returns [x1, x2] pixel bounds for a signal at current W
+  function sigBounds(sig) {
+    const cx = Math.floor(sig.frac * W);
+    const sc = W / 800;
+    if (sig.type === 'fsk') {
+      const half = Math.round(sig.shift * sc / 2) + Math.ceil(sig.spread * sc * 4);
+      return [cx - half, cx + half];
+    }
+    if (sig.type === 'mfsk') {
+      const hw = (sig.tones - 1) * sig.gap * sc / 2 + Math.ceil(sig.spread * sc * 4);
+      return [cx - hw, cx + hw];
+    }
+    if (sig.type === 'psk') {
+      return [cx - 8, cx + 8];
+    }
+    if (sig.type === 'dv') {
+      const hw = Math.round(sig.width * sc / 2);
+      return [cx - hw, cx + hw];
+    }
+    return [cx - 16, cx + 16];
+  }
+
+  // Active detection overlays: { si, age }
+  let detections = [];
+  const DET_SPAWN = 130; // frames between spawn attempts (~2 s at 60 fps)
+  const DET_LIFE  = 320; // total lifespan in frames (~5 s)
+  const DET_FADE  = 30;  // fade in / out duration
 
   // Runtime state per signal
   const st = SIGS.map(() => ({ tone: 0, timer: 0, null_: false }));
@@ -215,6 +243,49 @@
     ctx.font = '8px IBM Plex Sans, monospace';
     ctx.fillStyle = 'rgba(158,150,144,0.6)';
     ctx.fillText('437.525 MHz  LIVE', 8, H - 5);
+
+    // ── DETECTION OVERLAYS ──
+    if (frame % DET_SPAWN === 0) {
+      const free = SIGS.map((_, i) => i).filter(i => !detections.some(d => d.si === i));
+      if (free.length && Math.random() < 0.7) {
+        const bh = Math.floor(H * (0.25 + Math.random() * 0.2));
+        detections.push({ si: free[Math.floor(Math.random() * free.length)], age: 0,
+          by: Math.floor(Math.random() * (H - bh - 20)), bh });
+      }
+    }
+
+    detections.forEach(d => d.age++);
+    detections = detections.filter(d => d.age < DET_LIFE);
+
+    detections.forEach(d => {
+      const a = d.age;
+      const alpha = a < DET_FADE ? a / DET_FADE
+                  : a > DET_LIFE - DET_FADE ? (DET_LIFE - a) / DET_FADE
+                  : 1;
+      const sig = SIGS[d.si];
+      const [x1, x2] = sigBounds(sig);
+      const bx = x1 - 3, bw = Math.max(18, x2 - x1 + 6);
+      const { by, bh } = d;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      ctx.fillStyle = 'rgba(242,100,28,0.05)';
+      ctx.fillRect(bx, by, bw, bh);
+      ctx.strokeStyle = 'rgba(242,100,28,0.65)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
+
+      ctx.font = '8px "JetBrains Mono", monospace';
+      const tw = ctx.measureText(sig.label).width;
+      const tx = Math.max(2, Math.min(bx, W - tw - 8));
+      ctx.fillStyle = 'rgba(242,100,28,0.88)';
+      ctx.fillRect(tx - 1, by + 2, tw + 6, 13);
+      ctx.fillStyle = '#0D0B09';
+      ctx.fillText(sig.label, tx + 2, by + 12);
+
+      ctx.restore();
+    });
   }
   draw();
 })();
