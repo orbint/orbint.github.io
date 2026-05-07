@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://orbint.de/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://orbint.de/news/rohde-schwarz-investment.html</loc>
+    <lastmod>2025-11-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://orbint.de/news/seranis-space-tech-expo-2025.html</loc>
+    <lastmod>2025-11-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://orbint.de/news/bdi-newspace-100th-member.html</loc>
+    <lastmod>2025-07-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://orbint.de/news/tag-der-raumfahrt-space-cafe.html</loc>
+    <lastmod>2025-03-31</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
