@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<title>Orbint — Careers</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --orange:      #F2641C;
+    --orange-dark: #C94E0E;
+    --dark-base:   #121110;
+    --dark-el:     #1C1A18;
+    --dark-border: #302C28;
+    --fg-dark:     #E6E4E2;
+    --fg-sec-dark: #9E9690;
+    --fg-ter-dark: #5E5650;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--dark-base);
+    color: var(--fg-dark);
+    overflow-x: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(242,100,28,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(242,100,28,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+  .bg-glow {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(242,100,28,0.07) 0%, transparent 70%);
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    position: relative; z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    gap: 0;
+  }
+
+  /* ── LOGO ── */
+  .logo-wrap {
+    margin-bottom: 48px;
+  }
+  .logo-wrap img {
+    height: 72px;
+    display: block;
+  }
+
+  /* ── EVENT BADGE ── */
+  .event-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 28px;
+  }
+  .event-badge::before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 1px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+  .event-badge::after {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 1px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  /* ── HEADLINE ── */
+  .headline {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: #fff;
+    text-align: center;
+    max-width: 760px;
+    margin-bottom: 20px;
+  }
+
+  .subline {
+    font-size: clamp(15px, 2vw, 18px);
+    line-height: 1.65;
+    color: var(--fg-sec-dark);
+    text-align: center;
+    max-width: 520px;
+    margin-bottom: 48px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: var(--dark-border);
+    margin-bottom: 48px;
+  }
+
+  /* ── CTA SECTION ── */
+  .cta-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .cta-card {
+    width: 100%;
+    background: var(--dark-el);
+    border: 1px solid var(--dark-border);
+    border-radius: 8px;
+    padding: 28px 32px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    transition: border-color 200ms, background 200ms;
+  }
+  .cta-card:hover {
+    border-color: var(--orange);
+    background: rgba(242,100,28,0.04);
+  }
+  .cta-card:hover .cta-arrow { color: var(--orange); transform: translateX(4px); }
+
+  .cta-card-primary {
+    border-color: rgba(242,100,28,0.4);
+  }
+  .cta-card-primary:hover {
+    border-color: var(--orange);
+  }
+
+  .cta-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .cta-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .cta-desc {
+    font-size: 13px;
+    color: var(--fg-sec-dark);
+    line-height: 1.5;
+  }
+  .cta-arrow {
+    font-size: 22px;
+    color: var(--fg-ter-dark);
+    flex-shrink: 0;
+    transition: color 200ms, transform 200ms;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    padding: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--fg-ter-dark);
+    border-top: 1px solid var(--dark-border);
+  }
+  footer a {
+    color: var(--fg-ter-dark);
+    text-decoration: none;
+    transition: color 150ms;
+  }
+  footer a:hover { color: var(--fg-sec-dark); }
+
+  /* ── WATERFALL BG ── */
+  #waterfall-mini {
+    position: fixed; inset: 0; z-index: 0;
+    width: 100%; height: 100%;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 480px) {
+    .cta-card { padding: 20px; }
+    .cta-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="waterfall-mini"></canvas>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<main>
+  <div class="logo-wrap">
+    <a href="../">
+      <img src="../assets/images/white_white_logo.png" alt="Orbint">
+    </a>
+  </div>
+
+  <div class="event-badge">AFCEA Fachausstellung · Bonn</div>
+
+  <h1 class="headline">Glad you stopped by our booth!</h1>
+  <p class="subline">We detect, identify, and locate signals around the globe. Come build what's next with us, or dive deeper into how it works.</p>
+
+  <div class="divider"></div>
+
+  <div class="cta-group">
+    <a class="cta-card cta-card-primary" href="../#career">
+      <div>
+        <div class="cta-label">Careers</div>
+        <div class="cta-title">Join our team</div>
+        <div class="cta-desc">See open positions and apply directly.</div>
+      </div>
+      <span class="cta-arrow">→</span>
+    </a>
+
+    <a class="cta-card" href="../#technology">
+      <div>
+        <div class="cta-label">Technology</div>
+        <div class="cta-title">Explore our mission</div>
+        <div class="cta-desc">Learn how we detect and identify signals worldwide.</div>
+      </div>
+      <span class="cta-arrow">→</span>
+    </a>
+  </div>
+</main>
+
+<footer>
+  <span>© 2025 Orbint GmbH · </span>
+  <a href="../impressum.html">Impressum</a>
+  <span> · </span>
+  <a href="../privacy.html">Privacy</a>
+</footer>
+
+<script src="../js/nscript.js"></script>
+</body>
+</html>

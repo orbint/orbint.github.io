@@ -89,32 +89,132 @@
   let W = 0, H = 0, rows = [], frame = 0;
   const COLORS = ['#121110','#1C1A18','#3A2E28','#8B4513','#F2641C','#FFD700'];
 
+  // Signal definitions. baud = rows per symbol period.
+  // FSK:  two tones alternating; shift = half-separation in px at reference width 800
+  // MFSK: N evenly-spaced tones, one active per symbol
+  // PSK:  very narrow; phase reversals create periodic amplitude nulls (diamond idle)
+  // DV:   flat wideband block (digital voice / vocoder); pulse = PTT keying
+  const SIGS = [
+    { type:'fsk',  frac:0.08, shift:10, spread:2,   power:0.70, baud:7,  label:'RTTY · FSK-170'  },
+    { type:'mfsk', frac:0.22, tones:8,  gap:6,  spread:1.5, power:0.68, baud:4, label:'MFSK16'         },
+    { type:'psk',  frac:0.38, spread:1.5, power:0.92, baud:3,  label:'PSK31'          },
+    { type:'dv',   frac:0.54, width:28,  power:0.55, pulse:{on:40,off:22}, label:'DMR · Tier II'  },
+    { type:'fsk',  frac:0.67, shift:16, spread:2.5, power:0.64, baud:5,  label:'FSK · ALE'        },
+    { type:'psk',  frac:0.78, spread:1,  power:0.48, baud:2,  label:'BPSK63'         },
+    { type:'mfsk', frac:0.90, tones:4,  gap:8,  spread:2,   power:0.52, baud:6, label:'Olivia 4/500' },
+  ];
+
+  // Returns [x1, x2] pixel bounds for a signal at current W
+  function sigBounds(sig) {
+    const cx = Math.floor(sig.frac * W);
+    const sc = W / 800;
+    if (sig.type === 'fsk') {
+      const half = Math.round(sig.shift * sc / 2) + Math.ceil(sig.spread * sc * 4);
+      return [cx - half, cx + half];
+    }
+    if (sig.type === 'mfsk') {
+      const hw = (sig.tones - 1) * sig.gap * sc / 2 + Math.ceil(sig.spread * sc * 4);
+      return [cx - hw, cx + hw];
+    }
+    if (sig.type === 'psk') {
+      return [cx - 8, cx + 8];
+    }
+    if (sig.type === 'dv') {
+      const hw = Math.round(sig.width * sc / 2);
+      return [cx - hw, cx + hw];
+    }
+    return [cx - 16, cx + 16];
+  }
+
+  // Active detection overlays: { si, age }
+  let detections = [];
+  const DET_SPAWN = 130; // frames between spawn attempts (~2 s at 60 fps)
+  const DET_LIFE  = 320; // total lifespan in frames (~5 s)
+  const DET_FADE  = 30;  // fade in / out duration
+
+  // Runtime state per signal
+  const st = SIGS.map(() => ({ tone: 0, timer: 0, null_: false }));
+
   function resize() {
     const parent = canvas.parentElement;
     const w = parent.offsetWidth;
     const h = parent.offsetHeight;
-    if (w < 4 || h < 4) return; // not laid out yet
+    if (w < 4 || h < 4) return;
     if (w === W && h === H) return;
     W = canvas.width = w;
     H = canvas.height = h;
-    rows = []; // reset on resize
+    rows = [];
   }
 
   const ro = new ResizeObserver(() => resize());
   ro.observe(canvas.parentElement);
-  // Also try after a short delay in case layout isn't settled
   setTimeout(resize, 100);
   resize();
 
+  function gauss(row, cx, spread, power) {
+    const r = Math.ceil(spread * 4);
+    for (let i = Math.max(0, cx - r); i <= Math.min(row.length - 1, cx + r); i++) {
+      const d = (i - cx) / spread;
+      row[i] += power * Math.exp(-d * d) * (0.88 + Math.random() * 0.12);
+    }
+  }
+
   function makeRow() {
     const row = new Float32Array(Math.floor(W));
-    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.05;
-    const cx = Math.floor(W * 0.45);
-    for (let i = cx - 20; i <= cx + 20; i++) {
-      if (i < 0 || i >= row.length) continue;
-      const d = Math.abs(i - cx) / 12;
-      row[i] += 0.85 * Math.exp(-d * d) * (0.9 + Math.random() * 0.1);
-    }
+    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.05 + 0.01;
+
+    // Scale shift/gap/width from reference width 800 to actual W
+    const scale = W / 800;
+
+    SIGS.forEach((sig, si) => {
+      const s = st[si];
+
+      // PTT / pulse gating for DV
+      if (sig.pulse) {
+        const cyc = sig.pulse.on + sig.pulse.off;
+        if (frame % cyc >= sig.pulse.on) return;
+      }
+
+      // Advance symbol clock
+      s.timer++;
+      if (s.timer >= sig.baud) {
+        s.timer = 0;
+        if (sig.type === 'fsk')  s.tone = 1 - s.tone;
+        if (sig.type === 'mfsk') s.tone = Math.floor(Math.random() * sig.tones);
+        if (sig.type === 'psk')  s.null_ = Math.random() < 0.25; // phase reversal → null
+      }
+
+      const cx = Math.floor(sig.frac * W);
+
+      if (sig.type === 'fsk') {
+        // Two tones; the inactive one bleeds through faintly (realistic)
+        const off = Math.round((sig.shift * scale) / 2);
+        gauss(row, cx + (s.tone ? off : -off), sig.spread * scale, sig.power);
+        gauss(row, cx + (s.tone ? -off : off), sig.spread * scale, sig.power * 0.08);
+
+      } else if (sig.type === 'mfsk') {
+        // All tones faintly present; active tone at full power
+        const totalW = (sig.tones - 1) * sig.gap * scale;
+        const t0 = cx - totalW / 2;
+        for (let t = 0; t < sig.tones; t++) {
+          const tx = Math.round(t0 + t * sig.gap * scale);
+          gauss(row, tx, sig.spread * scale, t === s.tone ? sig.power : sig.power * 0.06);
+        }
+
+      } else if (sig.type === 'psk') {
+        // Phase reversal: brief amplitude null visible in waterfall
+        if (!s.null_) gauss(row, cx, sig.spread * scale, sig.power);
+
+      } else if (sig.type === 'dv') {
+        // Flat rectangular block with tapered edges — typical vocoder spectrum
+        const hw = Math.round(sig.width * scale / 2);
+        for (let i = Math.max(0, cx - hw); i <= Math.min(row.length - 1, cx + hw); i++) {
+          const edge = Math.min(1, (hw - Math.abs(i - cx)) / (3 * scale));
+          row[i] += sig.power * edge * (0.65 + Math.random() * 0.35);
+        }
+      }
+    });
+
     return row;
   }
 
@@ -122,9 +222,9 @@
 
   function draw() {
     requestAnimationFrame(draw);
-    if (W < 4 || H < 4) return; // not ready yet
+    if (W < 4 || H < 4) return;
     frame++;
-    if (frame % 2 === 0) {
+    if (frame % 4 === 0) {
       rows.unshift(makeRow());
       if (rows.length > MAX) rows.pop();
     }
@@ -143,6 +243,49 @@
     ctx.font = '8px IBM Plex Sans, monospace';
     ctx.fillStyle = 'rgba(158,150,144,0.6)';
     ctx.fillText('437.525 MHz  LIVE', 8, H - 5);
+
+    // ── DETECTION OVERLAYS ──
+    if (frame % DET_SPAWN === 0) {
+      const free = SIGS.map((_, i) => i).filter(i => !detections.some(d => d.si === i));
+      if (free.length && Math.random() < 0.7) {
+        const bh = Math.floor(H * (0.25 + Math.random() * 0.2));
+        detections.push({ si: free[Math.floor(Math.random() * free.length)], age: 0,
+          by: Math.floor(Math.random() * (H - bh - 20)), bh });
+      }
+    }
+
+    detections.forEach(d => d.age++);
+    detections = detections.filter(d => d.age < DET_LIFE);
+
+    detections.forEach(d => {
+      const a = d.age;
+      const alpha = a < DET_FADE ? a / DET_FADE
+                  : a > DET_LIFE - DET_FADE ? (DET_LIFE - a) / DET_FADE
+                  : 1;
+      const sig = SIGS[d.si];
+      const [x1, x2] = sigBounds(sig);
+      const bx = x1 - 3, bw = Math.max(18, x2 - x1 + 6);
+      const { by, bh } = d;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      ctx.fillStyle = 'rgba(242,100,28,0.05)';
+      ctx.fillRect(bx, by, bw, bh);
+      ctx.strokeStyle = 'rgba(242,100,28,0.65)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
+
+      ctx.font = '8px "JetBrains Mono", monospace';
+      const tw = ctx.measureText(sig.label).width;
+      const tx = Math.max(2, Math.min(bx, W - tw - 8));
+      ctx.fillStyle = 'rgba(242,100,28,0.88)';
+      ctx.fillRect(tx - 1, by + 2, tw + 6, 13);
+      ctx.fillStyle = '#0D0B09';
+      ctx.fillText(sig.label, tx + 2, by + 12);
+
+      ctx.restore();
+    });
   }
   draw();
 })();
