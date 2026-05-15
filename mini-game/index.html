@@ -880,8 +880,8 @@ function startBattle() {
   document.getElementById('joker-panel').style.display='block';
 
   renderP(); renderE(); updateJokers();
-  setStatus('KAMPFPHASE','Dein Zug — klicke auf das Zielfeld.');
-  addLog('ls','◈','Kampfphase gestartet. Spieler beginnt.');
+  setStatus('Spiel','Dein Zug — klicke auf das Zielfeld.');
+  addLog('ls','◈','Spiel gestartet. Spieler beginnt.');
 }
 
 function eHov(r, c) {
@@ -919,17 +919,17 @@ function shoot(r, c) {
       ship.sunk=true;
       ship.cells.forEach(([rr,cc])=>pShots[rr][cc]='sunk');
       addLog('lp','✦',`Lokalisiert — ${ship.name} versenkt!`);
-      setStatus('KAMPFPHASE',`${ship.name} lokalisiert! Bonusschuss.`);
+      setStatus('Spiel',`${ship.name} lokalisiert! Bonusschuss.`);
       renderE(); renderP(); checkWin();
     } else {
       addLog('lp','✕',`Geolokalisiert — Treffer auf ${COLS[c]}${r+1}!`);
-      setStatus('KAMPFPHASE','Geolokalisiert! Bonusschuss — schieße erneut.');
+      setStatus('Spiel','Geolokalisiert! Bonusschuss — schieße erneut.');
       renderE();
     }
   } else {
     pShots[r][c]='miss';
     addLog('lp','○',`Wasser — ${COLS[c]}${r+1}.`);
-    setStatus('KAMPFPHASE','Wasser. KI ist dran...');
+    setStatus('Spiel','Wasser. KI ist dran...');
     renderE(); endPlayerTurn();
   }
 }
@@ -982,19 +982,19 @@ function aiShoot() {
       ship.sunk=true;
       aiHits=[]; aiQ=[];
       addLog('la','✦',`KI: ${ship.name} lokalisiert!`);
-      setStatus('KAMPFPHASE',`KI lokalisiert ${ship.name}! KI schießt erneut.`);
+      setStatus('Spiel',`KI lokalisiert ${ship.name}! KI schießt erneut.`);
       renderP(); checkWin();
       if (phase==='battle') setTimeout(aiTurn, 950);
     } else {
       addLog('la','✕',`KI: Treffer auf ${COLS[c]}${r+1}.`);
-      setStatus('KAMPFPHASE',`KI trifft ${COLS[c]}${r+1}. KI schießt erneut.`);
+      setStatus('Spiel',`KI trifft ${COLS[c]}${r+1}. KI schießt erneut.`);
       renderP();
       if (phase==='battle') setTimeout(aiShoot, 950);
     }
   } else {
     eShots[r][c]='miss';
     addLog('la','○',`KI: Wasser — ${COLS[c]}${r+1}.`);
-    setStatus('KAMPFPHASE',`KI schießt ${COLS[c]}${r+1} — Wasser. Dein Zug.`);
+    setStatus('Spiel',`KI schießt ${COLS[c]}${r+1} — Wasser. Dein Zug.`);
     renderP();
     playerTurnCount++; turn='player'; updateJokers(); renderE();
   }
@@ -1016,7 +1016,7 @@ function aiUseJoker(type) {
     aiRowScore[row]+=count*3;
     aiTdoaScans.push({cells:area, count});
     addLog('la','⊕',`KI TDOA Zeile ${row+1}: ${count} verbleibende${count!==1?' Felder':' Feld'}.`);
-    setStatus('KAMPFPHASE',`KI nutzt TDOA-Zeile ${row+1} — ${count} Felder. KI schießt...`);
+    setStatus('Spiel',`KI nutzt TDOA-Zeile ${row+1} — ${count} Felder. KI schießt...`);
   } else if (type==='tdoa_col') {
     const col=aiBestTDOACol();
     let count=0;
@@ -1031,7 +1031,7 @@ function aiUseJoker(type) {
     aiColScore[col]+=count*3;
     aiTdoaScans.push({cells:area, count});
     addLog('la','⊕',`KI TDOA Spalte ${COLS[col]}: ${count} verbleibende${count!==1?' Felder':' Feld'}.`);
-    setStatus('KAMPFPHASE',`KI nutzt TDOA-Spalte ${COLS[col]} — ${count} Felder. KI schießt...`);
+    setStatus('Spiel',`KI nutzt TDOA-Spalte ${COLS[col]} — ${count} Felder. KI schießt...`);
   } else if (type==='spektral') {
     const [cr,cc]=aiBestSpektralCell();
     let count=0;
@@ -1054,7 +1054,7 @@ function aiUseJoker(type) {
     });
     aiSpektralScans.push({cells:area, count});
     addLog('la','◎',`KI Spektral 3×3 um ${COLS[cc]}${cr+1}: ${count} verbleibende${count!==1?' Felder':' Feld'}.`);
-    setStatus('KAMPFPHASE',`KI nutzt Spektral um ${COLS[cc]}${cr+1} — ${count} Felder. KI schießt...`);
+    setStatus('Spiel',`KI nutzt Spektral um ${COLS[cc]}${cr+1} — ${count} Felder. KI schießt...`);
   }
   renderP();
 }
@@ -1133,11 +1133,11 @@ function aiPick() {
 function activateJoker(type) {
   if (phase!=='battle'||turn!=='player') return;
   if (!jokers[type]) return;
-  if (jokerDone) { setStatus('KAMPFPHASE','Nur 1 Joker pro Zug erlaubt.'); return; }
+  if (jokerDone) { setStatus('Spiel','Nur 1 Joker pro Zug erlaubt.'); return; }
   activeJ = type;
-  if (type==='tdoa_row') { setStatus('KAMPFPHASE','TDOA-Zeile: Klicke eine Zeile für den Scan.'); updateJokers(); renderE(); }
-  else if (type==='tdoa_col') { setStatus('KAMPFPHASE','TDOA-Spalte: Klicke eine Spalte für den Scan.'); updateJokers(); renderE(); }
-  else if (type==='spektral') { setStatus('KAMPFPHASE','Spektral: Klicke ein Zielfeld für den 3×3-Scan.'); updateJokers(); renderE(); }
+  if (type==='tdoa_row') { setStatus('Spiel','TDOA-Zeile: Klicke eine Zeile für den Scan.'); updateJokers(); renderE(); }
+  else if (type==='tdoa_col') { setStatus('Spiel','TDOA-Spalte: Klicke eine Spalte für den Scan.'); updateJokers(); renderE(); }
+  else if (type==='spektral') { setStatus('Spiel','Spektral: Klicke ein Zielfeld für den 3×3-Scan.'); updateJokers(); renderE(); }
 }
 
 function doTDOA(r, c, axis) {
@@ -1157,7 +1157,7 @@ function doTDOA(r, c, axis) {
 
   const result=`${label}: ${count} Schiffsfeld${count!==1?'er':''} belegt.`;
   addLog('lj','⊕','TDOA: '+result);
-  setStatus('KAMPFPHASE', result+' Schieße weiter.');
+  setStatus('Spiel', result+' Schieße weiter.');
   renderE();
 }
 
@@ -1175,7 +1175,7 @@ function doSpektral(r, c) {
 
   const result=`3×3 um ${COLS[c]}${r+1}: ${count} Schiffsfeld${count!==1?'er':''} belegt.`;
   addLog('lj','◎','Spektral: '+result);
-  setStatus('KAMPFPHASE', result+' Schieße weiter.');
+  setStatus('Spiel', result+' Schieße weiter.');
   renderE();
 }
 
