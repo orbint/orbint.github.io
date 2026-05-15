@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schiffe Geolokalisieren</title>
+<style>
+  /* Import Instrument Serif */
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&display=swap');
+
+  :root {
+    --bg: #0e0a07;
+    --surface: #181008;
+    --surface2: #211508;
+    --border: #3a2410;
+    --accent: #e8621a;
+    --accent2: #c4440a;
+    --accent3: #f0874a;
+    --text: #d4b896;
+    --text-dim: #7a5538;
+    --gold: #e8a060;
+    --blue: rgba(0,180,220,0.25);
+    --font-main: 'Instrument Serif', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+    font-weight: 400;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(232,98,26,0.012) 2px, rgba(232,98,26,0.012) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .radar-bg {
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,26,0.05) 0%, transparent 70%);
+    animation: pulse 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .container { max-width: 1060px; margin: 0 auto; padding: 24px 12px; }
+
+  header { text-align: center; margin-bottom: 20px; }
+
+  .classification {
+    font-family: var(--font-main);
+    font-size: 14px; letter-spacing: 4px;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: var(--font-main);
+    font-size: clamp(42px, 6vw, 72px);
+    font-style: italic;
+    letter-spacing: 2px; color: var(--accent);
+    text-shadow: 0 0 30px rgba(232,98,26,0.4);
+    line-height: 1;
+  }
+
+  /* Status bar */
+  .status-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 10px 18px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--font-main); font-size: 16px;
+  }
+
+  #status-phase { color: var(--accent); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; font-style: italic; }
+  #status-msg { color: var(--text); flex: 1; }
+
+  /* Main 2-column layout */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 20px;
+  }
+
+  .left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 16px;
+  }
+
+  .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  /* Grids layout */
+  .grids-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .grid-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px;
+  }
+
+  .grid-title {
+    font-family: var(--font-main);
+    font-size: 13px; letter-spacing: 3px;
+    color: var(--text-dim); text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .grid-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .grid-wrap { overflow-x: auto; }
+
+  .grid {
+    display: inline-grid;
+    grid-template-columns: 20px repeat(10, 34px);
+    grid-template-rows: 20px repeat(10, 34px);
+    gap: 2px;
+  }
+
+  .gh {
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-main); font-size: 11px; color: var(--text-dim);
+  }
+
+  .cell {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    background: rgba(0,180,220,0.03);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-main); font-size: 18px;
+    transition: background 0.12s, border-color 0.12s;
+    position: relative;
+  }
+
+  .cell.ship { background: var(--blue); border-color: rgba(0,180,220,0.3); }
+  .cell.ship-hit { background: rgba(232,98,26,0.3); border-color: var(--accent); color: var(--accent); }
+  .cell.sunk { background: rgba(139,32,0,0.45); border-color: var(--accent2); color: var(--gold); }
+  .cell.miss { background: rgba(20,40,80,0.35); color: #2a5a8a; }
+  .cell.hit { background: rgba(232,98,26,0.3); border-color: var(--accent); color: var(--accent); }
+  .cell.prev-ok { background: rgba(0,180,220,0.18); border-color: rgba(0,180,220,0.5); }
+  .cell.prev-bad { background: rgba(200,30,30,0.18); border-color: rgba(200,50,50,0.5); }
+  .cell.shootable { cursor: crosshair; }
+  .cell.shootable:hover { background: rgba(232,98,26,0.12); border-color: rgba(232,98,26,0.4); }
+  .cell.jok-target { cursor: crosshair; }
+  .cell.jok-target:hover { background: rgba(240,135,74,0.15); border-color: var(--accent3); }
+  .cell.jok-hl { outline: 1px solid var(--accent3); }
+  .cell.spektral-area { background: rgba(50,200,120,0.13); border-color: rgba(80,210,140,0.5); }
+  .cell.spektral-area::after {
+    content: attr(data-spektral);
+    position: absolute;
+    top: 1px; right: 2px;
+    font-size: 10px;
+    font-family: var(--font-main);
+    color: rgba(80,210,140,0.9);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .cell.tdoa-area { background: rgba(80,140,255,0.13); border-color: rgba(100,160,255,0.5); }
+  .cell.tdoa-area::after {
+    content: attr(data-tdoa);
+    position: absolute;
+    top: 1px; right: 2px;
+    font-size: 10px;
+    font-family: var(--font-main);
+    color: rgba(100,160,255,0.9);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  /* Placement controls */
+  #placement-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+
+  .panel-title {
+    font-family: var(--font-main);
+    font-size: 14px; letter-spacing: 3px;
+    color: var(--text-dim); text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .ship-queue { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+
+  .sq-item {
+    font-family: var(--font-main); font-size: 13px;
+    padding: 4px 8px; border: 1px solid var(--border); color: var(--text-dim);
+  }
+  .sq-item.cur { border-color: var(--accent); color: var(--accent); background: rgba(232,98,26,0.07); }
+  .sq-item.done { text-decoration: line-through; opacity: 0.3; }
+
+  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .btn {
+    font-family: var(--font-main);
+    font-size: 14px;
+    padding: 8px 12px;
+    border: 1px solid var(--accent); background: transparent;
+    color: var(--accent); cursor: pointer; transition: all 0.15s;
+  }
+  .btn:hover { background: rgba(232,98,26,0.1); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn.dim { border-color: var(--border); color: var(--text-dim); }
+
+  /* Joker section */
+  #joker-panel { display: none; }
+
+  .joker-cards { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+  .jcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .jcard:not(.jused):hover { border-color: var(--accent3); }
+  .jcard.jused { opacity: 0.3; cursor: not-allowed; }
+  .jcard.jactive { border-color: var(--accent3); background: rgba(240,135,74,0.07); }
+
+  .jcard-title {
+    font-family: var(--font-main);
+    font-size: 20px; letter-spacing: 1px; color: var(--accent3); margin-bottom: 4px;
+    line-height: 1;
+  }
+  .jcard-desc { font-size: 14px; color: var(--text-dim); line-height: 1.3; }
+  .jcard-badge {
+    font-family: var(--font-main);
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--accent2); text-transform: uppercase; margin-top: 7px;
+  }
+
+  /* Log */
+  #log {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 14px 16px;
+    overflow-y: auto;
+    max-height: 420px;
+    min-height: 120px;
+  }
+
+  .log-entry {
+    font-family: var(--font-main); font-size: 15px;
+    color: var(--text-dim); margin-bottom: 3px;
+    display: flex; gap: 8px;
+  }
+  .log-prefix { flex-shrink: 0; font-weight: bold; }
+  .log-entry.lp .log-prefix { color: var(--accent); }
+  .log-entry.la .log-prefix { color: #3a7aaa; }
+  .log-entry.lj .log-prefix { color: var(--accent3); }
+
+  /* Modal */
+  .modal-ov {
+    position: fixed; inset: 0;
+    background: rgba(8,4,2,0.88);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--accent3);
+    padding: 28px; max-width: 480px; width: 90%;
+  }
+
+  .modal-title {
+    font-family: var(--font-main);
+    font-size: 32px; font-style: italic; letter-spacing: 1px; color: var(--accent3); margin-bottom: 12px;
+  }
+
+  .modal-body { font-size: 16px; color: var(--text); margin-bottom: 16px; line-height: 1.5; }
+
+  .modal-result {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border); border-left: 3px solid var(--accent3);
+    padding: 12px 16px;
+    font-family: var(--font-main); font-size: 16px; color: var(--accent3);
+    margin-bottom: 16px; display: none;
+  }
+
+  .sel-btn {
+    font-family: var(--font-main); font-size: 14px;
+    padding: 6px 12px; border: 1px solid var(--border);
+    background: transparent; color: var(--text); cursor: pointer;
+  }
+
+  .modal-label {
+    font-family: var(--font-main);
+    font-size: 12px; letter-spacing: 2px; color: var(--text-dim);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+
+  /* Victory */
+  .victory-ov {
+    position: fixed; inset: 0;
+    background: rgba(8,4,2,0.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+  }
+
+  .victory-box {
+    text-align: center;
+    border: 1px solid var(--accent); padding: 48px;
+    background: var(--surface); max-width: 420px;
+  }
+
+  .victory-title {
+    font-family: var(--font-main);
+    font-size: 84px; font-style: italic; letter-spacing: 2px; color: var(--accent);
+    text-shadow: 0 0 40px rgba(232,98,26,0.5);
+    line-height: 1;
+  }
+
+  .victory-sub {
+    font-family: var(--font-main);
+    font-size: 18px; color: var(--text-dim); margin-top: 10px;
+  }
+
+  footer {
+    text-align: center; padding: 20px 0;
+    font-family: var(--font-main);
+    font-size: 12px; letter-spacing: 3px; color: var(--text-dim);
+  }
+
+  .name-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    font-family: var(--font-main);
+    font-size: 18px;
+    padding: 10px 12px;
+    outline: none;
+    margin-bottom: 14px;
+  }
+
+  .score-display {
+    font-family: var(--font-main);
+    font-size: 48px; font-style: italic;
+    color: var(--gold); margin: 14px 0 2px;
+    line-height: 1;
+  }
+
+  .hs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    font-size: 15px;
+  }
+  .hs-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .hs-table td.hs-rank { color: var(--accent3); width: 30px; }
+  .hs-table td.hs-score { color: var(--accent); text-align: right; }
+
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .left-col { position: static; }
+    .joker-cards { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .grids-container { grid-template-columns: 1fr; }
+    .joker-cards { grid-template-columns: 1fr; }
+    .grid {
+      grid-template-columns: 18px repeat(10, 28px);
+      grid-template-rows: 18px repeat(10, 28px);
+    }
+    .cell { width: 28px; height: 28px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="radar-bg"></div>
+<div class="container">
+
+  <header>
+    <h1>Schiffe Geolokalisieren</h1>
+  </header>
+
+  <div class="status-bar">
+    <span id="status-phase">Aufstellung</span>
+    <span id="status-msg">Platziere deine Schiffe auf dem eigenen Feld.</span>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- Left column: placement panel + joker panel -->
+    <div class="left-col">
+
+      <div id="placement-panel">
+        <div class="panel-title">Schiffe platzieren</div>
+        <div class="ship-queue" id="sq"></div>
+        <div class="btn-row">
+          <button class="btn" id="btn-rot" onclick="rotateShip()">Drehen (R)</button>
+          <button class="btn dim" onclick="randomAll()">Zufällig</button>
+          <button class="btn dim" onclick="resetPlacement()">Zurücksetzen</button>
+        </div>
+      </div>
+
+      <div id="joker-panel">
+        <div class="panel-title" style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px">Joker-Karten</div>
+        <div class="joker-cards">
+          <div class="jcard" id="jc-tdoa_row" onclick="activateJoker('tdoa_row')">
+            <div class="jcard-title">TDOA-ZEILE</div>
+            <div class="jcard-desc">Klicke eine Zeile — erfahre, wie viele Schiffsfelder in der gesamten Zeile liegen.</div>
+          </div>
+          <div class="jcard" id="jc-tdoa_col" onclick="activateJoker('tdoa_col')">
+            <div class="jcard-title">TDOA-SPALTE</div>
+            <div class="jcard-desc">Klicke eine Spalte — erfahre, wie viele Schiffsfelder in der gesamten Spalte liegen.</div>
+          </div>
+          <div class="jcard" id="jc-spektral" onclick="activateJoker('spektral')">
+            <div class="jcard-title">SPEKTRALE LAGEERFASSUNG</div>
+            <div class="jcard-desc">Klicke ein Zielfeld — erfahre, wie viele Schiffsfelder im 3×3-Bereich liegen.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column: grids + log -->
+    <div class="right-col">
+
+      <div class="grids-container">
+        <div class="grid-panel">
+          <div class="grid-title">Eigenes Feld</div>
+          <div class="grid-wrap"><div class="grid" id="pg"></div></div>
+        </div>
+        <div class="grid-panel">
+          <div class="grid-title">Zielfeld</div>
+          <div class="grid-wrap"><div class="grid" id="eg"></div></div>
+        </div>
+      </div>
+
+      <div id="log">
+        <div class="panel-title" style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px">Log</div>
+        <div id="log-entries"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    SCHIFFE GEOLOKALISIEREN // © Orbint GmbH
+    <br><br>
+    <button class="btn dim" style="font-size:12px;padding:6px 10px;letter-spacing:2px" onclick="resetStats()">STATISTIK ZURÜCKSETZEN</button>
+  </footer>
+</div>
+
+<!-- Name Entry -->
+<div id="name-entry" class="modal-ov">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">SPIELER ANMELDEN</div>
+    <div class="modal-body" style="margin-bottom:14px">Gib deinen Rufzeichen ein, um das Spiel zu starten.</div>
+    <div class="modal-label">DEIN NAME</div>
+    <input type="text" id="player-name-input" class="name-input" placeholder="Rufzeichen..." maxlength="20"
+           onkeydown="if(event.key==='Enter') submitName()" />
+    <div class="btn-row">
+      <button class="btn" onclick="submitName()">Starten</button>
+    </div>
+    <div style="margin-top:20px">
+      <div class="panel-title" style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px">BESTENLISTE</div>
+      <div id="hs-list-entry"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-ov" style="display:none">
+  <div class="modal">
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-body" id="m-body"></div>
+    <div id="m-result" class="modal-result"></div>
+    <div id="m-ctrl"></div>
+  </div>
+</div>
+
+<!-- Victory -->
+<div id="victory" class="victory-ov" style="display:none">
+  <div class="victory-box" style="max-width:500px;width:90%;text-align:center">
+    <div class="victory-title" id="v-title">SIEG</div>
+    <div class="victory-sub" id="v-sub"></div>
+    <div id="v-score-wrap" style="display:none">
+      <div class="score-display" id="v-score">0</div>
+      <div class="score-label">PUNKTE</div>
+    </div>
+    <div id="v-hs-wrap" style="text-align:left">
+      <div class="panel-title" style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px">BESTENLISTE</div>
+      <div id="v-hs-list"></div>
+    </div>
+    <br>
+    <button class="btn" onclick="location.reload()">NEUES SPIEL</button>
+  </div>
+</div>
+
+<script>
+const COLS = ['A','B','C','D','E','F','G','H','I','J'];
+
+const FLEET = [
+  { name:'Träger', size:5 },
+  { name:'Kreuzer', size:4 },
+  { name:'Kreuzer', size:4 },
+  { name:'Zerstörer', size:3 },
+  { name:'Zerstörer', size:3 },
+  { name:'U-Boot', size:2 },
+  { name:'U-Boot', size:2 },
+];
+
+// ── State ──
+let phase = 'placement';  // placement | battle | over
+let orient = 'h';
+let curShip = 0;
+let hov = new Set();
+let hovOk = false;
+
+let pGrid = mk10();   // player grid: 0 or shipId
+let eGrid = mk10();   // enemy grid
+let pShots = mk10();  // player shots on enemy: 0|'miss'|'hit'|'sunk'
+let eShots = mk10();  // enemy shots on player
+
+let pShips = [];  // {id,name,size,cells,hitSet,sunk}
+let eShips = [];
+
+let jokers = { tdoa_row:true, tdoa_col:true, spektral:true };
+let turn = 'player';
+let jokerDone = false;
+let activeJ = null;
+let spektralScans = [];
+let tdoaScans = [];
+
+// AI
+let aiQ = [];
+let aiHits = [];
+let aiShotSet = new Set();
+let aiJokers = { tdoa_row: true, tdoa_col: true, spektral: true };
+let aiRowScore = Array(10).fill(0);
+let aiColScore = Array(10).fill(0);
+let aiCellBoost = new Map();
+let aiJokerUsedThisTurn = false;
+let aiSpektralScans = [];
+let aiTdoaScans = [];
+
+let playerName = 'Spieler';
+let playerTurnCount = 0;
+
+const HS_KEY = 'schiffe_highscores';
+const HS_MAX = 10;
+
+function mk10() { return Array(10).fill(null).map(() => Array(10).fill(0)); }
+
+// ── Scoring & Highscore ──
+function getSimpleScore() {
+  const flat = pShots.flat();
+  const hits = flat.filter(s => s === 'hit' || s === 'sunk').length;
+  const shots = flat.filter(s => s !== 0).length;
+  if (shots === 0) return 0;
+  const accuracy = Math.round((hits / shots) * 100);
+  return Math.max(0, accuracy - playerTurnCount);
+}
+
+function loadHighscores() {
+  try { return JSON.parse(localStorage.getItem(HS_KEY)) || []; }
+  catch(e) { return []; }
+}
+
+function saveHighscore(name, score) {
+  const list = loadHighscores();
+  const entry = { name, score, date: new Date().toLocaleDateString('de-DE') };
+  list.push(entry);
+  list.sort((a, b) => b.score - a.score);
+  if (list.length > HS_MAX) list.splice(HS_MAX);
+  const rank = list.indexOf(entry);
+  localStorage.setItem(HS_KEY, JSON.stringify(list));
+  return rank;
+}
+
+function renderHighscores(containerId, newRank) {
+  const list = loadHighscores();
+  const el = document.getElementById(containerId);
+  if (!list.length) {
+    el.innerHTML = '<div class="hs-empty">Noch keine Einträge.</div>';
+    return;
+  }
+  let html = '<table class="hs-table">';
+  list.forEach((entry, i) => {
+    const rowCls = (newRank !== undefined && i === newRank) ? ' class="hs-new"' : '';
+    html += `<tr${rowCls}><td class="hs-rank">#${i+1}</td><td>${entry.name}</td><td class="hs-score">${entry.score}</td><td style="color:var(--text-dim);text-align:right;font-size:10px">${entry.date}</td></tr>`;
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+function submitName() {
+  const input = document.getElementById('player-name-input');
+  const name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  playerName = name;
+  document.getElementById('name-entry').style.display = 'none';
+  initPlacement();
+}
+
+function initNameEntry() {
+  renderHighscores('hs-list-entry');
+  document.getElementById('player-name-input').focus();
+}
+
+// ── Grid builder ──
+function buildGrid(id, onClick, onHover, onLeave) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  const corner = document.createElement('div'); corner.className = 'gh'; frag.appendChild(corner);
+  COLS.forEach(c => { const h = document.createElement('div'); h.className='gh'; h.textContent=c; frag.appendChild(h); });
+
+  for (let r = 0; r < 10; r++) {
+    const rh = document.createElement('div'); rh.className='gh'; rh.textContent=r+1; frag.appendChild(rh);
+    for (let c = 0; c < 10; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r; cell.dataset.c = c;
+      if (onClick) cell.addEventListener('click', () => onClick(r,c));
+      if (onHover) cell.addEventListener('mouseenter', () => onHover(r,c));
+      if (onLeave) cell.addEventListener('mouseleave', onLeave);
+      frag.appendChild(cell);
+    }
+  }
+  el.appendChild(frag);
+}
+
+// ── Render player grid ──
+function renderP() {
+  const aiSpektralMap = new Map();
+  aiSpektralScans.forEach(scan => {
+    scan.cells.forEach(([nr,nc]) => aiSpektralMap.set(`${nr},${nc}`, scan.count));
+  });
+  const aiTdoaMap = new Map();
+  aiTdoaScans.forEach(scan => {
+    scan.cells.forEach(([nr,nc]) => aiTdoaMap.set(`${nr},${nc}`, scan.count));
+  });
+
+  const cells = document.getElementById('pg').querySelectorAll('.cell');
+  cells.forEach(cell => {
+    const r = +cell.dataset.r, c = +cell.dataset.c;
+    cell.className = 'cell';
+    cell.textContent = '';
+    cell.removeAttribute('data-spektral');
+    cell.removeAttribute('data-tdoa');
+
+    const sid = pGrid[r][c];
+    const shot = eShots[r][c];
+    const key = `${r},${c}`;
+
+    if (phase === 'placement' && hov.has(key)) {
+      cell.classList.add(hovOk ? 'prev-ok' : 'prev-bad');
+    } else if (sid) {
+      const ship = pShips.find(s => s.id === sid);
+      if (ship && ship.sunk) { cell.classList.add('sunk'); cell.textContent = '✦'; }
+      else if (shot === 'hit') { cell.classList.add('ship-hit'); cell.textContent = '✕'; }
+      else cell.classList.add('ship');
+    } else if (shot === 'miss') {
+      cell.classList.add('miss'); cell.textContent = 'W';
+    }
+
+    if (aiSpektralMap.has(key)) {
+      cell.classList.add('spektral-area');
+      cell.dataset.spektral = aiSpektralMap.get(key);
+    }
+    if (aiTdoaMap.has(key)) {
+      cell.classList.add('tdoa-area');
+      cell.dataset.tdoa = aiTdoaMap.get(key);
+    }
+  });
+}
+
+// ── Render enemy grid ──
+function renderE() {
+  const spektralMap = new Map();
+  spektralScans.forEach(scan => {
+    scan.cells.forEach(([nr,nc]) => spektralMap.set(`${nr},${nc}`, scan.count));
+  });
+  const tdoaMap = new Map();
+  tdoaScans.forEach(scan => {
+    scan.cells.forEach(([nr,nc]) => tdoaMap.set(`${nr},${nc}`, scan.count));
+  });
+
+  const cells = document.getElementById('eg').querySelectorAll('.cell');
+  cells.forEach(cell => {
+    const r = +cell.dataset.r, c = +cell.dataset.c;
+    cell.className = 'cell';
+    cell.textContent = '';
+    cell.removeAttribute('data-spektral');
+    cell.removeAttribute('data-tdoa');
+    const key = `${r},${c}`;
+    const shot = pShots[r][c];
+
+    if (shot === 'miss') { cell.classList.add('miss'); cell.textContent = 'W'; }
+    else if (shot === 'hit') { cell.classList.add('hit'); cell.textContent = '✕'; }
+    else if (shot === 'sunk') { cell.classList.add('sunk'); cell.textContent = '✦'; }
+    else if (phase === 'battle' && turn === 'player') {
+      if (activeJ === 'spektral' || activeJ === 'tdoa_row' || activeJ === 'tdoa_col') {
+        cell.classList.add('jok-target');
+        if (hov.has(key)) cell.classList.add('jok-hl');
+      } else {
+        cell.classList.add('shootable');
+      }
+    }
+
+    if (spektralMap.has(key)) {
+      cell.classList.add('spektral-area');
+      cell.dataset.spektral = spektralMap.get(key);
+    }
+    if (tdoaMap.has(key)) {
+      cell.classList.add('tdoa-area');
+      cell.dataset.tdoa = tdoaMap.get(key);
+    }
+  });
+}
+
+// ── Placement ──
+function initPlacement() {
+  buildGrid('pg', placeShip, prevShip, clearPrev);
+  buildGrid('eg', null, null, null);
+  renderShipQueue();
+  renderP(); renderE();
+  setStatus('AUFSTELLUNG', `Platziere: ${FLEET[0].name} (${FLEET[0].size} Felder) — Horizontal`);
+  addLog('ls','//','Willkommen. Platziere deine Flotte auf dem eigenen Feld.');
+}
+
+function renderShipQueue() {
+  const el = document.getElementById('sq'); el.innerHTML = '';
+  FLEET.forEach((s,i) => {
+    const d = document.createElement('div');
+    d.className = 'sq-item' + (i===curShip?' cur':i<curShip?' done':'');
+    d.textContent = `${s.name} (${s.size})`;
+    el.appendChild(d);
+  });
+}
+
+function shipCells(r, c, size, dir) {
+  const cells = [];
+  for (let i = 0; i < size; i++) {
+    const nr = dir==='v' ? r+i : r;
+    const nc = dir==='h' ? c+i : c;
+    if (nr>=0&&nr<10&&nc>=0&&nc<10) cells.push([nr,nc]);
+  }
+  return cells;
+}
+
+function validPlace(cells, grid, ships) {
+  if (cells.length === 0) return false;
+  for (const [r,c] of cells) {
+    if (r<0||r>=10||c<0||c>=10) return false;
+    if (grid[r][c]) return false;
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=r+dr,nc=c+dc;
+      if (nr>=0&&nr<10&&nc>=0&&nc<10&&grid[nr][nc]) return false;
+    }
+  }
+  return true;
+}
+
+function prevShip(r, c) {
+  if (phase!=='placement'||curShip>=FLEET.length) return;
+  const cells = shipCells(r, c, FLEET[curShip].size, orient);
+  hov = new Set(cells.map(([rr,cc])=>`${rr},${cc}`));
+  hovOk = cells.length===FLEET[curShip].size && validPlace(cells, pGrid, pShips);
+  renderP();
+}
+
+function clearPrev() { hov = new Set(); renderP(); }
+
+function placeShip(r, c) {
+  if (phase!=='placement'||curShip>=FLEET.length) return;
+  const def = FLEET[curShip];
+  const cells = shipCells(r, c, def.size, orient);
+  if (cells.length!==def.size||!validPlace(cells, pGrid, pShips)) return;
+
+  const id = curShip+1;
+  const ship = { id, name:def.name, size:def.size, cells, hitSet:new Set(), sunk:false };
+  pShips.push(ship);
+  cells.forEach(([rr,cc])=>pGrid[rr][cc]=id);
+  curShip++;
+  hov = new Set();
+
+  if (curShip>=FLEET.length) { startBattle(); return; }
+  renderShipQueue(); renderP();
+  setStatus('AUFSTELLUNG', `Platziere: ${FLEET[curShip].name} (${FLEET[curShip].size} Felder) — ${orient==='h'?'Horizontal':'Vertikal'}`);
+}
+
+function rotateShip() {
+  orient = orient==='h'?'v':'h';
+  if (phase==='placement'&&curShip<FLEET.length)
+    setStatus('AUFSTELLUNG', `Platziere: ${FLEET[curShip].name} (${FLEET[curShip].size} Felder) — ${orient==='h'?'Horizontal':'Vertikal'}`);
+}
+
+function resetPlacement() {
+  pGrid = mk10(); pShips = []; curShip = 0; hov = new Set();
+  renderShipQueue(); renderP();
+  setStatus('AUFSTELLUNG', `Platziere: ${FLEET[0].name} (${FLEET[0].size} Felder)`);
+}
+
+function randomAll() {
+  pGrid = mk10(); pShips = []; curShip = 0;
+  FLEET.forEach((def, i) => {
+    let ok=false, tries=0;
+    while (!ok && tries<500) {
+      tries++;
+      const r=rnd(10), c=rnd(10), dir=Math.random()<0.5?'h':'v';
+      const cells=shipCells(r,c,def.size,dir);
+      if (cells.length===def.size&&validPlace(cells,pGrid,pShips)) {
+        const id=i+1;
+        pShips.push({id,name:def.name,size:def.size,cells,hitSet:new Set(),sunk:false});
+        cells.forEach(([rr,cc])=>pGrid[rr][cc]=id);
+        ok=true;
+      }
+    }
+  });
+  curShip = FLEET.length;
+  startBattle();
+}
+
+function placeEnemyShips() {
+  FLEET.forEach((def, i) => {
+    let ok=false, tries=0;
+    while (!ok && tries<500) {
+      tries++;
+      const r=rnd(10), c=rnd(10), dir=Math.random()<0.5?'h':'v';
+      const cells=shipCells(r,c,def.size,dir);
+      if (cells.length===def.size&&validPlace(cells,eGrid,eShips)) {
+        const id=i+1;
+        eShips.push({id,name:def.name,size:def.size,cells,hitSet:new Set(),sunk:false});
+        cells.forEach(([rr,cc])=>eGrid[rr][cc]=id);
+        ok=true;
+      }
+    }
+  });
+}
+
+// ── Battle ──
+function startBattle() {
+  placeEnemyShips();
+  phase='battle'; turn='player'; jokerDone=false; playerTurnCount=1;
+
+  buildGrid('pg', null, null, null);
+  buildGrid('eg', shoot, eHov, eLeave);
+
+  document.getElementById('placement-panel').style.display='none';
+  document.getElementById('joker-panel').style.display='block';
+
+  renderP(); renderE(); updateJokers();
+  setStatus('KAMPFPHASE','Dein Zug — klicke auf das Zielfeld.');
+  addLog('ls','◈','Kampfphase gestartet. Spieler beginnt.');
+}
+
+function eHov(r, c) {
+  if (phase!=='battle'||turn!=='player') return;
+  hov = new Set();
+  if (activeJ === 'spektral') {
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=r+dr,nc=c+dc;
+      if (nr>=0&&nr<10&&nc>=0&&nc<10) hov.add(`${nr},${nc}`);
+    }
+  } else if (activeJ === 'tdoa_row') {
+    for (let nc=0;nc<10;nc++) hov.add(`${r},${nc}`);
+  } else if (activeJ === 'tdoa_col') {
+    for (let nr=0;nr<10;nr++) hov.add(`${nr},${c}`);
+  }
+  renderE();
+}
+
+function eLeave() { hov=new Set(); if(phase==='battle') renderE(); }
+
+function shoot(r, c) {
+  if (phase!=='battle'||turn!=='player') return;
+  if (activeJ==='spektral') { doSpektral(r,c); return; }
+  if (activeJ==='tdoa_row') { doTDOA(r,c,'row'); return; }
+  if (activeJ==='tdoa_col') { doTDOA(r,c,'col'); return; }
+  if (pShots[r][c]) return;
+
+  const sid = eGrid[r][c];
+  if (sid) {
+    pShots[r][c]='hit';
+    const ship=eShips.find(s=>s.id===sid);
+    ship.hitSet.add(`${r},${c}`);
+
+    if (ship.hitSet.size===ship.size) {
+      ship.sunk=true;
+      ship.cells.forEach(([rr,cc])=>pShots[rr][cc]='sunk');
+      addLog('lp','✦',`Lokalisiert — ${ship.name} versenkt!`);
+      setStatus('KAMPFPHASE',`${ship.name} lokalisiert! Bonusschuss.`);
+      renderE(); renderP(); checkWin();
+    } else {
+      addLog('lp','✕',`Geolokalisiert — Treffer auf ${COLS[c]}${r+1}!`);
+      setStatus('KAMPFPHASE','Geolokalisiert! Bonusschuss — schieße erneut.');
+      renderE();
+    }
+  } else {
+    pShots[r][c]='miss';
+    addLog('lp','○',`Wasser — ${COLS[c]}${r+1}.`);
+    setStatus('KAMPFPHASE','Wasser. KI ist dran...');
+    renderE(); endPlayerTurn();
+  }
+}
+
+function endPlayerTurn() {
+  if (phase!=='battle') return;
+  jokerDone=false; activeJ=null;
+  turn='enemy';
+  aiJokerUsedThisTurn=false;
+  updateJokers(); renderE();
+  setTimeout(aiTurn, 850);
+}
+
+// ── AI ──
+function aiTurn() {
+  if (phase!=='battle') return;
+
+  aiQ = aiQ.filter(([r,c])=>!aiShotSet.has(`${r},${c}`));
+
+  // Use joker when in hunt mode (no tracked targets) and not yet used this turn
+  if (aiQ.length===0 && !aiJokerUsedThisTurn) {
+    const avail = Object.keys(aiJokers).filter(k=>aiJokers[k]);
+    if (avail.length>0 && Math.random()<0.45) {
+      aiJokerUsedThisTurn=true;
+      const type = avail[Math.floor(Math.random()*avail.length)];
+      aiUseJoker(type);
+      if (phase==='battle') setTimeout(aiShoot, 700);
+      return;
+    }
+  }
+  aiShoot();
+}
+
+function aiShoot() {
+  if (phase!=='battle') return;
+
+  aiQ = aiQ.filter(([r,c])=>!aiShotSet.has(`${r},${c}`));
+  const [r,c] = aiQ.length>0 ? aiQ.shift() : aiPick();
+  aiShotSet.add(`${r},${c}`);
+
+  const sid=pGrid[r][c];
+  if (sid) {
+    eShots[r][c]='hit';
+    const ship=pShips.find(s=>s.id===sid);
+    ship.hitSet.add(`${r},${c}`);
+    aiHits.push([r,c]);
+    pushAiAdj(r,c);
+
+    if (ship.hitSet.size===ship.size) {
+      ship.sunk=true;
+      aiHits=[]; aiQ=[];
+      addLog('la','✦',`KI: ${ship.name} lokalisiert!`);
+      setStatus('KAMPFPHASE',`KI lokalisiert ${ship.name}! KI schießt erneut.`);
+      renderP(); checkWin();
+      if (phase==='battle') setTimeout(aiTurn, 950);
+    } else {
+      addLog('la','✕',`KI: Treffer auf ${COLS[c]}${r+1}.`);
+      setStatus('KAMPFPHASE',`KI trifft ${COLS[c]}${r+1}. KI schießt erneut.`);
+      renderP();
+      if (phase==='battle') setTimeout(aiShoot, 950);
+    }
+  } else {
+    eShots[r][c]='miss';
+    addLog('la','○',`KI: Wasser — ${COLS[c]}${r+1}.`);
+    setStatus('KAMPFPHASE',`KI schießt ${COLS[c]}${r+1} — Wasser. Dein Zug.`);
+    renderP();
+    playerTurnCount++; turn='player'; updateJokers(); renderE();
+  }
+}
+
+function aiUseJoker(type) {
+  aiJokers[type]=false;
+  if (type==='tdoa_row') {
+    const row=aiBestTDOARow();
+    let count=0;
+    const area=[];
+    for (let c=0;c<10;c++) {
+      area.push([row,c]);
+      if (!aiShotSet.has(`${row},${c}`)) {
+        const sid=pGrid[row][c];
+        if (sid) { const ship=pShips.find(s=>s.id===sid); if (!ship.sunk) count++; }
+      }
+    }
+    aiRowScore[row]+=count*3;
+    aiTdoaScans.push({cells:area, count});
+    addLog('la','⊕',`KI TDOA Zeile ${row+1}: ${count} verbleibende${count!==1?' Felder':' Feld'}.`);
+    setStatus('KAMPFPHASE',`KI nutzt TDOA-Zeile ${row+1} — ${count} Felder. KI schießt...`);
+  } else if (type==='tdoa_col') {
+    const col=aiBestTDOACol();
+    let count=0;
+    const area=[];
+    for (let r=0;r<10;r++) {
+      area.push([r,col]);
+      if (!aiShotSet.has(`${r},${col}`)) {
+        const sid=pGrid[r][col];
+        if (sid) { const ship=pShips.find(s=>s.id===sid); if (!ship.sunk) count++; }
+      }
+    }
+    aiColScore[col]+=count*3;
+    aiTdoaScans.push({cells:area, count});
+    addLog('la','⊕',`KI TDOA Spalte ${COLS[col]}: ${count} verbleibende${count!==1?' Felder':' Feld'}.`);
+    setStatus('KAMPFPHASE',`KI nutzt TDOA-Spalte ${COLS[col]} — ${count} Felder. KI schießt...`);
+  } else if (type==='spektral') {
+    const [cr,cc]=aiBestSpektralCell();
+    let count=0;
+    const area=[];
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=cr+dr,nc=cc+dc;
+      if (nr>=0&&nr<10&&nc>=0&&nc<10) {
+        area.push([nr,nc]);
+        if (!aiShotSet.has(`${nr},${nc}`)) {
+          const sid=pGrid[nr][nc];
+          if (sid) { const ship=pShips.find(s=>s.id===sid); if (!ship.sunk) count++; }
+        }
+      }
+    }
+    area.forEach(([nr,nc])=>{
+      if (!aiShotSet.has(`${nr},${nc}`)) {
+        const key=`${nr},${nc}`;
+        aiCellBoost.set(key,(aiCellBoost.get(key)||0)+count*2);
+      }
+    });
+    aiSpektralScans.push({cells:area, count});
+    addLog('la','◎',`KI Spektral 3×3 um ${COLS[cc]}${cr+1}: ${count} verbleibende${count!==1?' Felder':' Feld'}.`);
+    setStatus('KAMPFPHASE',`KI nutzt Spektral um ${COLS[cc]}${cr+1} — ${count} Felder. KI schießt...`);
+  }
+  renderP();
+}
+
+function aiBestTDOARow() {
+  let bestCount=-1; const cands=[];
+  for (let r=0;r<10;r++) {
+    let n=0; for (let c=0;c<10;c++) if (!aiShotSet.has(`${r},${c}`)) n++;
+    if (n>bestCount) { bestCount=n; cands.length=0; cands.push(r); }
+    else if (n===bestCount) cands.push(r);
+  }
+  return cands[Math.floor(Math.random()*cands.length)];
+}
+
+function aiBestTDOACol() {
+  let bestCount=-1; const cands=[];
+  for (let c=0;c<10;c++) {
+    let n=0; for (let r=0;r<10;r++) if (!aiShotSet.has(`${r},${c}`)) n++;
+    if (n>bestCount) { bestCount=n; cands.length=0; cands.push(c); }
+    else if (n===bestCount) cands.push(c);
+  }
+  return cands[Math.floor(Math.random()*cands.length)];
+}
+
+function aiBestSpektralCell() {
+  let bestCount=-1; const cands=[];
+  for (let r=1;r<9;r++) for (let c=1;c<9;c++) {
+    let n=0;
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++)
+      if (!aiShotSet.has(`${r+dr},${c+dc}`)) n++;
+    if (n>bestCount) { bestCount=n; cands.length=0; cands.push([r,c]); }
+    else if (n===bestCount) cands.push([r,c]);
+  }
+  return cands[Math.floor(Math.random()*cands.length)];
+}
+
+function pushAiAdj(r, c) {
+  if (aiHits.length>=2) {
+    const [r0,c0]=aiHits[0];
+    const [r1,c1]=aiHits[aiHits.length-1];
+    const dr=r1>r0?1:r1<r0?-1:0, dc=c1>c0?1:c1<c0?-1:0;
+    [[r1+dr,c1+dc],[r0-dr,c0-dc]].forEach(([nr,nc])=>{
+      if(nr>=0&&nr<10&&nc>=0&&nc<10&&!aiShotSet.has(`${nr},${nc}`)&&!aiQ.some(([a,b])=>a===nr&&b===nc))
+        aiQ.unshift([nr,nc]);
+    });
+    return;
+  }
+  [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc])=>{
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<10&&nc>=0&&nc<10&&!aiShotSet.has(`${nr},${nc}`)&&!aiQ.some(([a,b])=>a===nr&&b===nc))
+      aiQ.push([nr,nc]);
+  });
+}
+
+function aiPick() {
+  const all=[];
+  for(let r=0;r<10;r++) for(let c=0;c<10;c++)
+    if(!aiShotSet.has(`${r},${c}`)) all.push([r,c]);
+  if(!all.length) return [0,0];
+
+  let maxScore=-Infinity;
+  const scored=all.map(([r,c])=>{
+    let score=(r+c)%2===0?2:0;
+    score+=aiRowScore[r];
+    score+=aiColScore[c];
+    score+=aiCellBoost.get(`${r},${c}`)||0;
+    if(score>maxScore) maxScore=score;
+    return {r,c,score};
+  });
+  const best=scored.filter(s=>s.score===maxScore);
+  const pick=best[rnd(best.length)];
+  return [pick.r,pick.c];
+}
+
+// ── Jokers ──
+function activateJoker(type) {
+  if (phase!=='battle'||turn!=='player') return;
+  if (!jokers[type]) return;
+  if (jokerDone) { setStatus('KAMPFPHASE','Nur 1 Joker pro Zug erlaubt.'); return; }
+  activeJ = type;
+  if (type==='tdoa_row') { setStatus('KAMPFPHASE','TDOA-Zeile: Klicke eine Zeile für den Scan.'); updateJokers(); renderE(); }
+  else if (type==='tdoa_col') { setStatus('KAMPFPHASE','TDOA-Spalte: Klicke eine Spalte für den Scan.'); updateJokers(); renderE(); }
+  else if (type==='spektral') { setStatus('KAMPFPHASE','Spektral: Klicke ein Zielfeld für den 3×3-Scan.'); updateJokers(); renderE(); }
+}
+
+function doTDOA(r, c, axis) {
+  let count=0;
+  const area=[];
+  if (axis==='row') {
+    for (let nc=0;nc<10;nc++) { area.push([r,nc]); if(eGrid[r][nc]) count++; }
+  } else {
+    for (let nr=0;nr<10;nr++) { area.push([nr,c]); if(eGrid[nr][c]) count++; }
+  }
+  const label = axis==='row' ? `Zeile ${r+1}` : `Spalte ${COLS[c]}`;
+  const jokerKey = axis==='row' ? 'tdoa_row' : 'tdoa_col';
+
+  jokers[jokerKey]=false; jokerDone=true; activeJ=null; hov=new Set();
+  tdoaScans.push({cells:area, count});
+  updateJokers();
+
+  const result=`${label}: ${count} Schiffsfeld${count!==1?'er':''} belegt.`;
+  addLog('lj','⊕','TDOA: '+result);
+  setStatus('KAMPFPHASE', result+' Schieße weiter.');
+  renderE();
+}
+
+function doSpektral(r, c) {
+  let count=0;
+  const area=[];
+  for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<10&&nc>=0&&nc<10){ area.push([nr,nc]); if(eGrid[nr][nc]) count++; }
+  }
+
+  jokers.spektral=false; jokerDone=true; activeJ=null; hov=new Set();
+  spektralScans.push({cells:area, count});
+  updateJokers();
+
+  const result=`3×3 um ${COLS[c]}${r+1}: ${count} Schiffsfeld${count!==1?'er':''} belegt.`;
+  addLog('lj','◎','Spektral: '+result);
+  setStatus('KAMPFPHASE', result+' Schieße weiter.');
+  renderE();
+}
+
+function updateJokers() {
+  ['tdoa_row','tdoa_col','spektral'].forEach(t=>{
+    const el=document.getElementById(`jc-${t}`);
+    el.className='jcard';
+    if (!jokers[t]) {
+      el.classList.add('jused');
+      if (!el.querySelector('.jcard-badge')) {
+        const b=document.createElement('div'); b.className='jcard-badge'; b.textContent='VERWENDET';
+        el.appendChild(b);
+      }
+    } else if (activeJ===t) {
+      el.classList.add('jactive');
+    } else if (turn!=='player'||jokerDone) {
+      el.classList.add('jdisabled');
+    }
+  });
+}
+
+// ── Modal helpers ──
+function openModal(title, body) {
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-body').innerHTML=body;
+  document.getElementById('m-result').style.display='none';
+  document.getElementById('m-result').textContent='';
+  document.getElementById('m-ctrl').innerHTML='';
+  document.getElementById('modal').style.display='flex';
+}
+
+function closeModal() { document.getElementById('modal').style.display='none'; }
+
+function addCloseBtn(ctrl, label, fn) {
+  const btn=document.createElement('button'); btn.className='btn'; btn.textContent=label;
+  btn.onclick=()=>{ closeModal(); fn&&fn(); };
+  ctrl.appendChild(btn);
+}
+
+function mdLabel(text) {
+  const el=document.createElement('div'); el.className='modal-label'; el.textContent=text; return el;
+}
+
+// ── Win check ──
+function checkWin() {
+  if (eShips.every(s=>s.sunk)) { phase='over'; showVictory(true); }
+  else if (pShips.every(s=>s.sunk)) { phase='over'; showVictory(false); }
+}
+
+function showVictory(won) {
+  document.getElementById('v-title').textContent=won?'SIEG':'NIEDERLAGE';
+  document.getElementById('v-title').style.color=won?'var(--accent)':'var(--accent2)';
+  document.getElementById('v-sub').textContent=won
+    ?'Alle feindlichen Schiffe wurden geolokalisiert.'
+    :'Deine Flotte wurde vollständig lokalisiert.';
+  if (won) {
+    const score = getSimpleScore();
+    const rank = saveHighscore(playerName, score);
+    document.getElementById('v-score').textContent = score;
+    document.getElementById('v-score-wrap').style.display = 'block';
+    renderHighscores('v-hs-list', rank);
+  } else {
+    document.getElementById('v-score-wrap').style.display = 'none';
+    renderHighscores('v-hs-list');
+  }
+  document.getElementById('victory').style.display='flex';
+}
+
+// ── Utilities ──
+function setStatus(phase, msg) {
+  document.getElementById('status-phase').textContent=phase;
+  document.getElementById('status-msg').textContent=msg;
+}
+
+function addLog(type, prefix, msg) {
+  const entries=document.getElementById('log-entries');
+  const e=document.createElement('div'); e.className=`log-entry ${type}`;
+  e.innerHTML=`<span class="log-prefix">${prefix}</span><span>${msg}</span>`;
+  entries.appendChild(e);
+  document.getElementById('log').scrollTop=99999;
+}
+
+function rnd(n) { return Math.floor(Math.random()*n); }
+
+function resetStats() {
+  if (!confirm('Bestenliste wirklich löschen?')) return;
+  localStorage.removeItem(HS_KEY);
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  if (e.key==='r'||e.key==='R') rotateShip();
+});
+
+// ── Init ──
+initNameEntry();
+</script>
+</body>
+</html>
