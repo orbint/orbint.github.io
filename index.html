@@ -184,7 +184,7 @@
       <div class="team-info">
         <div class="team-name">Simon Heine</div>
         <div class="team-role">Co-Founder &amp; Co-CEO</div>
-        <div class="team-bio">Orbital systems and mission design specialist. Responsible for business development and European defence partnerships.</div>
+        <div class="team-bio">Systems engineer and communications technology expert. Leads finance and company building, with a strong network across the startup and innovation ecosystem.</div>
       </div>
     </div>
     <div class="team-card">
@@ -397,7 +397,7 @@
     const jobSlugs = [
         'signal-processing-engineer', 'systems-engineer', 'mechanical-engineer',
         'fpga-engineer', 'embedded-software-developer', 'software-developer-ground',
-        'software-developer-working-student', 'project-manager', 'operations-associate',
+        'software-developer-working-student', 'project-manager', 'founders-associate',
     ];
     Promise.all(jobSlugs.map(slug =>
         fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
