@@ -518,15 +518,6 @@ footer { padding: 80px 0; }
 .carousel-arrow[hidden] { display: none; }
 @media (max-width: 768px) { .carousel-arrow { display: none; } }
 
-/* ── SCROLL INDICATOR ── */
-.scroll-indicator {
-  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  z-index: 2;
-}
-.scroll-text { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(230,228,226,0.35); }
-.scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(242,100,28,0.6), transparent); }
-
 /* ── ARTICLE PAGE ── */
 .article-content { padding: 72px 80px 96px; max-width: 860px; margin: 0 auto; }
 .article-body h2 { font-size: 19px; font-weight: 700; color: #fff; margin: 40px 0 12px; letter-spacing: -0.01em; }
