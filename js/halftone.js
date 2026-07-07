@@ -1,20 +1,22 @@
-// ── HERO HALFTONE SPECTROGRAM OVERLAY ──
+// ── HALFTONE SPECTROGRAM OVERLAY (hero + dark section backgrounds) ──
+// Hero: <canvas data-halftone id="hero-halftone"> already in the markup, scrolls with the hero.
+// Everything else: any element with [data-halftone-bg] gets a canvas created for it here and
+// dropped into the fixed #bg-halftone-layer, so adding the effect to a new section is a
+// one-attribute change — no markup or JS to duplicate per section.
 (async function () {
-  const canvas = document.getElementById('hero-halftone');
-  if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const heroCanvas = document.querySelector('canvas[data-halftone]');
+  const bgTargets = Array.from(document.querySelectorAll('[data-halftone-bg]'));
+  const layer = document.getElementById('bg-halftone-layer');
+  if ((!heroCanvas && !(layer && bgTargets.length)) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
 
   const CELL_SIZE_PX = 22;
   const MOBILE_BREAKPOINT_PX = 767;
   const MOBILE_CELL_SIZE_PX = 16;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setClearColor(0x000000, 0);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.Camera();
+  const NAV_HEIGHT_PX = 64;
+  const NAV_HEIGHT_MOBILE_PX = 60;
+  const NAV_FADE_BUFFER_PX = 60;
 
   const VERT = `
     varying vec2 vUv;
@@ -75,7 +77,7 @@
       float tx   = (cell.x + 0.5) / uGrid.x + uTime * uScroll;
       float freq = 1.0 - (cell.y + 0.5) / uGrid.y;
 
-      float falloff = pow(1.0 - freq, uFalloff);
+      float falloff = pow(freq, uFalloff);
       float grain   = fbm(vec2(tx * 9.0, freq * 7.0));
 
       float f0 = 0.14 + 0.07 * sin(tx * 4.0) + 0.03 * sin(tx * 9.3 + 2.0);
@@ -85,7 +87,7 @@
       h += 0.30 * ridge(freq, f0 * 3.0, 0.055);
 
       float burstGate = smoothstep(0.78, 0.95, vnoise(vec2(tx * 6.0, 3.3)));
-      float burst = burstGate * (0.9 - 0.5 * freq);
+      float burst = burstGate * (0.4 + 0.5 * freq);
 
       float mag = falloff * (0.18 + uNoiseAmt * grain) + 0.62 * falloff * h + burst;
       mag = clamp(mag, 0.0, 1.0);
@@ -106,55 +108,131 @@
     }
   `;
 
-  const uniforms = {
-    uTime:       { value: 0 },
-    uGrid:       { value: new THREE.Vector2(1, 1) },
-    uCellAspect: { value: 1 },
-    uDotColor:   { value: new THREE.Color('#ffffff') },
-    uScroll:     { value: 0.05 },
-    uRadiusMin:  { value: 0.0 },
-    uRadiusMax:  { value: 0.16 },
-    uNoiseAmt:   { value: 0.4 },
-    uFalloff:    { value: 1.7 },
-    uFadeLeft:   { value: 0.15 },
-    uFadeBottom: { value: 0.55 },
-    uNavCutoff:  { value: 0.1 },
-    uFadeTop:    { value: 0.2 },
-    uOpacity:    { value: 0.2 },
+  const DEFAULTS = {
+    dotColor:   '#ffffff',
+    scroll:     0.05,
+    radiusMin:  0.0,
+    radiusMax:  0.16,
+    noiseAmt:   0.4,
+    falloff:    1.7,
+    fadeLeft:   0.15,
+    fadeBottom: 0.3,
+    fadeTop:    0.2,
+    opacity:    0.14,
+    avoidNav:   false, // reserve top clearance for the fixed nav bar
   };
 
-  const NAV_HEIGHT_PX = 64;
-  const NAV_HEIGHT_MOBILE_PX = 60;
-  const NAV_FADE_BUFFER_PX = 60;
+  const instances = []; // { canvas, target } — target is undefined for the hero canvas
 
-  scene.add(new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms, transparent: true })
-  ));
-
-  function resize() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (w === 0 || h === 0) return;
-    const isMobile = w <= MOBILE_BREAKPOINT_PX;
-    const cellSize = isMobile ? MOBILE_CELL_SIZE_PX : CELL_SIZE_PX;
-    const cols = Math.max(1, Math.round(w / cellSize));
-    const rows = Math.max(1, Math.round(h / cellSize));
-    renderer.setSize(w, h, false);
-    uniforms.uGrid.value.set(cols, rows);
-    uniforms.uCellAspect.value = (w / h) * (rows / cols);
-    const navHeight = isMobile ? NAV_HEIGHT_MOBILE_PX : NAV_HEIGHT_PX;
-    const navCutoffPx = navHeight + cellSize; // safety margin for dot radius bleed
-    uniforms.uNavCutoff.value = navCutoffPx / h;
-    uniforms.uFadeTop.value = (navCutoffPx + NAV_FADE_BUFFER_PX) / h;
+  if (heroCanvas) {
+    instances.push({ canvas: heroCanvas, cfg: { ...DEFAULTS, fadeBottom: 0.55, fadeTop: 0.2, opacity: 0.2, avoidNav: true } });
   }
 
-  new ResizeObserver(resize).observe(canvas);
-  resize();
+  // Per-section tweaks read straight off the target element, e.g. data-halftone-opacity="0.18"
+  // — no id-keyed lookup table to keep in sync as sections are added or removed.
+  bgTargets.forEach((target) => {
+    const canvas = document.createElement('canvas');
+    canvas.className = 'bg-halftone';
+    layer.appendChild(canvas);
+    const cfg = { ...DEFAULTS };
+    if (target.dataset.halftoneOpacity) cfg.opacity = parseFloat(target.dataset.halftoneOpacity);
+    instances.push({ canvas, cfg, target });
+  });
 
-  const clock = new THREE.Clock();
-  (function tick() {
-    uniforms.uTime.value = clock.getElapsedTime();
-    renderer.render(scene, camera);
-    requestAnimationFrame(tick);
-  })();
+  instances.forEach(({ canvas, cfg, target }) => initHalftone(canvas, cfg, target));
+
+  // The section-backed canvases live in a fixed, full-viewport backdrop layer so the dot
+  // pattern stays put while the page scrolls. Only the canvas for whichever section currently
+  // has the most visible area is faded in.
+  const backdrops = instances.filter((i) => i.target);
+  if (backdrops.length) {
+    const ratios = new Map(backdrops.map((b) => [b.target, 0]));
+    const THRESHOLDS = Array.from({ length: 21 }, (_, i) => i / 20);
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+      let winner = null, best = 0.05; // dead zone so nothing lights up between sections
+      backdrops.forEach(({ target }) => {
+        const r = ratios.get(target);
+        if (r > best) { best = r; winner = target; }
+      });
+      backdrops.forEach(({ canvas, target }) => canvas.classList.toggle('is-active', target === winner));
+    }, { threshold: THRESHOLDS });
+
+    backdrops.forEach(({ target }) => io.observe(target));
+  }
+
+  function initHalftone(canvas, cfg, target) {
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+
+    const uniforms = {
+      uTime:       { value: 0 },
+      uGrid:       { value: new THREE.Vector2(1, 1) },
+      uCellAspect: { value: 1 },
+      uDotColor:   { value: new THREE.Color(cfg.dotColor) },
+      uScroll:     { value: cfg.scroll },
+      uRadiusMin:  { value: cfg.radiusMin },
+      uRadiusMax:  { value: cfg.radiusMax },
+      uNoiseAmt:   { value: cfg.noiseAmt },
+      uFalloff:    { value: cfg.falloff },
+      uFadeLeft:   { value: cfg.fadeLeft },
+      uFadeBottom: { value: cfg.fadeBottom },
+      uNavCutoff:  { value: 0 },
+      uFadeTop:    { value: cfg.fadeTop },
+      uOpacity:    { value: cfg.opacity },
+    };
+
+    scene.add(new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms, transparent: true })
+    ));
+
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+      const isMobile = w <= MOBILE_BREAKPOINT_PX;
+      const cellSize = isMobile ? MOBILE_CELL_SIZE_PX : CELL_SIZE_PX;
+      const cols = Math.max(1, Math.round(w / cellSize));
+      const rows = Math.max(1, Math.round(h / cellSize));
+      renderer.setSize(w, h, false);
+      uniforms.uGrid.value.set(cols, rows);
+      uniforms.uCellAspect.value = (w / h) * (rows / cols);
+
+      if (cfg.avoidNav) {
+        const navHeight = isMobile ? NAV_HEIGHT_MOBILE_PX : NAV_HEIGHT_PX;
+        const navCutoffPx = navHeight + cellSize; // safety margin for dot radius bleed
+        uniforms.uNavCutoff.value = navCutoffPx / h;
+        uniforms.uFadeTop.value = (navCutoffPx + NAV_FADE_BUFFER_PX) / h;
+      }
+    }
+
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+
+    // Backdrop canvases sit in a fixed full-viewport layer, so they're always
+    // geometrically "in view" — their real visibility is the .is-active class toggled by
+    // the section IntersectionObserver above. The hero canvas has no target section, so it
+    // pauses based on its own on-screen presence instead.
+    const isBackdrop = !!target;
+    let visible = true;
+    if (!isBackdrop) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((entry) => { visible = entry.isIntersecting; });
+      }, { rootMargin: '200px 0px' }).observe(canvas);
+    }
+
+    const clock = new THREE.Clock();
+    (function tick() {
+      if (isBackdrop ? canvas.classList.contains('is-active') : visible) {
+        uniforms.uTime.value = clock.getElapsedTime();
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(tick);
+    })();
+  }
 })();

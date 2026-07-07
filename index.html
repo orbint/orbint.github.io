@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" type="image/svg+xml" href="assets/favicon-v2.svg">
-<title>Orbint - Space-Based Signal Intelligence</title>
+<title>Orbint | Space-Based Signal Intelligence</title>
 <meta name="description" content="Orbint detects, identifies, and localizes RF signal emitters globally.">
 <meta property="og:title" content="Orbint">
 <meta property="og:description" content="Orbint detects, identifies, and localizes RF signal emitters globally.">
@@ -18,6 +18,9 @@
 <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
+
+<!-- FIXED HALFTONE BACKDROP: js/halftone.js creates one canvas per [data-halftone-bg] element here -->
+<div id="bg-halftone-layer" aria-hidden="true"></div>
 
 <!-- NAV -->
 <nav id="main-nav">
@@ -53,7 +56,7 @@
     <source src="assets/videos/60sLEO.mp4" type="video/mp4">
   </video>
   <div class="hero-overlay"></div>
-  <canvas class="hero-canvas" id="hero-halftone" tabindex="-1" aria-hidden="true"></canvas>
+  <canvas class="hero-canvas" id="hero-halftone" data-halftone tabindex="-1" aria-hidden="true"></canvas>
 
   <div class="hero-content">
     <h1 class="hero-headline fade-up visible">We detect, identify, and localize signal emitters around the globe.</h1>
@@ -65,7 +68,7 @@
 </section>
 
 <!-- TECHNOLOGY -->
-<section class="section section-dark" id="technology">
+<section class="section section-dark" id="technology" data-halftone-bg>
   <div class="fade-up">
     <div class="section-label">Technology</div>
     <h2 class="section-title section-title--dark">Signal intelligence for operators who cannot afford gaps.</h2>
@@ -117,7 +120,7 @@
 </section>
 
 <!-- PARTNERS -->
- <section class="section section-dark" id="partners">
+ <section class="section section-dark" id="partners" data-halftone-bg>
   <div class="fade-up">
     <div class="section-label">Partners &amp; institutions</div>
     <h2 class="section-title section-title--dark">Backed by European institutions.</h2>
@@ -143,13 +146,10 @@
       </div>
     </div>
 </section>
-</section>
-
-
 
 
 <!-- TEAM -->
-<section class="section section-warm" id="about">
+<section class="section section-warm" id="about" data-halftone-bg>
   <div class="fade-up">
     <div class="section-label">Team</div>
     <h2 class="section-title section-title--light">Founded by researchers. Operated by executers.</h2>
@@ -204,7 +204,7 @@
 </section>
 
 <!-- CAREERS -->
-<section class="section section-light" id="career">
+<section class="section section-light" id="career" data-halftone-bg>
   <div class="careers-layout">
     <div class="careers-intro fade-up">
       <div class="section-label">Careers</div>
@@ -243,7 +243,7 @@
 </section>
 
 <!-- NEWS -->
-<section class="section section-light" id="news">
+<section class="section section-light" id="news" data-halftone-bg>
   <div class="fade-up">
     <div class="section-label">News</div>
     <h2 class="section-title section-title--light">Stay updated about Orbint's latest developments.</h2>
@@ -314,7 +314,7 @@
 </section>
 
 <!-- CONTACT -->
-<section class="section section-dark" id="contact">
+<section class="section section-dark" id="contact" data-halftone-bg data-halftone-opacity="0.18">
   <div class="contact-grid">
     <div class="fade-up">
       <div class="section-label">Contact</div>
@@ -382,7 +382,7 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="site-footer">
+<footer class="site-footer" data-halftone-bg>
     <img src="../assets/images/white_white_logo.png" alt="Orbint" class="site-footer-logo">
     <div class="site-footer-links">
         <a href="../impressum.html" class="site-footer-link">Impressum</a>
