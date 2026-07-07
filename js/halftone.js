@@ -1,11 +1,11 @@
-// ── HALFTONE SPECTROGRAM OVERLAY (hero + dark section backgrounds) ──
+// ── HALFTONE SPECTROGRAM OVERLAY (hero + section backgrounds) ──
 // Hero: <canvas data-halftone id="hero-halftone"> already in the markup, scrolls with the hero.
-// Everything else: any element with [data-halftone-bg] gets a canvas created for it here and
-// dropped into the fixed #bg-halftone-layer, so adding the effect to a new section is a
-// one-attribute change — no markup or JS to duplicate per section.
+// Everything else: every .section and .site-footer gets a canvas created for it here and
+// dropped into the fixed #bg-halftone-layer, so any new section picks up the effect
+// automatically — no markup or JS to duplicate per section.
 (async function () {
   const heroCanvas = document.querySelector('canvas[data-halftone]');
-  const bgTargets = Array.from(document.querySelectorAll('[data-halftone-bg]'));
+  const bgTargets = Array.from(document.querySelectorAll('.section, .site-footer'));
   const layer = document.getElementById('bg-halftone-layer');
   if ((!heroCanvas && !(layer && bgTargets.length)) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
