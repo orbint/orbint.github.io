@@ -372,6 +372,7 @@ nav.scrolled {
 }
 .team-info { padding: 20px; }
 .team-name { font-size: 15px; font-weight: 600; color: var(--page-heading); }
+.team-née { font-size: 11px; color: var(--page-text); opacity: 0.55; margin-top: 2px; }
 .team-role { font-size: 12px; color: var(--orange); font-weight: 500; margin-top: 4px; letter-spacing: 0.02em; }
 .team-bio { font-size: 13px; color: var(--page-text); line-height: 1.55; margin-top: 10px; opacity: 0.8; }
 
