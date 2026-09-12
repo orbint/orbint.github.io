@@ -344,9 +344,8 @@
 
     // Job listings
     const jobSlugs = [
-        'senior-rf-engineer', 'business-development-proposal-manager', 'signal-processing-engineer', 'systems-engineer', 'mechanical-engineer',
-        'fpga-engineer', 'embedded-software-developer', 'software-developer-ground',
-        'software-developer-working-student', 'project-manager', 'founders-associate','legal'
+        'senior-rf-engineer', 'signal-processing-engineer', 'fpga-engineer',
+        'founders-associate', 'legal'
     ];
     Promise.all(jobSlugs.map(slug =>
         fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
