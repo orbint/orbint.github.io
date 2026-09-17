@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.add('js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" type="image/svg+xml" href="assets/favicon-v2.svg">
 <title>Orbint | Space-Based Signal Intelligence</title>
@@ -19,350 +20,466 @@
 </head>
 <body>
 
-<!-- FIXED HALFTONE BACKDROP: js/halftone.js creates one canvas per .section/.site-footer element here -->
-<div id="bg-halftone-layer" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
 
-<!-- NAV -->
-<nav id="main-nav">
-    <div class="nav-content">
-        <a href="#mission" class="logo logo-crossfade">
-            <img id="nav-logo-dark" src="assets/images/white_white_logo.png" alt="Orbint">
-            <img id="nav-logo-light" src="assets/images/black_black_logo.png" alt="">
-        </a>
-        <div class="nav-links">
-            <a href="#mission" class="mono active" data-section="mission">Mission</a>
-            <a href="#career" class="mono" data-section="career">Career</a>
-            <a href="#news" class="mono" data-section="news">News</a>
-            <a href="#contact" class="mono" data-section="contact">Contact</a>
-        </div>
-        <button id="hamburger" class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+<!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+<nav class="nav" aria-label="Primary">
+  <div class="nav-inner wrap">
+    <a href="#top" class="nav-logo" aria-label="Orbint — home">
+      <img src="assets/images/logo-black.png" alt="Orbint" width="70" height="38">
+    </a>
+    <div class="nav-links">
+      <a href="#technology">Technology</a>
+      <a href="#career">Career</a>
+      <a href="#news">News</a>
+      <a href="#contact">Contact</a>
     </div>
+    <button id="hamburger" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
-<!-- MOBILE MENU -->
-<div id="mobile-menu" class="mobile-menu">
-    <a href="#mission">Mission</a>
-    <a href="#career">Career</a>
-    <a href="#news">News</a>
-    <a href="#contact">Contact</a>
+<div id="mobile-menu" class="mobile-menu" hidden>
+  <a href="#technology">Technology</a>
+  <a href="#career">Career</a>
+  <a href="#news">News</a>
+  <a href="#contact">Contact</a>
 </div>
 
-<!-- HERO -->
-<section class="hero" id="mission">
-  <div class="hero-bg"></div>
-  <video class="hero-video" autoplay muted loop playsinline disablePictureInPicture poster="assets/images/poster_dark.jpg" oncontextmenu="return false;">
-    <source src="assets/videos/60sLEO.mp4" type="video/mp4">
-  </video>
-  <div class="hero-overlay"></div>
-  <canvas class="hero-canvas" id="hero-halftone" data-halftone tabindex="-1" aria-hidden="true"></canvas>
+<main id="main">
 
-  <div class="hero-content">
-    <h1 class="hero-headline fade-up visible">We detect, identify, and localize signal emitters around the globe.</h1>
-    <div class="hero-actions fade-up visible">
-      <a class="btn-ghost" href="#technology">How it works →</a>
+<!-- ── HERO ────────────────────────────────────────────────────────────── -->
+<header class="hero" id="top">
+  <div class="hero-type">
+    <div class="hero-rules grid" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
-
-  </div>
-</section>
-
-<!-- TECHNOLOGY -->
-<section class="section section-dark" id="technology">
-  <div class="fade-up">
-    <div class="section-label">Technology</div>
-    <h2 class="section-title section-title--dark">Signal intelligence for operators who cannot afford gaps.</h2>
-    <p class="section-sub section-sub--dark">Orbint delivers the full stack from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
-  </div>
-  <div class="usecases-layout fade-up">
-    <div class="usecase-list">
-      <div class="usecase-item active" data-uc="0">
-        <div class="usecase-num">01</div>
-        <div>
-          <div class="usecase-title">Electromagnetic order of battle</div>
-          <div class="usecase-body">Create and update a near real-time map of radar systems, radio networks, and electronic jamming gear across restricted or hostile zones. Multi-satellite signal processing locates each transmitter with sub-kilometer precision, while onboard analysis identifies its specific modulation, pulse patterns, and timing variations.</div>
-        </div>
+    <div class="grid wrap hero-grid">
+      <h1 class="display hero-headline reveal">We detect, identify, and localize signal emitters around the globe.</h1>
+      <div class="hero-aside reveal" style="--reveal-delay:220ms">
+        <p>Space-based signal intelligence, built and operated in Europe.</p>
+        <p class="meta">Neubiberg, Germany</p>
       </div>
-      <div class="usecase-item" data-uc="1">
-        <div class="usecase-num">02</div>
-        <div>
-          <div class="usecase-title">Maritime surveillance</div>
-          <div class="usecase-body">Ships that go dark by disabling their AIS transponder still radiate. Orbint correlates radar emissions and communications signatures against characterized emitter behaviors to resolve position to sub-kilometer accuracy, fused with prior tracks and terrain models in near real time.</div>
-        </div>
-      </div>
-      <div class="usecase-item" data-uc="2">
-        <div class="usecase-num">03</div>
-        <div>
-          <div class="usecase-title">Crisis early warning</div>
-          <div class="usecase-body">A new emitter appearing overnight, a radar shifting frequency, a transmitter changing its pulse rhythm: these are the signals that precede action. Orbint flags the change the moment a satellite pass captures it, even before the situation on the ground becomes visible.</div>
-        </div>
+      <div class="hero-actions reveal" style="--reveal-delay:140ms">
+        <a class="link" href="#technology">How it works <span class="arrow" aria-hidden="true">↓</span></a>
       </div>
     </div>
-    <div class="usecase-visual">
-      <div id="anim-wrap" style="width:100%;position:relative;overflow:hidden;">
-        <iframe id="anim-iframe" src="assets/animations/focused-capture.html?embed" scrolling="no" allowtransparency="true" style="position:absolute;top:0;left:0;width:534px;height:350px;border:none;background:transparent;transform-origin:top left;"></iframe>
-      </div>
-      <script>
-        (function () {
-          var wrap = document.getElementById('anim-wrap');
-          var iframe = document.getElementById('anim-iframe');
-          function resize() {
-            var scale = wrap.offsetWidth / 534;
-            iframe.style.transform = 'scale(' + scale + ')';
-            wrap.style.height = (350 * scale) + 'px';
-          }
-          resize();
-          new ResizeObserver(resize).observe(wrap);
-        })();
-      </script>
+  </div>
+
+</header>
+
+<!-- ── TECHNOLOGY ──────────────────────────────────────────────────────── -->
+<section class="section wrap" id="technology" aria-labelledby="technology-title">
+  <div class="section-rule reveal-rule"></div>
+  <div class="grid section-head" style="padding-top: var(--space-block)">
+    <p class="marginalia reveal">Technology</p>
+    <div class="section-head-body">
+      <h2 class="heading reveal" id="technology-title">Signal intelligence for operators who cannot afford gaps.</h2>
+      <p class="lede reveal" style="--reveal-delay:90ms">Orbint delivers the full stack, from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
     </div>
   </div>
-</section>
 
-<!-- PARTNERS -->
- <section class="section section-dark" id="partners">
-  <div class="fade-up">
-    <div class="section-label">Partners &amp; institutions</div>
-    <h2 class="section-title section-title--dark">Backed by European institutions.</h2>
-    <p class="section-sub section-sub--dark">Co-developed and validated by the institutions that operate critical European infrastructure.</p>
-  </div>
-    <div class="partners-carousel fade-up" style="margin-top: 32px;">
-      <div class="partners-track">
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" style="height: 55px;" alt="University of the Bundeswehr Munich"></a>
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" style="height: 50px;" alt="MCSC"></a>
-        <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" style="height: 61px;" alt="dtec.bw"></a>
-        <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" style="height: 65px;" alt="Rohde &amp; Schwarz"></a>
-        <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" style="height: 47px;" alt="ESA BIC"></a>
-        <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" style="height: 54px;" alt="Palladion"></a>
-        <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" style="height: 91px;" alt="New Space BDI"></a>
-        <a href="https://spacefounders.eu" target="_blank" rel="noopener"><img src="assets/images/partners/spacefounders_logo.png" style="height: 60px;" alt="SpaceFounders"></a>
-        <!-- duplicate for seamless loop -->
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/unibw.png" style="height: 55px;" alt="University of the Bundeswehr Munich"></a>
-        <a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/mcsc_logo-1.png" style="height: 50px;" alt="MCSC"></a>
-        <a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/dtec.png" style="height: 61px;" alt="dtec.bw"></a>
-        <a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/RS_Logo.png" style="height: 65px;" alt="Rohde &amp; Schwarz"></a>
-        <a href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener"><img src="assets/images/partners/esa_bic.png" style="height: 47px;" alt="ESA BIC"></a>
-        <a href="https://palladion-unibw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/palladion.png" style="height: 54px;" alt="Palladion"></a>
-        <a href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener"><img src="assets/images/partners/new_space_bdi.png" style="height: 91px;" alt="New Space BDI"></a>
-        <a href="https://spacefounders.eu" target="_blank" rel="noopener"><img src="assets/images/partners/spacefounders_logo.png" style="height: 60px;" alt="SpaceFounders"></a>
-      </div>
-    </div>
-</section>
-
-
-<!-- TEAM -->
-
-<!-- CAREERS -->
-<section class="section section-light" id="career">
-  <div class="careers-layout">
-    <div class="careers-intro fade-up">
-      <div class="section-label">Careers</div>
-      <h2 class="section-title section-title--light">Build the intelligence layer for the next conflict-prevention era.</h2>
-      <p class="section-sub section-sub--light">We are a small, technically rigorous team. We hire for depth, not breadth. If you want to work on problems that matter in satellite systems, signal processing, or software read on.</p>
-      <div class="careers-values">
-        <div class="career-value-item">
-          <div class="career-value-num">01</div>
+  <div class="grid tech-layout section-body">
+    <ul class="ruled tech-cases" data-stagger="80">
+      <li>
+        <div class="case">
+          <span class="ordinal" aria-hidden="true">01</span>
           <div>
-            <div class="career-value-title">Technical depth over generalism</div>
-            <div class="career-value-body">We expect you to understand the problem at a fundamental level not just operate the toolchain.</div>
+            <h3 class="case-title">Electromagnetic order of battle</h3>
+            <p class="case-body">Create and update a near real-time map of radar systems, radio networks, and electronic jamming gear across restricted or hostile zones. Multi-satellite signal processing locates each transmitter with sub-kilometer precision, while onboard analysis identifies its specific modulation, pulse patterns, and timing variations.</p>
           </div>
         </div>
-        <div class="career-value-item">
-          <div class="career-value-num">02</div>
+      </li>
+      <li>
+        <div class="case">
+          <span class="ordinal" aria-hidden="true">02</span>
           <div>
-            <div class="career-value-title">Sovereign &amp; European</div>
-            <div class="career-value-body">We build critical infrastructure for European defence. That comes with responsibility, clarity of purpose, and stable long-term backing.</div>
+            <h3 class="case-title">Maritime surveillance</h3>
+            <p class="case-body">Ships that go dark by disabling their AIS transponder still radiate. Orbint correlates radar emissions and communications signatures against characterized emitter behaviors to resolve position to sub-kilometer accuracy, fused with prior tracks and terrain models in near real time.</p>
           </div>
         </div>
-        <div class="career-value-item">
-          <div class="career-value-num">03</div>
+      </li>
+      <li>
+        <div class="case">
+          <span class="ordinal" aria-hidden="true">03</span>
           <div>
-            <div class="career-value-title">Small team, large scope</div>
-            <div class="career-value-body">You will own significant surface area. Decisions move fast. Results are visible and measurable.</div>
+            <h3 class="case-title">Crisis early warning</h3>
+            <p class="case-body">A new emitter appearing overnight, a radar shifting frequency, a transmitter changing its pulse rhythm: these are the signals that precede action. Orbint flags the change the moment a satellite pass captures it, even before the situation on the ground becomes visible.</p>
           </div>
         </div>
+      </li>
+    </ul>
+
+    <figure class="tech-figure reveal">
+      <div class="figure-frame">
+        <svg viewBox="0 0 480 400" role="img"
+             aria-label="Diagram: three satellites observe one ground emitter. The detected signal appears as a peak in the spectrum trace above, and time-difference-of-arrival curves from each satellite intersect at the emitter's position.">
+
+          <!-- Spectrum trace: the detected peak sits on the same vertical axis
+               as the emitter in the geometry below. -->
+          <polyline class="dia-hair" points="16,52.8 20,52.5 24,51.6 28,52.8 32,52.7 36,52.5 40,53.5 44,52.7 48,52.4 52,51.9 56,53.8 60,53.2 64,53.8 68,51.9 72,52.2 76,53.9 80,51.4 84,51.5 88,52.2 92,52.2 96,52.8 100,51.7 104,47.3 108,43.6 112,37.1 116,31.5 120,29.9 124,31 128,36.4 132,41.6 136,47.4 140,50.1 144,51.9 148,52 152,52.8 156,53.3 160,51.4 164,51.4 168,51.8 172,52.2 176,53.2 180,53.4 184,53.2 188,53.8 192,52 196,53 200,51.8 204,53 208,51.5 212,51.8 216,54 220,53.5 224,51.6 228,52.8 232,51.5 236,53 240,53.8 244,52.3 248,51.7 252,51.5 256,46.7 260,34.1 264,17 268,10 272,19.2 276,34.3 280,46.6 284,52.1 288,51.6 292,53.5 296,52.5 300,52.8 304,53.5 308,52.1 312,53.7 316,52.3 320,53.7 324,52.9 328,53.4 332,53.3 336,51.5 340,51.9 344,53.1 348,51.4 352,52.2 356,49.4 360,43.9 364,39 368,36.3 372,34 376,40.1 380,45.5 384,48.4 388,51.9 392,52.9 396,53.7 400,53.8 404,52.5 408,53.4 412,52.4 416,53 420,52.8 424,51.5 428,52.7 432,52.5 436,51.7 440,53.5 444,53.6 448,51.6 452,51.9 456,53.4 460,53.5 464,52.1"/>
+          <polyline class="dia-accent" points="252,51.5 256,46.7 260,34.1 264,17 268,10 272,19.2 276,34.3 280,46.6 284,52.1"/>
+          <text class="dia-label" x="16" y="20">Spectrum</text>
+          <text class="dia-label-accent" x="464" y="20" text-anchor="end">Detected</text>
+          <line class="dia-hair" x1="0" y1="64" x2="480" y2="64"/>
+
+          <!-- Ruler ticks: the frame reads as a measuring instrument -->
+          <g class="dia-hair" aria-hidden="true">
+            <line x1="0" y1="88" x2="7" y2="88"/><line x1="0" y1="112" x2="7" y2="112"/>
+            <line x1="0" y1="136" x2="7" y2="136"/><line x1="0" y1="160" x2="7" y2="160"/>
+            <line x1="0" y1="184" x2="7" y2="184"/><line x1="0" y1="208" x2="7" y2="208"/>
+            <line x1="0" y1="232" x2="7" y2="232"/><line x1="0" y1="256" x2="7" y2="256"/>
+            <line x1="0" y1="280" x2="7" y2="280"/><line x1="0" y1="304" x2="7" y2="304"/>
+            <line x1="0" y1="328" x2="7" y2="328"/><line x1="0" y1="352" x2="7" y2="352"/>
+          </g>
+
+          <!-- Earth limb -->
+          <path class="dia-line" d="M 0 384 Q 240 312 480 384"/>
+
+          <!-- Lines of sight -->
+          <line class="dia-dash" x1="86"  y1="118" x2="268" y2="348"/>
+          <line class="dia-dash" x1="394" y1="118" x2="268" y2="348"/>
+          <line class="dia-line" x1="240" y1="118" x2="268" y2="348"/>
+
+          <!-- Satellites -->
+          <g class="dia-fill" aria-hidden="true">
+            <rect x="80" y="112" width="12" height="12"/>
+            <rect x="234" y="112" width="12" height="12"/>
+            <rect x="388" y="112" width="12" height="12"/>
+          </g>
+          <g class="dia-line" aria-hidden="true">
+            <line x1="68"  y1="118" x2="80"  y2="118"/><line x1="92"  y1="118" x2="104" y2="118"/>
+            <line x1="222" y1="118" x2="234" y2="118"/><line x1="246" y1="118" x2="258" y2="118"/>
+            <line x1="376" y1="118" x2="388" y2="118"/><line x1="400" y1="118" x2="412" y2="118"/>
+          </g>
+          <text class="dia-label" x="86"  y="100" text-anchor="middle">Sat 01</text>
+          <text class="dia-label" x="240" y="100" text-anchor="middle">Sat 02</text>
+          <text class="dia-label" x="394" y="100" text-anchor="middle">Sat 03</text>
+
+          <!-- Emitter: pings, crosshair, fix -->
+          <g aria-hidden="true">
+            <circle class="dia-accent dia-ping" cx="268" cy="348" r="34" style="opacity:.6"/>
+            <circle class="dia-accent dia-ping dia-ping--2" cx="268" cy="348" r="34" style="opacity:.6"/>
+            <circle class="dia-accent dia-ping dia-ping--3" cx="268" cy="348" r="34" style="opacity:.6"/>
+            <line class="dia-accent" x1="268" y1="330" x2="268" y2="342"/>
+            <line class="dia-accent" x1="268" y1="354" x2="268" y2="366"/>
+            <line class="dia-accent" x1="250" y1="348" x2="262" y2="348"/>
+            <line class="dia-accent" x1="274" y1="348" x2="286" y2="348"/>
+            <circle class="dia-fill-accent" cx="268" cy="348" r="3.5"/>
+          </g>
+          <text class="dia-label-accent" x="296" y="376">Emitter fix</text>
+        </svg>
       </div>
+      <figcaption class="figure-caption">
+        <span>Multi-satellite geolocation</span>
+        <span>TDOA / FDOA</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ── PARTNERS ────────────────────────────────────────────────────────── -->
+<section class="section wrap" id="partners" aria-labelledby="partners-title">
+  <div class="section-rule reveal-rule"></div>
+  <div class="grid section-head" style="padding-top: var(--space-block)">
+    <p class="marginalia reveal">Partners</p>
+    <div class="section-head-body">
+      <h2 class="heading reveal" id="partners-title">Backed by European institutions.</h2>
+      <p class="lede reveal" style="--reveal-delay:90ms">Co-developed and validated by the institutions that operate critical European infrastructure.</p>
     </div>
-    <div class="jobs-panel fade-up">
-      <div class="jobs-panel-header">Open positions</div>
-      <div id="job-feed"><div class="mono" style="opacity: 0.5;">Loading...</div></div>
-      <p style="margin-top: 16px; font-size: 12px; color: var(--fg-ter-light); line-height: 1.55;">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="mailto:career@orbint.de" style="color: inherit; text-decoration: none;">info@orbint.de</a>.</p>
+  </div>
+
+  <div class="partner-grid section-body reveal">
+    <a class="partner-cell" href="https://www.unibw.de/satcom/" target="_blank" rel="noopener" style="--logo-scale:1">
+      <img src="assets/images/partners/trimmed/unibw.png" alt="University of the Bundeswehr Munich" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://www.unibw.de/satcom/" target="_blank" rel="noopener" style="--logo-scale:1.05">
+      <img src="assets/images/partners/trimmed/mcsc_logo-1.png" alt="Munich Center for Space Communications" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://dtecbw.de/home" target="_blank" rel="noopener" style="--logo-scale:1">
+      <img src="assets/images/partners/trimmed/dtec.png" alt="dtec.bw" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://www.rohde-schwarz.com" target="_blank" rel="noopener" style="--logo-scale:.95">
+      <img src="assets/images/partners/trimmed/RS_Logo.png" alt="Rohde &amp; Schwarz" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://commercialisation.esa.int/esa-business-incubation-centres/" target="_blank" rel="noopener" style="--logo-scale:1.1">
+      <img src="assets/images/partners/trimmed/esa_bic.png" alt="ESA Business Incubation Centre" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://palladion-unibw.de/home" target="_blank" rel="noopener" style="--logo-scale:1">
+      <img src="assets/images/partners/trimmed/palladion.png" alt="Palladion" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://bdi.eu/de/specials/newspace-initiative" target="_blank" rel="noopener" style="--logo-scale:1">
+      <img src="assets/images/partners/trimmed/new_space_bdi.png" alt="BDI NewSpace Initiative" loading="lazy">
+    </a>
+    <a class="partner-cell" href="https://spacefounders.eu" target="_blank" rel="noopener" style="--logo-scale:.9">
+      <img src="assets/images/partners/trimmed/spacefounders_logo.png" alt="SpaceFounders" loading="lazy">
+    </a>
+  </div>
+</section>
+
+<!-- ── CAREERS ─────────────────────────────────────────────────────────── -->
+<section class="section wrap" id="career" aria-labelledby="career-title">
+  <div class="section-rule reveal-rule"></div>
+  <div class="grid section-head" style="padding-top: var(--space-block)">
+    <p class="marginalia reveal">Careers</p>
+    <div class="section-head-body">
+      <h2 class="heading reveal" id="career-title">Build the intelligence layer for the next conflict-prevention era.</h2>
+      <p class="lede reveal" style="--reveal-delay:90ms">We are a small, technically rigorous team. We hire for depth, not breadth. If you want to work on problems that matter in satellite systems, signal processing, or software, read on.</p>
+    </div>
+  </div>
+
+  <div class="grid careers-layout section-body">
+    <ul class="ruled careers-values" data-stagger="80">
+      <li>
+        <div class="value">
+          <span class="ordinal" aria-hidden="true">01</span>
+          <div>
+            <h3 class="value-title">Technical depth over generalism</h3>
+            <p class="value-body">We expect you to understand the problem at a fundamental level, not just operate the toolchain.</p>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="value">
+          <span class="ordinal" aria-hidden="true">02</span>
+          <div>
+            <h3 class="value-title">Sovereign &amp; European</h3>
+            <p class="value-body">We build critical infrastructure for European defence. That comes with responsibility, clarity of purpose, and stable long-term backing.</p>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="value">
+          <span class="ordinal" aria-hidden="true">03</span>
+          <div>
+            <h3 class="value-title">Small team, large scope</h3>
+            <p class="value-body">You will own significant surface area. Decisions move fast. Results are visible and measurable.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="careers-jobs reveal">
+      <h3 class="jobs-title">Open positions</h3>
+      <div id="job-feed" data-slugs="senior-rf-engineer,signal-processing-engineer,fpga-engineer,founders-associate,legal">
+        <ul class="ruled">
+          <li><a class="job-link" href="jobs/job.html?slug=senior-rf-engineer"><span>Senior RF Engineer</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a class="job-link" href="jobs/job.html?slug=signal-processing-engineer"><span>Signal Processing Engineer</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a class="job-link" href="jobs/job.html?slug=fpga-engineer"><span>FPGA Engineer</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a class="job-link" href="jobs/job.html?slug=founders-associate"><span>Founders Associate</span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a class="job-link" href="jobs/job.html?slug=legal"><span>Legal, Commercial and Finance Lead</span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </div>
+      <p class="jobs-note">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="mailto:career@orbint.de">career@orbint.de</a>.</p>
     </div>
   </div>
 </section>
 
-<!-- NEWS -->
-<section class="section section-light" id="news">
-  <div class="fade-up">
-    <div class="section-label">News</div>
-    <h2 class="section-title section-title--light">Stay updated about Orbint's latest developments.</h2>
-    <p class="section-sub section-sub--light">Our latest articles, press releases, and achievements.</p>
-  </div>
-  <div id="news-feed" class="fade-up" style="margin-top: 48px;">
-    <div class="carousel-wrapper">
-      <div class="news-grid">
-        <a href="news/airbus-ila-2026-mou.html" class="news-card">
-          <div class="news-image"><img src="/news/articles/assets/ILA_2026_2.jpg" alt="Airbus, Rohde &amp; Schwarz, constellr, Orbint and HPS Sign MoU for Sovereign Space-Based ISR"></div>
-          <div class="news-content">
-            <div class="news-meta"><span class="news-category">PARTNERSHIP</span><span class="news-date">Jun 10, 2026</span></div>
-            <h3 class="news-title">Airbus, Rohde &amp; Schwarz, constellr, Orbint and HPS Sign MoU for Sovereign Space-Based ISR</h3>
-            <p class="news-excerpt">Airbus Defence and Space has signed an MoU with Rohde &amp; Schwarz, constellr, Orbint and HPS to develop a sovereign, end-to-end satellite-based Earth observation and ISR solution for Europe.</p>
-            <div class="news-more">Read full story</div>
-          </div>
-        </a>
-        <a href="news/rohde-schwarz-idc-2026.html" class="news-card">
-          <div class="news-image"><img src="/news/articles/assets/idc2026.jpeg" alt="Orbint at Rohde &amp; Schwarz International Developers Conference (IDC) 2026"></div>
-          <div class="news-content">
-            <div class="news-meta"><span class="news-category">EVENT</span><span class="news-date">Apr 29, 2026</span></div>
-            <h3 class="news-title">Orbint at Rohde &amp; Schwarz International Developers Conference (IDC) 2026</h3>
-            <p class="news-excerpt">Orbint presented to Rohde &amp; Schwarz's global R&amp;D community at IDC 2026 in Munich, exchanging ideas with developers and engineers on next-generation, highly reliable space-based systems.</p>
-            <div class="news-more">Read full story</div>
-          </div>
-        </a>
-        <a href="news/seranis-space-tech-expo-2025.html" class="news-card">
-          <div class="news-image"><img src="/news/articles/assets/seranis.jpeg" alt="SeRANIS and Orbint at Space Tech Expo 2025"></div>
-          <div class="news-content">
-            <div class="news-meta"><span class="news-category">EVENT</span><span class="news-date">Nov 18, 2025</span></div>
-            <h3 class="news-title">SeRANIS and Orbint at Space Tech Expo 2025</h3>
-            <p class="news-excerpt">Leonhard Kessler and Daniel Weinzierl from University of the Bundeswehr Munich presented SeRANIS and Orbint at the Space Tech Expo Europe in Bremen.</p>
-            <div class="news-more">Read full story</div>
-          </div>
-        </a>
-        <a href="news/rohde-schwarz-investment.html" class="news-card">
-          <div class="news-image"><img src="/news/articles/assets/rohde.jpg" alt="Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signal Intelligence"></div>
-          <div class="news-content">
-            <div class="news-meta"><span class="news-category">MILESTONE</span><span class="news-date">Nov 13, 2025</span></div>
-            <h3 class="news-title">Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signal Intelligence</h3>
-            <p class="news-excerpt">Technology group Rohde &amp; Schwarz has invested in Orbint GmbH, joining forces to advance satellite-based signal intelligence and strengthen Germany's and Europe's technological sovereignty in space.</p>
-            <div class="news-more">Read full story</div>
-          </div>
-        </a>
-        <a href="news/bdi-newspace-100th-member.html" class="news-card">
-          <div class="news-image"><img src="/news/articles/assets/founders.jpg" alt="Orbint becomes 100th Member of BDI NewSpace Initiative"></div>
-          <div class="news-content">
-            <div class="news-meta"><span class="news-category">MILESTONE</span><span class="news-date">Jul 15, 2025</span></div>
-            <h3 class="news-title">Orbint becomes 100th Member of BDI NewSpace Initiative</h3>
-            <p class="news-excerpt">Orbint GmbH joins the BDI NewSpace Initiative as its 100th member, bringing space-based signal intelligence to Germany's leading industry network.</p>
-            <div class="news-more">Read full story</div>
-          </div>
-        </a>
-        <a href="news/tag-der-raumfahrt-space-cafe.html" class="news-card">
-          <div class="news-image"><img src="/news/articles/assets/tag-der-raumfahrt.jpg" alt="&quot;Tag der Raumfahrt&quot; in Berlin: Space Cafe Clip"></div>
-          <div class="news-content">
-            <div class="news-meta"><span class="news-category">BROADCAST</span><span class="news-date">Mar 31, 2025</span></div>
-            <h3 class="news-title">"Tag der Raumfahrt" in Berlin: Space Cafe Clip</h3>
-            <p class="news-excerpt">Alexander Eckert (né Schmidt), co-founder of Orbint GmbH, sat down with SpaceWatch.Global TV to discuss the future of satellite-based signal intelligence and Orbint's mission.</p>
-            <div class="news-more">Read full story</div>
-          </div>
-        </a>
-      </div>
-      <button class="carousel-arrow carousel-arrow--left" id="news-arrow-left" aria-label="Scroll left" hidden>&#8249;</button>
-      <button class="carousel-arrow carousel-arrow--right" id="news-arrow-right" aria-label="Scroll right">&#8250;</button>
+<!-- ── NEWS ────────────────────────────────────────────────────────────── -->
+<section class="section wrap" id="news" aria-labelledby="news-title">
+  <div class="section-rule reveal-rule"></div>
+  <div class="grid section-head" style="padding-top: var(--space-block)">
+    <p class="marginalia reveal">News</p>
+    <div class="section-head-body">
+      <h2 class="heading reveal" id="news-title">Stay updated about Orbint's latest developments.</h2>
+      <p class="lede reveal" style="--reveal-delay:90ms">Our latest articles, press releases, and achievements.</p>
     </div>
+  </div>
+
+  <ul class="ruled section-body" data-stagger="60">
+    <li class="reveal">
+      <a class="news-row" href="news/airbus-ila-2026-mou.html">
+        <div class="news-when">
+          <span class="news-kicker">Partnership</span>
+          <time class="meta" datetime="2026-06-10">10 Jun 2026</time>
+        </div>
+        <div class="news-text">
+          <h3 class="news-title">Airbus, Rohde &amp; Schwarz, constellr, Orbint and HPS Sign MoU for Sovereign Space-Based ISR</h3>
+          <p class="news-excerpt">Airbus Defence and Space has signed an MoU with Rohde &amp; Schwarz, constellr, Orbint and HPS to develop a sovereign, end-to-end satellite-based Earth observation and ISR solution for Europe.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/ILA_2026_2.jpg" alt="Representatives of the five consortium partners at the MoU signing" loading="lazy">
+        </div>
+      </a>
+    </li>
+    <li class="reveal">
+      <a class="news-row" href="news/rohde-schwarz-idc-2026.html">
+        <div class="news-when">
+          <span class="news-kicker">Event</span>
+          <time class="meta" datetime="2026-04-29">29 Apr 2026</time>
+        </div>
+        <div class="news-text">
+          <h3 class="news-title">Orbint at Rohde &amp; Schwarz International Developers Conference 2026</h3>
+          <p class="news-excerpt">Orbint presented to Rohde &amp; Schwarz's global R&amp;D community at IDC 2026 in Munich, exchanging ideas with developers and engineers on next-generation, highly reliable space-based systems.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/idc2026.jpeg" alt="Orbint presenting at the Rohde &amp; Schwarz International Developers Conference" loading="lazy">
+        </div>
+      </a>
+    </li>
+    <li class="reveal">
+      <a class="news-row" href="news/seranis-space-tech-expo-2025.html">
+        <div class="news-when">
+          <span class="news-kicker">Event</span>
+          <time class="meta" datetime="2025-11-18">18 Nov 2025</time>
+        </div>
+        <div class="news-text">
+          <h3 class="news-title">SeRANIS and Orbint at Space Tech Expo 2025</h3>
+          <p class="news-excerpt">Leonhard Kessler and Daniel Weinzierl from University of the Bundeswehr Munich presented SeRANIS and Orbint at the Space Tech Expo Europe in Bremen.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/seranis.jpeg" alt="The SeRANIS and Orbint stand at Space Tech Expo Europe in Bremen" loading="lazy">
+        </div>
+      </a>
+    </li>
+    <li class="reveal">
+      <a class="news-row" href="news/rohde-schwarz-investment.html">
+        <div class="news-when">
+          <span class="news-kicker">Milestone</span>
+          <time class="meta" datetime="2025-11-13">13 Nov 2025</time>
+        </div>
+        <div class="news-text">
+          <h3 class="news-title">Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signal Intelligence</h3>
+          <p class="news-excerpt">Technology group Rohde &amp; Schwarz has invested in Orbint GmbH, joining forces to advance satellite-based signal intelligence and strengthen Germany's and Europe's technological sovereignty in space.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/rohde.jpg" alt="Rohde &amp; Schwarz and Orbint representatives marking the investment" loading="lazy">
+        </div>
+      </a>
+    </li>
+    <li class="reveal">
+      <a class="news-row" href="news/bdi-newspace-100th-member.html">
+        <div class="news-when">
+          <span class="news-kicker">Milestone</span>
+          <time class="meta" datetime="2025-07-15">15 Jul 2025</time>
+        </div>
+        <div class="news-text">
+          <h3 class="news-title">Orbint becomes 100th Member of BDI NewSpace Initiative</h3>
+          <p class="news-excerpt">Orbint GmbH joins the BDI NewSpace Initiative as its 100th member, bringing space-based signal intelligence to Germany's leading industry network.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/founders.jpg" alt="The Orbint founding team" loading="lazy">
+        </div>
+      </a>
+    </li>
+    <li class="reveal">
+      <a class="news-row" href="news/tag-der-raumfahrt-space-cafe.html">
+        <div class="news-when">
+          <span class="news-kicker">Broadcast</span>
+          <time class="meta" datetime="2025-03-31">31 Mar 2025</time>
+        </div>
+        <div class="news-text">
+          <h3 class="news-title">"Tag der Raumfahrt" in Berlin: Space Cafe Clip</h3>
+          <p class="news-excerpt">Alexander Eckert (né Schmidt), co-founder of Orbint GmbH, sat down with SpaceWatch.Global TV to discuss the future of satellite-based signal intelligence and Orbint's mission.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/tag-der-raumfahrt.jpg" alt="Alexander Eckert interviewed by SpaceWatch.Global TV in Berlin" loading="lazy">
+        </div>
+      </a>
+    </li>
+  </ul>
+</section>
+
+<!-- ── CONTACT ─────────────────────────────────────────────────────────── -->
+<section class="section wrap field-accent" id="contact" aria-labelledby="contact-title">
+  <div class="grid section-head">
+    <p class="marginalia reveal">Contact</p>
+    <div class="section-head-body">
+      <h2 class="heading reveal" id="contact-title">Request access or learn more.</h2>
+      <p class="lede reveal" style="--reveal-delay:90ms">Whether you are evaluating Orbint for a procurement decision, interested in a research partnership, or want to join the team.</p>
+    </div>
+  </div>
+
+  <div class="grid contact-layout section-body">
+    <div class="contact-info reveal">
+      <div class="info-item">
+        <p class="info-label">Email</p>
+        <p class="info-value"><a href="mailto:info@orbint.de">info@orbint.de</a></p>
+      </div>
+      <div class="info-item">
+        <p class="info-label">Headquarters</p>
+        <p class="info-value">Orbint GmbH<br>Lilienthalstraße 9<br>85579 Neubiberg, Germany</p>
+      </div>
+    </div>
+
+    <form class="contact-form reveal" id="contact-form" style="--reveal-delay:90ms">
+      <input type="hidden" name="access_key" value="2d41798b-b0d6-473b-acb0-ae80b7407d5e">
+      <input type="hidden" name="subject" value="Orbint contact form">
+      <!-- Honeypot: deliberately unlabelled and hidden from AT; a real user never reaches it. -->
+      <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="first_name">First name</label>
+          <input class="form-input" id="first_name" type="text" name="first_name" autocomplete="given-name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="last_name">Last name</label>
+          <input class="form-input" id="last_name" type="text" name="last_name" autocomplete="family-name" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="email">Work email</label>
+        <input class="form-input" id="email" type="email" name="email" autocomplete="email" placeholder="you@organisation.gov" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="organisation">Organisation</label>
+        <input class="form-input" id="organisation" type="text" name="organisation" autocomplete="organization">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="enquiry_type">Enquiry type</label>
+        <select class="form-select" id="enquiry_type" name="enquiry_type">
+          <option>Product demonstration</option>
+          <option>Procurement / evaluation</option>
+          <option>Research partnership</option>
+          <option>Career enquiry</option>
+          <option>Press / media</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="message">Message</label>
+        <textarea class="form-textarea" id="message" name="message" rows="3" placeholder="Describe your use case or question"></textarea>
+      </div>
+
+      <button class="btn" type="submit" style="align-self:flex-start">Send message</button>
+
+      <output class="form-note" id="form-success" tabindex="-1" hidden>Message sent. We will be in touch within one business day.</output>
+      <p class="form-note form-note--error" id="form-error" role="alert" hidden>Something went wrong. Please try again, or email <a href="mailto:info@orbint.de">info@orbint.de</a>.</p>
+    </form>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="section section-dark" id="contact" data-halftone-opacity="0.18">
-  <div class="contact-grid">
-    <div class="fade-up">
-      <div class="section-label">Contact</div>
-      <h2 class="section-title section-title--dark">Request access or learn more.</h2>
-      <p class="section-sub section-sub--dark">Whether you are evaluating Orbint for a procurement decision, interested in a research partnership, or want to join the team.</p>
-      <div class="contact-info" style="margin-top: 48px;">
-        <div class="contact-info-item">
-          <div class="contact-info-label">Email</div>
-          <div class="contact-info-value"><a href="mailto:info@orbint.de">info@orbint.de</a></div>
-        </div>
-        <div class="contact-info-item">
-          <div class="contact-info-label">Headquarters</div>
-          <div class="contact-info-value">Orbint GmbH<br>Lilienthalstraße 9<br>85579 Neubiberg, Germany</div>
-        </div>
-      </div>
+</main>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
+<footer class="site-footer wrap field-ink">
+  <div class="grid footer-grid">
+    <div class="footer-brand">
+      <img src="assets/images/logo-white.png" alt="Orbint" width="81" height="44">
     </div>
-    <div class="fade-up">
-      <form class="contact-form" onsubmit="handleSubmit(event)">
-        <input type="hidden" name="access_key" value="2d41798b-b0d6-473b-acb0-ae80b7407d5e">
-        <input type="hidden" name="subject" value="Orbint contact form">
-        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">First name</label>
-            <input class="form-input" type="text" name="first_name" placeholder="First name" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Last name</label>
-            <input class="form-input" type="text" name="last_name" placeholder="Last name" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Work email</label>
-          <input class="form-input" type="email" name="email" placeholder="you@organisation.gov" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Organisation</label>
-          <input class="form-input" type="text" name="organisation" placeholder="Organisation / agency">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Enquiry type</label>
-          <select class="form-select" name="enquiry_type">
-            <option>Product demonstration</option>
-            <option>Procurement / evaluation</option>
-            <option>Research partnership</option>
-            <option>Career enquiry</option>
-            <option>Press / media</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Message</label>
-          <textarea class="form-textarea" name="message" placeholder="Describe your use case or question"></textarea>
-        </div>
-        <button class="btn-primary" type="submit" id="submit-btn" style="align-self: flex-start;">Send message</button>
-        <div id="form-success" style="display:none; padding: 12px 16px; background: rgba(61,184,122,0.1); border: 1px solid rgba(61,184,122,0.3); border-radius: 4px; font-size: 13px; color: var(--success);">Message sent. We will be in touch within one business day.</div>
-        <div id="form-error" style="display:none; padding: 12px 16px; background: rgba(220,53,69,0.1); border: 1px solid rgba(220,53,69,0.3); border-radius: 4px; font-size: 13px; color: #dc3545;">Something went wrong. Please try again or email us at <a href="mailto:info@orbint.de" style="color: inherit;">info@orbint.de</a>.</div>
-      </form>
+    <nav class="footer-nav" aria-label="Sections">
+      <p class="footer-label">Site</p>
+      <a class="footer-link" href="#technology">Technology</a>
+      <a class="footer-link" href="#career">Career</a>
+      <a class="footer-link" href="#news">News</a>
+      <a class="footer-link" href="#contact">Contact</a>
+    </nav>
+    <nav class="footer-legal" aria-label="Legal">
+      <p class="footer-label">Legal</p>
+      <a class="footer-link" href="impressum.html">Impressum</a>
+      <a class="footer-link" href="privacy.html">Privacy</a>
+    </nav>
+    <div class="footer-end">
+      <p class="footer-label">Orbint GmbH</p>
+      <p class="footer-note">Lilienthalstraße 9<br>85579 Neubiberg<br>Germany</p>
+      <p class="footer-note" style="margin-top:1rem">&copy; 2026</p>
     </div>
   </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="site-footer">
-    <img src="../assets/images/white_white_logo.png" alt="Orbint" class="site-footer-logo">
-    <div class="site-footer-links">
-        <a href="../impressum.html" class="site-footer-link">Impressum</a>
-        <a href="../privacy.html" class="site-footer-link">Privacy</a>
-    </div>
-    <div class="site-footer-copy">© 2026 Orbint GmbH</div>
 </footer>
 
-<script src="js/script.js"></script>
-<script>
-    // News carousel
-    const newsGrid = document.querySelector('.news-grid');
-    const newsArrowRight = document.getElementById('news-arrow-right');
-    const newsArrowLeft = document.getElementById('news-arrow-left');
-    if (newsGrid && newsArrowRight && typeof initCarouselArrow === 'function') {
-        initCarouselArrow(newsGrid, newsArrowRight, newsArrowLeft);
-    }
-
-    // Job listings
-    const jobSlugs = [
-        'senior-rf-engineer', 'signal-processing-engineer', 'fpga-engineer',
-        'founders-associate', 'legal'
-    ];
-    Promise.all(jobSlugs.map(slug =>
-        fetch(`jobs/posts/${slug}.json`).then(r => r.json()).then(j => ({ ...j, slug }))
-    )).then(jobs => {
-        document.getElementById('job-feed').innerHTML =
-            `<ul class="job-list">${jobs.map(j =>
-                `<li><a href="jobs/job.html?slug=${j.slug}" class="job-list-item">${j.title}</a></li>`
-            ).join('')}</ul>`;
-    }).catch(() => {
-        document.getElementById('job-feed').innerHTML =
-            '<p class="mono" style="opacity:0.5;">Could not load positions. If testing locally, run: <code>python3 -m http.server 8000</code></p>';
-    });
-</script>
-
-<script src="js/halftone.js"></script>
-
+<script src="js/script.js" defer></script>
 </body>
 </html>

@@ -3,49 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impressum | Orbint</title>
+<script>document.documentElement.classList.add('js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/svg+xml" href="assets/favicon-v2.svg">
+<title>Impressum | Orbint</title>
 </head>
 <body>
 
-<!-- NAV -->
-<nav id="main-nav" class="nav-opaque">
-  <div class="nav-content">
-    <a href="index.html" class="logo-crossfade">
-      <img id="nav-logo-dark" src="assets/images/white_white_logo.png" alt="Orbint">
-      <img id="nav-logo-light" src="assets/images/black_black_logo.png" alt="">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="nav" aria-label="Primary">
+  <div class="nav-inner wrap">
+    <a href="index.html" class="nav-logo" aria-label="Orbint — home">
+      <img src="assets/images/logo-black.png" alt="Orbint" width="70" height="38">
     </a>
     <div class="nav-links">
-      <a href="index.html#mission" class="mono">Mission</a>
-      <a href="index.html#career" class="mono">Career</a>
-      <a href="index.html#news" class="mono">News</a>
-      <a href="index.html#contact" class="mono">Contact</a>
+      <a href="index.html#technology">Technology</a>
+      <a href="index.html#career">Career</a>
+      <a href="index.html#news">News</a>
+      <a href="index.html#contact">Contact</a>
     </div>
-    <button id="hamburger" class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button id="hamburger" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
-<!-- MOBILE MENU -->
-<div id="mobile-menu" class="mobile-menu">
-  <a href="index.html#mission">Mission</a>
+<div id="mobile-menu" class="mobile-menu" hidden>
+  <a href="index.html#technology">Technology</a>
   <a href="index.html#career">Career</a>
   <a href="index.html#news">News</a>
   <a href="index.html#contact">Contact</a>
 </div>
 
-<!-- PAGE HEADER -->
-<div class="legal-header">
-  <a href="index.html" class="page-back">← Back</a>
-  <div class="section-label">Legal</div>
-  <h1 class="page-header-title">Impressum</h1>
+<main id="main">
+
+<div class="page-head wrap">
+  <a class="page-back" href="index.html"><span aria-hidden="true">&larr;</span> Back</a>
+  <div class="grid">
+    <p class="marginalia">Legal</p>
+    <div class="page-head-body">
+      <h1 class="page-title">Impressum</h1>
+    </div>
+  </div>
 </div>
 
-<!-- CONTENT -->
-<div class="legal-body">
-  <p>
+<div class="page-body wrap">
+  <div class="grid">
+    <div class="copy copy-col">
+      <p>
     Orbint GmbH<br>
     Lilienthalstr. 9<br>
     85579 Neubiberg
@@ -67,11 +76,37 @@
 
   <h2>Disclaimer</h2>
   <p>Die auf dieser Website bereitgestellten Inhalte dienen ausschließlich allgemeinen Informationszwecken. Obwohl wir uns um Genauigkeit bemühen, übernehmen wir keine Garantie für die Vollständigkeit oder Richtigkeit der bereitgestellten Informationen.</p>
+    </div>
+  </div>
 </div>
 
-<!-- FOOTER -->
-<div id="footer-placeholder"></div>
+</main>
 
-<script src="js/script.js"></script>
+<footer class="site-footer wrap field-ink">
+  <div class="grid footer-grid">
+    <div class="footer-brand">
+      <img src="assets/images/logo-white.png" alt="Orbint" width="81" height="44">
+    </div>
+    <nav class="footer-nav" aria-label="Sections">
+      <p class="footer-label">Site</p>
+      <a class="footer-link" href="index.html#technology">Technology</a>
+      <a class="footer-link" href="index.html#career">Career</a>
+      <a class="footer-link" href="index.html#news">News</a>
+      <a class="footer-link" href="index.html#contact">Contact</a>
+    </nav>
+    <nav class="footer-legal" aria-label="Legal">
+      <p class="footer-label">Legal</p>
+      <a class="footer-link" href="impressum.html">Impressum</a>
+      <a class="footer-link" href="privacy.html">Privacy</a>
+    </nav>
+    <div class="footer-end">
+      <p class="footer-label">Orbint GmbH</p>
+      <p class="footer-note">Lilienthalstraße 9<br>85579 Neubiberg<br>Germany</p>
+      <p class="footer-note" style="margin-top:1rem">&copy; 2026</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js" defer></script>
 </body>
 </html>
