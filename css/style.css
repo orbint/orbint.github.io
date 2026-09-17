@@ -619,7 +619,32 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
 
   .tech-figure, .job-aside { position: static; }
   .tech-figure { order: -1; }
-  .hero-aside { padding-top: 0; }
+
+  /* Hero: headline pinned to the top, strapline and scroll cue to the bottom,
+     so the fold is used deliberately instead of centring a small block in a
+     void. Putting the strapline after the headline also stops the collapsed
+     margin column from reading as an eyebrow. */
+  .hero-type {
+    align-items: stretch;
+    /* Short of the full fold so the next section's rule shows, and capped so
+       the air between headline and strapline cannot grow unbounded on tall
+       viewports (a 1180px tablet would otherwise leave ~600px of void). */
+    min-height: min(calc(100svh - var(--nav-h) - 6rem), 44rem);
+    padding-block: var(--space-block) var(--space-tight);
+  }
+  .hero-grid {
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    row-gap: var(--space-block);
+  }
+  .hero-headline { order: 1; }
+  .hero-aside {
+    order: 2;
+    margin-top: auto;
+    padding-top: var(--space-tight);
+    border-top: 1px solid var(--rule);
+  }
+  .hero-actions { order: 3; margin-top: var(--space-tight); }
 
   .subgrid { display: block; }
   .row { display: grid; grid-template-columns: 1fr; row-gap: 0.4rem; }
