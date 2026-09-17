@@ -168,31 +168,40 @@
         .then(function (job) { job.slug = slug; return job; });
     }))
       .then(function (jobs) {
-        var list = document.createElement('ul');
-        list.className = 'ruled';
-        jobs.forEach(function (job) {
+        var rows = jobs.map(function (job) {
           var li = document.createElement('li');
+          li.className = 'row subgrid';
+
+          var where = document.createElement('span');
+          where.className = 'label label--muted';
+          where.textContent = job.location || '';
+
+          var text = document.createElement('div');
+          text.className = 'row-text';
+
           var a = document.createElement('a');
           a.className = 'job-link';
           a.href = 'jobs/job.html?slug=' + encodeURIComponent(job.slug);
+
           var title = document.createElement('span');
+          title.className = 'title';
           title.textContent = job.title;
+
           var arrow = document.createElement('span');
           arrow.className = 'arrow';
           arrow.setAttribute('aria-hidden', 'true');
-          arrow.textContent = '→';
+          arrow.textContent = '\u2192';
+
           a.appendChild(title);
           a.appendChild(arrow);
-          li.appendChild(a);
-          list.appendChild(li);
+          text.appendChild(a);
+          li.appendChild(where);
+          li.appendChild(text);
+          return li;
         });
-        feed.textContent = '';
-        feed.appendChild(list);
+        feed.replaceChildren.apply(feed, rows);
       })
-      .catch(function () {
-        feed.innerHTML = '<p class="jobs-note">Positions could not be loaded. ' +
-          'Write to <a href="mailto:career@orbint.de">career@orbint.de</a> and we will send the current list.</p>';
-      });
+      .catch(function () { /* the server-rendered list stays in place */ });
   }
 
   function init() {

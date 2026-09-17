@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<a class="skip-link label" href="#main">Skip to content</a>
 
 <nav class="nav" aria-label="Primary">
   <div class="nav-inner wrap">
@@ -28,10 +28,10 @@
       <img src="../assets/images/logo-black.png" alt="Orbint" width="70" height="38">
     </a>
     <div class="nav-links">
-      <a href="../index.html#technology">Technology</a>
-      <a href="../index.html#career">Career</a>
-      <a href="../index.html#news">News</a>
-      <a href="../index.html#contact">Contact</a>
+      <a class="label" href="../index.html#technology">Technology</a>
+      <a class="label" href="../index.html#career">Career</a>
+      <a class="label" href="../index.html#news">News</a>
+      <a class="label" href="../index.html#contact">Contact</a>
     </div>
     <button id="hamburger" class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
@@ -40,28 +40,28 @@
 </nav>
 
 <div id="mobile-menu" class="mobile-menu" hidden>
-  <a href="../index.html#technology">Technology</a>
-  <a href="../index.html#career">Career</a>
-  <a href="../index.html#news">News</a>
-  <a href="../index.html#contact">Contact</a>
+  <a class="label" href="../index.html#technology">Technology</a>
+  <a class="label" href="../index.html#career">Career</a>
+  <a class="label" href="../index.html#news">News</a>
+  <a class="label" href="../index.html#contact">Contact</a>
 </div>
 
 <main id="main">
 
 <div class="page-head wrap">
-  <a class="page-back" href="../index.html#news"><span aria-hidden="true">&larr;</span> All news</a>
+  <a class="page-back label" href="../index.html#news"><span aria-hidden="true">&larr;</span> All news</a>
   <div class="grid">
-    <p class="marginalia">Partnership</p>
-    <div class="page-head-body">
-      <h1 class="page-title">Airbus, Rohde &amp; Schwarz, constellr, Orbint and HPS Sign MoU for Sovereign Space-Based ISR</h1>
-      <p class="page-sub"><time datetime="2026-06-10">10 Jun 2026</time></p>
+    <div class="col-margin">
+      <p class="label">Partnership</p>
+      <p class="label label--muted"><time datetime="2026-06-10">10 Jun 2026</time></p>
     </div>
+    <h1 class="page-title col-wide">Airbus, Rohde &amp; Schwarz, constellr, Orbint and HPS Sign MoU for Sovereign Space-Based ISR</h1>
   </div>
 </div>
 
 <div class="page-body wrap">
   <div class="grid">
-    <article class="copy copy-col">
+    <article class="copy col-text">
         <img src="/news/articles/assets/ILA_2026_2.jpg" alt="Representatives of Airbus Defence and Space, Rohde &amp; Schwarz, constellr, Orbint and HPS at the signing of the Memorandum of Understanding for a sovereign European space-based ISR solution">
         <p class="image-caption">© Airbus Defence and Space GmbH 2026</p>
         <p>Airbus Defence and Space has signed a Memorandum of Understanding with Rohde &amp; Schwarz, constellr, Orbint and High Performance Space Structure Systems (HPS) to collaborate on a satellite-based Earth observation and Intelligence, Surveillance, and Reconnaissance (ISR) solution. Led by Airbus as prime contractor and system integrator, the consortium brings together five complementary German specialists to address growing governmental demand for sovereign, end-to-end space-based surveillance capabilities, independent of non-European dependencies.</p>
@@ -87,21 +87,33 @@
       <img src="../assets/images/logo-white.png" alt="Orbint" width="81" height="44">
     </div>
     <nav class="footer-nav" aria-label="Sections">
-      <p class="footer-label">Site</p>
+      <p class="label label--muted">Site</p>
       <a class="footer-link" href="../index.html#technology">Technology</a>
       <a class="footer-link" href="../index.html#career">Career</a>
       <a class="footer-link" href="../index.html#news">News</a>
       <a class="footer-link" href="../index.html#contact">Contact</a>
     </nav>
     <nav class="footer-legal" aria-label="Legal">
-      <p class="footer-label">Legal</p>
+      <p class="label label--muted">Legal</p>
       <a class="footer-link" href="../impressum.html">Impressum</a>
       <a class="footer-link" href="../privacy.html">Privacy</a>
     </nav>
     <div class="footer-end">
-      <p class="footer-label">Orbint GmbH</p>
-      <p class="footer-note">Lilienthalstraße 9<br>85579 Neubiberg<br>Germany</p>
-      <p class="footer-note" style="margin-top:1rem">&copy; 2026</p>
+      <p class="label label--muted">Orbint GmbH</p>
+      <p class="footer-note">Lilienthalstraße 9<br>85579 Neubiberg<br>Germany<br><br>&copy; 2026</p>
+    </div>
+    <div class="footer-partners">
+      <p class="label label--muted">In partnership with</p>
+      <div class="footer-partner-logos">
+        <img src="../assets/images/partners/trimmed/unibw.png" alt="University of the Bundeswehr Munich" style="--logo-scale:1" loading="lazy">
+        <img src="../assets/images/partners/trimmed/mcsc_logo-1.png" alt="Munich Center for Space Communications" style="--logo-scale:1.05" loading="lazy">
+        <img src="../assets/images/partners/trimmed/dtec.png" alt="dtec.bw" style="--logo-scale:1" loading="lazy">
+        <img src="../assets/images/partners/trimmed/RS_Logo.png" alt="Rohde &amp; Schwarz" style="--logo-scale:.95" loading="lazy">
+        <img src="../assets/images/partners/trimmed/esa_bic.png" alt="ESA Business Incubation Centre" style="--logo-scale:1.1" loading="lazy">
+        <img src="../assets/images/partners/trimmed/palladion.png" alt="Palladion" style="--logo-scale:1" loading="lazy">
+        <img src="../assets/images/partners/trimmed/new_space_bdi.png" alt="BDI NewSpace Initiative" style="--logo-scale:1" loading="lazy">
+        <img src="../assets/images/partners/trimmed/spacefounders_logo.png" alt="SpaceFounders" style="--logo-scale:.9" loading="lazy">
+      </div>
     </div>
   </div>
 </footer>
