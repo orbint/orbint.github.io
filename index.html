@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" type="image/svg+xml" href="assets/favicon-v2.svg">
-<title>Orbint | Space-Based Signal Intelligence</title>
+<title>Orbint | Space-Based Signals Intelligence</title>
 <meta name="description" content="Orbint detects, identifies, and localizes RF signal emitters globally.">
 <meta property="og:title" content="Orbint">
 <meta property="og:description" content="Orbint detects, identifies, and localizes RF signal emitters globally.">
@@ -52,19 +52,34 @@
 <!-- ── HERO ────────────────────────────────────────────────────────────── -->
 <header class="hero" id="top">
   <div class="hero-type">
+    <canvas class="hero-scene" aria-hidden="true"></canvas>
     <div class="grid wrap hero-grid">
-      <div class="hero-aside col-margin reveal">
-        <p class="label">Space-based<br>signal intelligence</p>
-        <p class="label label--muted">Made in Germany</p>
-      </div>
       <h1 class="display hero-headline col-wide reveal" style="--reveal-delay:80ms">We detect, identify, and localize signal emitters around the globe.</h1>
       <div class="hero-actions col-text reveal" style="--reveal-delay:180ms">
         <a class="link" href="#technology">How it works <span aria-hidden="true">&darr;</span></a>
       </div>
     </div>
-    <div class="hero-partner wrap reveal" style="--reveal-delay:280ms">
-      <p class="label label--muted">In partnership with</p>
-      <img class="hero-partner-logo" src="assets/images/partners/trimmed/RS_Logo.png" alt="Rohde &amp; Schwarz" width="923" height="240">
+    <div class="hero-colophon wrap reveal" style="--reveal-delay:280ms">
+      <div class="hero-credit">
+        <p class="label label--muted">Founded by researchers from</p>
+        <img class="hero-credit-logo" src="assets/images/partners/trimmed/unibw.png" alt="University of the Bundeswehr Munich" width="1257" height="240">
+      </div>
+      <div class="hero-credit">
+        <p class="label label--muted">In partnership with</p>
+        <img class="hero-credit-logo" src="assets/images/partners/trimmed/RS_Logo.png" alt="Rohde &amp; Schwarz" width="923" height="240">
+      </div>
+    </div>
+  </div>
+  <!-- Cursor instrument. The hero field stands in for one equirectangular
+       projection of the globe, so a point in it is a point on Earth: the point
+       marks it and the block reads it off. Drawn by script.js; pointer devices
+       only. -->
+  <div class="hero-cursor" id="hero-cursor" aria-hidden="true">
+    <span class="hero-cursor-point"></span>
+    <span class="hero-cursor-ring"></span>
+    <div class="hero-readout label">
+      <span data-lat>00.0000&deg; N</span>
+      <span data-lon>000.0000&deg; E</span>
     </div>
   </div>
 </header>
@@ -74,95 +89,33 @@
   <div class="section-rule reveal-rule"></div>
   <div class="grid section-head">
     <p class="label col-margin reveal">Technology</p>
-    <h2 class="heading col-wide reveal" id="technology-title">Signal intelligence for operators who cannot afford gaps.</h2>
+    <h2 class="heading col-wide reveal" id="technology-title">Signals intelligence for operators who cannot afford gaps.</h2>
     <p class="lede col-text reveal" style="--reveal-delay:90ms">Orbint delivers the full stack, from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
   </div>
 
-  <div class="grid tech-layout section-body">
-    <ul class="ruled tech-cases subgrid" data-stagger="80">
-      <li class="row subgrid reveal">
-        <span class="label label--accent" aria-hidden="true">01</span>
-        <div class="row-text">
-          <h3 class="title">Electromagnetic order of battle</h3>
-          <p class="body">Create and update a near real-time map of radar systems, radio networks, and electronic jamming gear across restricted or hostile zones. Multi-satellite signal processing locates each transmitter with sub-kilometer precision, while onboard analysis identifies its specific modulation, pulse patterns, and timing variations.</p>
-        </div>
-      </li>
-      <li class="row subgrid reveal">
-        <span class="label label--accent" aria-hidden="true">02</span>
-        <div class="row-text">
-          <h3 class="title">Maritime surveillance</h3>
-          <p class="body">Ships that go dark by disabling their AIS transponder still radiate. Orbint correlates radar emissions and communications signatures against characterized emitter behaviors to resolve position to sub-kilometer accuracy, fused with prior tracks and terrain models in near real time.</p>
-        </div>
-      </li>
-      <li class="row subgrid reveal">
-        <span class="label label--accent" aria-hidden="true">03</span>
-        <div class="row-text">
-          <h3 class="title">Crisis early warning</h3>
-          <p class="body">A new emitter appearing overnight, a radar shifting frequency, a transmitter changing its pulse rhythm: these are the signals that precede action. Orbint flags the change the moment a satellite pass captures it, even before the situation on the ground becomes visible.</p>
-        </div>
-      </li>
-    </ul>
-
-    <figure class="tech-figure reveal">
-      <div class="figure-frame">
-        <svg viewBox="0 0 480 400" role="img"
-             aria-label="Diagram: three satellites observe one ground emitter. The detected signal appears as a peak in the spectrum trace above, on the same vertical axis as the emitter's position below.">
-
-          <!-- Spectrum trace. The detected peak sits on the same vertical axis
-               as the emitter in the geometry below. -->
-          <polyline class="dia-hair" points="16,52.8 20,52.5 24,51.6 28,52.8 32,52.7 36,52.5 40,53.5 44,52.7 48,52.4 52,51.9 56,53.8 60,53.2 64,53.8 68,51.9 72,52.2 76,53.9 80,51.4 84,51.5 88,52.2 92,52.2 96,52.8 100,51.7 104,47.3 108,43.6 112,37.1 116,31.5 120,29.9 124,31 128,36.4 132,41.6 136,47.4 140,50.1 144,51.9 148,52 152,52.8 156,53.3 160,51.4 164,51.4 168,51.8 172,52.2 176,53.2 180,53.4 184,53.2 188,53.8 192,52 196,53 200,51.8 204,53 208,51.5 212,51.8 216,54 220,53.5 224,51.6 228,52.8 232,51.5 236,53 240,53.8 244,52.3 248,51.7 252,51.5 256,46.7 260,34.1 264,17 268,10 272,19.2 276,34.3 280,46.6 284,52.1 288,51.6 292,53.5 296,52.5 300,52.8 304,53.5 308,52.1 312,53.7 316,52.3 320,53.7 324,52.9 328,53.4 332,53.3 336,51.5 340,51.9 344,53.1 348,51.4 352,52.2 356,49.4 360,43.9 364,39 368,36.3 372,34 376,40.1 380,45.5 384,48.4 388,51.9 392,52.9 396,53.7 400,53.8 404,52.5 408,53.4 412,52.4 416,53 420,52.8 424,51.5 428,52.7 432,52.5 436,51.7 440,53.5 444,53.6 448,51.6 452,51.9 456,53.4 460,53.5 464,52.1"/>
-          <polyline class="dia-accent" points="252,51.5 256,46.7 260,34.1 264,17 268,10 272,19.2 276,34.3 280,46.6 284,52.1"/>
-          <text class="dia-label" x="16" y="20">Spectrum</text>
-          <text class="dia-label-accent" x="464" y="20" text-anchor="end">Detected</text>
-          <line class="dia-hair" x1="0" y1="64" x2="480" y2="64"/>
-
-          <g class="dia-hair" aria-hidden="true">
-            <line x1="0" y1="88" x2="7" y2="88"/><line x1="0" y1="112" x2="7" y2="112"/>
-            <line x1="0" y1="136" x2="7" y2="136"/><line x1="0" y1="160" x2="7" y2="160"/>
-            <line x1="0" y1="184" x2="7" y2="184"/><line x1="0" y1="208" x2="7" y2="208"/>
-            <line x1="0" y1="232" x2="7" y2="232"/><line x1="0" y1="256" x2="7" y2="256"/>
-            <line x1="0" y1="280" x2="7" y2="280"/><line x1="0" y1="304" x2="7" y2="304"/>
-            <line x1="0" y1="328" x2="7" y2="328"/><line x1="0" y1="352" x2="7" y2="352"/>
-          </g>
-
-          <path class="dia-line" d="M 0 384 Q 240 312 480 384"/>
-
-          <line class="dia-dash" x1="86"  y1="118" x2="268" y2="348"/>
-          <line class="dia-dash" x1="394" y1="118" x2="268" y2="348"/>
-          <line class="dia-line" x1="240" y1="118" x2="268" y2="348"/>
-
-          <g class="dia-fill" aria-hidden="true">
-            <rect x="80" y="112" width="12" height="12"/>
-            <rect x="234" y="112" width="12" height="12"/>
-            <rect x="388" y="112" width="12" height="12"/>
-          </g>
-          <g class="dia-line" aria-hidden="true">
-            <line x1="68"  y1="118" x2="80"  y2="118"/><line x1="92"  y1="118" x2="104" y2="118"/>
-            <line x1="222" y1="118" x2="234" y2="118"/><line x1="246" y1="118" x2="258" y2="118"/>
-            <line x1="376" y1="118" x2="388" y2="118"/><line x1="400" y1="118" x2="412" y2="118"/>
-          </g>
-          <text class="dia-label" x="86"  y="100" text-anchor="middle">Sat 01</text>
-          <text class="dia-label" x="240" y="100" text-anchor="middle">Sat 02</text>
-          <text class="dia-label" x="394" y="100" text-anchor="middle">Sat 03</text>
-
-          <g aria-hidden="true">
-            <circle class="dia-accent dia-ping" cx="268" cy="348" r="34" style="opacity:.6"/>
-            <circle class="dia-accent dia-ping dia-ping--2" cx="268" cy="348" r="34" style="opacity:.6"/>
-            <circle class="dia-accent dia-ping dia-ping--3" cx="268" cy="348" r="34" style="opacity:.6"/>
-            <line class="dia-accent" x1="268" y1="330" x2="268" y2="342"/>
-            <line class="dia-accent" x1="268" y1="354" x2="268" y2="366"/>
-            <line class="dia-accent" x1="250" y1="348" x2="262" y2="348"/>
-            <line class="dia-accent" x1="274" y1="348" x2="286" y2="348"/>
-            <circle class="dia-fill-accent" cx="268" cy="348" r="3.5"/>
-          </g>
-          <text class="dia-label-accent" x="296" y="376">Emitter fix</text>
-        </svg>
-      </div>
-      <figcaption class="figure-caption">
-        <span class="label label--muted">Geolocation</span>
-        <span class="label label--muted">TDOA / FDOA</span>
-      </figcaption>
-    </figure>
+  <div class="grid section-body use-cases">
+    <div class="use-case use-case--government reveal">
+      <h3 class="title">Governmental</h3>
+      <p class="body">For armed forces, intelligence services and security agencies operating under a national or European mandate.</p>
+      <ul class="label use-case-index">
+        <li>Electromagnetic order of battle</li>
+        <li>Radar and emitter identification</li>
+        <li>Maritime domain awareness</li>
+        <li>GNSS jamming and spoofing attribution</li>
+        <li>Crisis early warning</li>
+      </ul>
+    </div>
+    <div class="use-case use-case--civilian reveal" style="--reveal-delay:90ms">
+      <h3 class="title">Civilian</h3>
+      <p class="body">For regulators, infrastructure operators and commercial analysts who need to know what is transmitting, and from where.</p>
+      <ul class="label use-case-index">
+        <li>Satellite interference geolocation</li>
+        <li>Spectrum regulation and licence enforcement</li>
+        <li>GNSS interference mapping for aviation</li>
+        <li>Illegal fishing and dark vessel detection</li>
+        <li>Critical infrastructure protection</li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -211,7 +164,7 @@
   <div class="grid section-head">
     <p class="label col-margin reveal">Careers</p>
     <h2 class="heading col-wide reveal" id="career-title">Build the intelligence layer for the next conflict-prevention era.</h2>
-    <p class="lede col-text reveal" style="--reveal-delay:90ms">We are a small, technically rigorous team. We hire for depth, not breadth. If you want to work on problems that matter in satellite systems, signal processing, or software, read on.</p>
+    <p class="lede col-text reveal" style="--reveal-delay:90ms">We are a small team with a large scope. We hire for depth, not breadth. You will own real surface area in European defence.</p>
   </div>
 
   <div class="grid careers-layout section-body">
@@ -219,42 +172,25 @@
         data-slugs="senior-rf-engineer,signal-processing-engineer,fpga-engineer,founders-associate,legal">
       <li class="row subgrid reveal">
         <span class="label label--muted">Munich, Germany</span>
-        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=senior-rf-engineer"><span class="title">Senior RF Engineer</span><span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=senior-rf-engineer"><span class="title">Senior RF Engineer</span></a></div>
       </li>
       <li class="row subgrid reveal">
         <span class="label label--muted">Munich, Germany</span>
-        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=signal-processing-engineer"><span class="title">Signal Processing Engineer</span><span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=signal-processing-engineer"><span class="title">Signal Processing Engineer</span></a></div>
       </li>
       <li class="row subgrid reveal">
         <span class="label label--muted">Munich, Germany</span>
-        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=fpga-engineer"><span class="title">FPGA Engineer</span><span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=fpga-engineer"><span class="title">FPGA Engineer</span></a></div>
       </li>
       <li class="row subgrid reveal">
         <span class="label label--muted">Munich, Germany</span>
-        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=founders-associate"><span class="title">Founders Associate</span><span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=founders-associate"><span class="title">Founders Associate</span></a></div>
       </li>
       <li class="row subgrid reveal">
         <span class="label label--muted">Munich, Germany</span>
-        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=legal"><span class="title">Legal, Commercial and Finance Lead</span><span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+        <div class="row-text"><a class="job-link" href="jobs/job.html?slug=legal"><span class="title">Legal, Commercial and Finance Lead</span></a></div>
       </li>
     </ul>
-
-    <aside class="careers-values reveal">
-      <ul class="ruled">
-        <li class="value">
-          <h3>Technical depth over generalism</h3>
-          <p>We expect you to understand the problem at a fundamental level, not just operate the toolchain.</p>
-        </li>
-        <li class="value">
-          <h3>Sovereign &amp; European</h3>
-          <p>We build critical infrastructure for European defence. That comes with responsibility, clarity of purpose, and stable long-term backing.</p>
-        </li>
-        <li class="value">
-          <h3>Small team, large scope</h3>
-          <p>You will own significant surface area. Decisions move fast. Results are visible and measurable.</p>
-        </li>
-      </ul>
-    </aside>
 
     <p class="jobs-note col-text reveal">Don't see a match? We read unsolicited applications from exceptional engineers. Write to <a href="mailto:career@orbint.de">career@orbint.de</a>.</p>
   </div>
@@ -322,8 +258,8 @@
           <time class="label label--muted" datetime="2025-11-13">13 Nov 2025</time>
         </div>
         <div class="news-text">
-          <h3 class="title">Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signal Intelligence</h3>
-          <p class="body">Technology group Rohde &amp; Schwarz has invested in Orbint GmbH, joining forces to advance satellite-based signal intelligence and strengthen Germany's and Europe's technological sovereignty in space.</p>
+          <h3 class="title">Rohde &amp; Schwarz Invests in Orbint GmbH for Space-Based Signals Intelligence</h3>
+          <p class="body">Technology group Rohde &amp; Schwarz has invested in Orbint GmbH, joining forces to advance satellite-based signals intelligence and strengthen Germany's and Europe's technological sovereignty in space.</p>
         </div>
         <div class="news-figure">
           <img src="news/articles/assets/rohde.jpg" alt="Rohde &amp; Schwarz and Orbint representatives marking the investment" loading="lazy">
@@ -338,7 +274,7 @@
         </div>
         <div class="news-text">
           <h3 class="title">Orbint becomes 100th Member of BDI NewSpace Initiative</h3>
-          <p class="body">Orbint GmbH joins the BDI NewSpace Initiative as its 100th member, bringing space-based signal intelligence to Germany's leading industry network.</p>
+          <p class="body">Orbint GmbH joins the BDI NewSpace Initiative as its 100th member, bringing space-based signals intelligence to Germany's leading industry network.</p>
         </div>
         <div class="news-figure">
           <img src="news/articles/assets/founders.jpg" alt="The Orbint founding team" loading="lazy">
@@ -353,7 +289,7 @@
         </div>
         <div class="news-text">
           <h3 class="title">"Tag der Raumfahrt" in Berlin: Space Cafe Clip</h3>
-          <p class="body">Alexander Eckert (né Schmidt), co-founder of Orbint GmbH, sat down with SpaceWatch.Global TV to discuss the future of satellite-based signal intelligence and Orbint's mission.</p>
+          <p class="body">Alexander Eckert (né Schmidt), co-founder of Orbint GmbH, sat down with SpaceWatch.Global TV to discuss the future of satellite-based signals intelligence and Orbint's mission.</p>
         </div>
         <div class="news-figure">
           <img src="news/articles/assets/tag-der-raumfahrt.jpg" alt="Alexander Eckert interviewed by SpaceWatch.Global TV in Berlin" loading="lazy">
@@ -459,5 +395,8 @@
 </footer>
 
 <script src="js/script.js" defer></script>
+<!-- The hero constellation. A module, so browsers without one skip it and the
+     hero stays what it is without any of this. -->
+<script src="js/hero-satellites.js" type="module"></script>
 </body>
 </html>

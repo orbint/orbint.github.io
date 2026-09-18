@@ -46,7 +46,7 @@
   --t-body:    1rem;                                      /* 16 */
   --t-lead:    1.3125rem;                                 /* 21 */
   --t-head:    clamp(1.75rem, 0.95rem + 2.6vw, 2.625rem); /* 28 → 42 */
-  --t-display: clamp(2.5rem, 0.6rem + 6.2vw, 5rem);       /* 40 → 80 */
+  --t-display: clamp(2rem, 0.4rem + 4.9vw, 4rem);         /* 32 → 64 */
 
   /* ── TYPE: two weights, two widths, four letter-spacings ── */
   --w-normal:  400;
@@ -209,7 +209,7 @@ img, video, svg { display: block; max-width: 100%; }
 .link {
   display: inline-flex; align-items: baseline; gap: 0.5em;
   font-size: var(--t-body);
-  font-weight: var(--w-bold);
+  font-weight: var(--w-normal);
   text-decoration: none;
   padding-bottom: 0.25em;
   border-bottom: 1px solid var(--accent);
@@ -305,25 +305,115 @@ img, video, svg { display: block; max-width: 100%; }
 }
 
 .hero-grid { position: relative; z-index: 1; width: 100%; row-gap: var(--space-tight); }
-.hero-aside { display: flex; flex-direction: column; gap: 0.5rem; padding-top: 0.55rem; }
 .hero-actions { margin-top: clamp(1.5rem, 3vw, 2.5rem); }
 
-/* Partner colophon: pinned to the corner of the hero field, its right edge on
-   the page margin. The headline block keeps extra bottom padding so the two
-   never meet. The logo file is blue; brightness(0) holds the one-accent rule. */
-.hero-partner {
+/* The constellation. Three CubeSats over the map, drawn as a hidden-line
+   illustration in the same greys as the rules; js/hero-satellites.js sets the
+   tones from the tokens above. It sits under the type and takes no pointer,
+   so the readout keeps the field to itself. Nothing loads until the mesh is
+   decoded, and the canvas fades up once it has — an empty frame is never
+   shown, and a browser without WebGL2 shows nothing at all. */
+.hero-scene {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: var(--z-base);
+  display: block; pointer-events: none;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.hero-scene.is-ready { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .hero-scene { transition: none; } }
+/* A phone on its side leaves a field the headline already fills: no band for
+   the formation to fly in, so it neither draws nor loads (see the same
+   threshold in js/hero-satellites.js). */
+@media (max-height: 479px) { .hero-scene { display: none; } }
+
+/* Colophon: one row across the foot of the hero field, a credit on each
+   margin. The headline block keeps extra bottom padding so the two never
+   meet. Both logo files carry their own colour; brightness(0) flattens them
+   to ink, so the orange stays the one accent on the page. Logos are sized by
+   height, not width, so two different aspect ratios read as one weight. */
+.hero-colophon {
   position: absolute; inset-inline: 0; bottom: clamp(1.25rem, 3vh, 2.25rem);
-  display: flex; align-items: center; justify-content: flex-end;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-tight) var(--gutter);
+  flex-wrap: wrap;
+}
+.hero-credit {
+  display: flex; align-items: center;
   gap: clamp(0.75rem, 1.4vw, 1.25rem);
 }
-.hero-partner-logo {
-  width: clamp(8rem, 12vw, 11rem); height: auto;
+.hero-credit-logo {
+  height: clamp(1.75rem, 2.4vw, 2.5rem); width: auto;
   filter: brightness(0);
+}
+
+/* Cursor instrument. The hero field is read as one equirectangular projection
+   of the globe — left edge 180° W, top edge 90° N — so the pointer always
+   stands somewhere on Earth. The arrow is replaced by the instrument that says
+   where: a square on the point itself, and the readout hanging off it on the
+   same left edge, so the two read as one mark. script.js sets every position;
+   nothing here is announced or clickable. One fixed layer in viewport
+   coordinates, so the parts stay under the pointer while the page scrolls. */
+.hero-cursor {
+  position: fixed; inset: 0;
+  z-index: var(--z-sticky);
+  display: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms var(--ease-out);
+}
+.hero-cursor.is-on { opacity: 1; }
+
+.hero-cursor-point {
+  position: absolute; top: 0; left: 0;
+  width: 7px; height: 7px;
+  margin: -3px 0 0 -3px;
+  background: var(--accent);
+  translate: var(--x, 0px) var(--y, 0px);
+}
+/* Over a link the point is ringed rather than enlarged: the affordance the
+   arrow used to carry, without a block of orange sitting on the words. */
+.hero-cursor-ring {
+  position: absolute; top: 0; left: 0;
+  width: 21px; height: 21px;
+  margin: -10px 0 0 -10px;
+  border: 1px solid var(--accent);
+  translate: var(--x, 0px) var(--y, 0px);
+  scale: 0.45;
+  opacity: 0;
+  transition: scale 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+.hero-cursor.is-over-link .hero-cursor-ring { scale: 1; opacity: 1; }
+
+/* Hung a step below the point, on the point's own left edge. */
+.hero-readout {
+  position: absolute; top: 0; left: 0;
+  padding: 0.3rem 0.5rem 0.35rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  line-height: 1.3;
+  translate: var(--bx, 0px) var(--by, 0px);
+}
+.hero-readout span { display: block; }
+
+/* The native arrow only steps aside once the instrument is running. */
+.hero-type.is-tracked, .hero-type.is-tracked a { cursor: none; }
+
+@media (hover: hover) and (pointer: fine) { .hero-cursor { display: block; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-cursor, .hero-cursor-ring { transition: none; }
 }
 
 /* ── SECTION ─────────────────────────────────────────────────────────────── */
 .section { padding-block: var(--space-section); }
 .section-rule { border-top: 1px solid var(--rule); }
+
+/* An #anchor lands on the section box, a full --space-section above the rule
+   that opens the section; pull the anchor box down so the rule meets the nav. */
+.section[id] { scroll-margin-top: calc(var(--space-section) * -1); }
+/* The accent band opens at its own edge, so it keeps the plain nav offset. */
+.section[id].field-accent { scroll-margin-top: 0; }
 
 /* label in cols 1–2, heading in 3–10, lede in 3–8 on the next row */
 .section-head { row-gap: var(--space-tight); padding-top: var(--space-block); }
@@ -335,42 +425,24 @@ img, video, svg { display: block; max-width: 100%; }
 .ruled > li { border-bottom: 1px solid var(--rule); }
 
 /* A row whose ordinal or date sits in the margin column and whose text starts
-   at column 3. Shared by use cases, career values and the news index. */
+   at column 3. Shared by career values and the news index. */
 .row { padding-block: clamp(1.25rem, 2.4vw, 2rem); }
 .row > .label { grid-column: 1 / span 2; padding-top: 0.3rem; }
 .row > .row-text { grid-column: 3 / span 6; }
 .row .body { margin-top: 0.5rem; max-width: 62ch; }
 
 /* ── TECHNOLOGY ──────────────────────────────────────────────────────────── */
-.tech-layout { row-gap: var(--space-block); align-items: start; }
-.tech-cases { grid-column: 1 / span 8; }
-.tech-cases > li { grid-column: 1 / -1; }
-.tech-figure { grid-column: 9 / span 4; position: sticky; top: calc(var(--nav-h) + 2rem); }
+/* The use cases, split by who buys them: two half-width fields side by side,
+   each opened by the same 1px rule as every other block on the page. */
+.use-cases { row-gap: var(--space-block); }
+.use-case { border-top: 1px solid var(--rule); padding-top: var(--space-tight); }
+.use-case--government { grid-column: 3 / span 5; }
+.use-case--civilian   { grid-column: 8 / span 5; }
+.use-case .body { margin-top: 0.5rem; }
 
-.figure-frame { border: 1px solid var(--rule); }
-.figure-caption {
-  display: flex; justify-content: space-between; gap: 1rem;
-  padding: 0.6rem 0 0;
-}
-
-.dia-line   { stroke: var(--rule);   stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
-.dia-hair   { stroke: var(--rule);   stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
-.dia-dash   { stroke: var(--rule);   stroke-width: 1; fill: none; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
-.dia-accent { stroke: var(--accent); stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
-.dia-fill        { fill: var(--ink); }
-.dia-fill-accent { fill: var(--accent); }
-.dia-label        { font: 400 10px var(--font); fill: var(--ink-55); }
-.dia-label-accent { font: 400 10px var(--font); fill: var(--accent-ink); }
-
-.dia-ping { transform-box: fill-box; transform-origin: center; animation: ping 3.2s var(--ease-out) infinite; }
-.dia-ping--2 { animation-delay: 1.05s; }
-.dia-ping--3 { animation-delay: 2.1s; }
-@keyframes ping {
-  0%   { transform: scale(0.35); opacity: 0; }
-  12%  { opacity: 0.85; }
-  100% { transform: scale(1); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) { .dia-ping { animation: none; opacity: 0.5; } }
+/* Names only, one per line, set in the small role — an index, not prose. */
+.use-case-index { list-style: none; margin-top: var(--space-tight); }
+.use-case-index > li { padding-block: 0.12rem; }
 
 /* ── PARTNERS ────────────────────────────────────────────────────────────── */
 .partner-grid {
@@ -391,23 +463,15 @@ img, video, svg { display: block; max-width: 100%; }
 .partner-cell:hover img { filter: none; }
 
 /* ── CAREERS ─────────────────────────────────────────────────────────────── */
-/* Open positions hold the main field; how-we-work is the supporting column. */
+/* One intro column, then open positions across the full heading field. */
 .careers-layout { row-gap: var(--space-block); align-items: start; }
-.careers-jobs { grid-column: 1 / span 8; }
+.careers-jobs { grid-column: 1 / span 10; }
 .careers-jobs > li { grid-column: 1 / -1; }
-.careers-values { grid-column: 9 / span 4; }
-.value { padding-block: 0.9rem; }
-.value h3 { font-size: var(--t-body); font-weight: var(--w-bold); letter-spacing: var(--ls-normal); }
-.value p { font-size: var(--t-label); color: var(--ink-70); margin-top: 0.25rem; line-height: 1.5; }
+.careers-jobs .row > .row-text { grid-column: 3 / span 8; }
 
-.job-link {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
-  text-decoration: none;
-  transition: color 160ms linear;
-}
-.job-link .arrow { color: var(--accent); flex-shrink: 0; transition: transform 300ms var(--ease-out); }
+/* The whole title is the target; the rule above it carries the row. */
+.job-link { text-decoration: none; transition: color 160ms linear; }
 .job-link:hover { color: var(--accent-ink); }
-.job-link:hover .arrow { transform: translateX(6px); }
 
 .jobs-note { margin-top: 1.25rem; color: var(--ink-55); font-size: var(--t-label); }
 .jobs-note a { color: var(--accent-ink); text-underline-offset: 3px; }
@@ -592,10 +656,18 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
 @media (max-width: 1100px) {
   .col-wide { grid-column: 3 / span 9; }
   .partner-grid { grid-column: 3 / span 9; }
+  .careers-jobs { grid-column: 1 / span 11; }
+  .careers-jobs .row > .row-text { grid-column: 3 / span 9; }
 }
 
 @media (max-width: 860px) {
-  :root { --cols: 6; }
+  :root {
+    --cols: 6;
+    /* Display type is set for the column it has, and here the column is the
+       page. The scale rejoins the one above at 860px — 3rem is what the fluid
+       step below is worth there — so the size never jumps at the breakpoint. */
+    --t-display: clamp(2.5rem, 1.3rem + 6.2vw, 3rem);
+  }
 
   .nav-links { display: none; }
   .hamburger { display: flex; }
@@ -606,46 +678,39 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   /* The margin column folds above the content it annotates; everything else
      becomes a single full-width column. */
   .col-margin, .col-text, .col-wide,
-  .tech-cases, .tech-figure,
-  .careers-jobs, .careers-values,
+  .careers-jobs,
+  .use-case--government, .use-case--civilian,
   .contact-form, .contact-info,
   .partner-grid, .job-aside,
-  .hero-aside, .hero-headline, .hero-actions { grid-column: 1 / span 6; }
+  .hero-headline, .hero-actions { grid-column: 1 / span 6; }
 
-  .tech-figure, .job-aside { position: static; }
-  .tech-figure { order: -1; }
+  .job-aside { position: static; }
 
-  /* Hero, proportioned on the golden section. Height follows content rather
-     than the viewport, so there is no leftover space to distribute, and every
-     vertical interval is a step on a phi progression:
-       1rem -> 1.618 -> 2.618 -> 4.236   (x1, xphi, xphi^2, xphi^3)
-     The headline's own block is the major term, the strapline the minor. */
+  /* The hero holds the first screen here as it does on the desktop, but as one
+     centred column: the headline set in the middle of the field with the
+     constellation framing it, and the credits closing the fold. svh, so the
+     fold is the one the phone actually shows with its chrome out. */
   .hero-type {
     flex-direction: column; align-items: stretch;
-    min-height: 0;
-    padding-block: 2.618rem 4.236rem;
+    min-height: calc(100vh - var(--nav-h));
+    min-height: calc(100svh - var(--nav-h));
+    padding-block: 2.618rem 1.618rem;
   }
-  .hero-grid { display: flex; flex-direction: column; row-gap: 0; }
+  /* Auto margins on both sides: the block takes the middle of what the credits
+     leave, and its lower margin sets them on the fold line. */
+  .hero-grid {
+    display: flex; flex-direction: column; row-gap: 0;
+    margin-block: auto;
+  }
   .hero-headline { order: 1; }
-  .hero-aside {
-    order: 2;
-    margin-top: 2.618rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--rule);
-  }
-  .hero-actions { order: 3; margin-top: 1.618rem; }
+  .hero-actions { order: 2; margin-top: 1.618rem; }
 
-  /* No corner to pin to once the hero is a single column: the colophon
-     simply closes the block. */
-  .hero-partner {
-    position: static;
-    justify-content: flex-start;
-    margin-top: 2.618rem;
-  }
+  .hero-colophon { position: static; padding-top: 2.618rem; }
 
   .subgrid { display: block; }
   .row { display: grid; grid-template-columns: 1fr; row-gap: 0.4rem; }
-  .row > .label, .row > .row-text { grid-column: auto; padding-top: 0; }
+  .row > .label, .row > .row-text,
+  .careers-jobs .row > .row-text { grid-column: auto; padding-top: 0; }
 
   .partner-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
@@ -659,6 +724,21 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .footer-nav   { grid-column: 1 / span 3; }
   .footer-legal { grid-column: 4 / span 3; }
   .footer-end   { grid-column: 1 / span 6; }
+}
+
+/* Below this the two credits no longer fit the width as label-beside-mark, so
+   each credit turns the corner: mark under label, the two abreast. One band of
+   small print instead of a wrapped row. The marks are set on a common bottom
+   line, so a label running to two lines cannot break it. */
+@media (max-width: 640px) {
+  .hero-colophon {
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: 1.618rem var(--gutter);
+  }
+  .hero-credit { flex-direction: column; align-items: flex-start; gap: 0.618rem; }
+  .hero-credit .label { text-wrap: balance; }
+  .hero-credit-logo { height: 1.5rem; }
 }
 
 @media (max-width: 560px) {

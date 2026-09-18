@@ -187,13 +187,7 @@
           title.className = 'title';
           title.textContent = job.title;
 
-          var arrow = document.createElement('span');
-          arrow.className = 'arrow';
-          arrow.setAttribute('aria-hidden', 'true');
-          arrow.textContent = '\u2192';
-
           a.appendChild(title);
-          a.appendChild(arrow);
           text.appendChild(a);
           li.appendChild(where);
           li.appendChild(text);
@@ -204,8 +198,94 @@
       .catch(function () { /* the server-rendered list stays in place */ });
   }
 
+  /* ── HERO CURSOR ──────────────────────────────────────────────────────────
+     The hero field stands in for an equirectangular projection of the globe:
+     its left edge is 180° W, its top edge 90° N. Inside it the arrow is
+     replaced by an instrument — a point and its readout — that names the place
+     under the pointer. Mouse only: a finger has no hover position to report,
+     and none of this carries meaning. */
+
+  function initHeroCursor() {
+    var field = document.querySelector('.hero-type');
+    var cursor = document.getElementById('hero-cursor');
+    if (!field || !cursor) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    var lat = cursor.querySelector('[data-lat]');
+    var lon = cursor.querySelector('[data-lon]');
+    var box = cursor.querySelector('.hero-readout');
+    if (!lat || !lon || !box) return;
+
+    var GAP = 10;             // the readout clears the point, never covers it
+    var x = 0, y = 0, inside = false, queued = false;
+
+    // Fixed width of the integer part, so tabular figures never reflow the box.
+    function degrees(value, digits) {
+      var s = Math.abs(value).toFixed(4);
+      while (s.indexOf('.') < digits) s = '0' + s;
+      return s + '° ';
+    }
+
+    function clamp(n) { return n < 0 ? 0 : n > 1 ? 1 : n; }
+
+    function set(name, px) { cursor.style.setProperty(name, Math.round(px) + 'px'); }
+
+    function paint() {
+      queued = false;
+      var r = field.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+
+      var u = (x - r.left) / r.width;
+      var v = (y - r.top) / r.height;
+      // Scrolling moves the field out from under a resting pointer.
+      var over = inside && u >= 0 && u <= 1 && v >= 0 && v <= 1;
+      cursor.classList.toggle('is-on', over);
+      if (!over) return;
+
+      var lonDeg = clamp(u) * 360 - 180;
+      var latDeg = 90 - clamp(v) * 180;
+      lat.textContent = degrees(latDeg, 2) + (latDeg < 0 ? 'S' : 'N');
+      lon.textContent = degrees(lonDeg, 3) + (lonDeg < 0 ? 'W' : 'E');
+
+      set('--x', x); set('--y', y);
+
+      // The readout hangs below the point, its left edge on the point's, and
+      // flips at the viewport edge rather than let itself be clipped.
+      var w = box.offsetWidth, h = box.offsetHeight;
+      set('--bx', x + w > window.innerWidth ? x + 3 - w : x - 3);
+      set('--by', y + GAP + h > window.innerHeight ? y - GAP - h : y + GAP);
+    }
+
+    function queue() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(paint);
+    }
+
+    function track(e) {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      x = e.clientX; y = e.clientY;
+      inside = true;
+      cursor.classList.toggle('is-over-link', !!e.target.closest('a, button'));
+      queue();
+    }
+
+    field.addEventListener('pointerenter', track);
+    field.addEventListener('pointermove', track);
+
+    field.addEventListener('pointerleave', function () {
+      inside = false;
+      cursor.classList.remove('is-on');
+    });
+
+    window.addEventListener('scroll', function () { if (inside) queue(); }, { passive: true });
+
+    field.classList.add('is-tracked');
+  }
+
   function init() {
     initReveal();
+    initHeroCursor();
     initMenu();
     initScrollSpy();
     initForm();
