@@ -43,6 +43,32 @@
     setTimeout(function () { els.forEach(show); }, 2500);
   }
 
+  /* ── SMOOTH SCROLL ───────────────────────────────────────────────────────
+     `html.scroll-smooth` is off by default, so a hash landing from another
+     page and the back button both arrive instantly. Links that opt in switch
+     it on for the length of their own scroll and nothing else. */
+  function initSmoothScroll() {
+    var links = Array.prototype.slice.call(document.querySelectorAll('a[data-smooth][href^="#"]'));
+    if (!links.length || reduceMotion) return;
+
+    var root = document.documentElement;
+    var timer;
+
+    function off() {
+      clearTimeout(timer);
+      root.classList.remove('scroll-smooth');
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener('click', function () {
+        root.classList.add('scroll-smooth');
+        clearTimeout(timer);
+        timer = setTimeout(off, 1500);
+        if ('onscrollend' in window) window.addEventListener('scrollend', off, { once: true });
+      });
+    });
+  }
+
   /* ── MOBILE MENU ─────────────────────────────────────────────────────── */
   function initMenu() {
     var btn = document.getElementById('hamburger');
@@ -80,7 +106,7 @@
 
   /* ── SCROLL SPY ──────────────────────────────────────────────────────── */
   function initScrollSpy() {
-    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"], .mobile-menu a[href^="#"]'));
     if (!links.length || !('IntersectionObserver' in window)) return;
 
     var byId = {};
@@ -286,6 +312,7 @@
   function init() {
     initReveal();
     initHeroCursor();
+    initSmoothScroll();
     initMenu();
     initScrollSpy();
     initForm();
