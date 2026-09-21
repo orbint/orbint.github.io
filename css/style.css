@@ -201,14 +201,25 @@ img, video, svg { display: block; max-width: 100%; }
 }
 .label--muted  { color: var(--ink-55); }
 
-/* The kicker that opens a section is the one label with a job of its own. On
-   the wide grid its seat in the margin column says so; on a phone that column
-   folds above the heading and the seat says nothing, so the accent and the
-   middle weight carry it instead. One rule, both widths. */
+/* A label with a job of its own — the kicker that opens a section, and the
+   link back out of an interior page — is marked the way the hero readout is:
+   set on the accent, not in it. The block carries the mark at every width, so
+   the margin-column seat no longer has to. The box is one label line and its
+   padding and nothing else — it must never take the height of whatever sits
+   beside it, so it starts at the top of its row, hugs its text on both axes
+   and never wraps. One device, one height, everywhere it appears. */
 .section-head > .label,
-.page-head .col-margin > .label:first-child:not(.label--muted) {
-  color: var(--accent-ink);
-  font-weight: var(--w-medium);
+.page-head .col-margin > .label:first-child:not(.label--muted),
+.page-back {
+  align-self: start;
+  width: fit-content;
+  height: fit-content;
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.5rem 0.35rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .meta { font-size: var(--t-body); color: var(--ink-55); font-variant-numeric: tabular-nums; }
@@ -438,7 +449,6 @@ img, video, svg { display: block; max-width: 100%; }
 
 /* label in cols 1–2, heading in 3–10, lede in 3–8 on the next row */
 .section-head { row-gap: var(--space-tight); padding-top: var(--space-block); }
-.section-head > .label { padding-top: 0.6rem; }
 .section-body { margin-top: var(--space-block); }
 
 /* ── RULED LISTS ─────────────────────────────────────────────────────────── */
@@ -514,12 +524,12 @@ img, video, svg { display: block; max-width: 100%; }
 .field-accent { background: var(--accent); color: var(--on-accent); }
 .field-accent .lede { color: var(--on-accent); }
 .field-accent .label--muted { color: var(--on-accent-muted); }
-/* On the orange field the accent cannot mark anything, so the kicker is set
-   in ink; on the ink field the accent is the one colour that reads. */
-.field-accent .section-head > .label { color: var(--on-accent); }
+/* On the orange field the accent cannot mark anything, so the kicker box
+   inverts to ink; on the ink field the accent box already reads as it does on
+   paper and needs no rule of its own. */
+.field-accent .section-head > .label { background: var(--ink); color: var(--on-ink); }
 .field-ink { background: var(--ink); color: var(--on-ink); }
 .field-ink .label--muted { color: var(--on-ink-muted); }
-.field-ink .section-head > .label { color: var(--accent); }
 
 /* ── CONTACT ─────────────────────────────────────────────────────────────── */
 .contact-layout { row-gap: var(--space-block); align-items: start; }
@@ -593,15 +603,22 @@ img, video, svg { display: block; max-width: 100%; }
   padding-bottom: var(--space-block);
   border-bottom: 1px solid var(--rule);
 }
+/* The box above, carrying an arrow. It is the one kicker that is also a link,
+   so it needs the affordance the colour can no longer give: on hover it flips
+   to ink — the same inversion the orange field already makes — and the arrow
+   steps away from the words. */
 .page-back {
   display: inline-flex; align-items: center; gap: 0.5em;
-  text-decoration: none; color: var(--ink-55);
+  text-decoration: none;
+  margin-top: 0;
   margin-bottom: var(--space-block);
-  transition: color 160ms linear, gap 260ms var(--ease-out);
+  transition: background-color 160ms linear, color 160ms linear, gap 260ms var(--ease-out);
 }
-.page-back:hover { color: var(--ink); gap: 0.9em; }
+.page-back:hover { background: var(--ink); color: var(--on-ink); gap: 0.9em; }
 .page-head .grid { row-gap: var(--space-tight); }
-.page-head .label { padding-top: 0.6rem; }
+/* Only the labels seated in the page grid take the offset that lines them up
+   with the title; the back link sits above the grid and sets its own box. */
+.page-head .grid .label { padding-top: 0.6rem; }
 .page-title {
   font-size: var(--t-head);
   font-weight: var(--w-bold);
