@@ -641,7 +641,10 @@ img, video, svg { display: block; max-width: 100%; }
 }
 .copy figure { margin: 2rem 0; }
 .copy img { width: 100%; border: 1px solid var(--rule); }
-.copy .image-caption, .copy figcaption {
+/* Small print inside long-form copy. Scoped, because `.copy p` outranks a bare
+   role class on its own children and would otherwise pull these back to body
+   size and body colour. */
+.copy .image-caption, .copy figcaption, .copy .meta {
   margin-top: 0.6rem;
   font-size: var(--t-label); font-weight: var(--w-normal);
   color: var(--ink-55);
