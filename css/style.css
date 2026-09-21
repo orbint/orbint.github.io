@@ -120,7 +120,8 @@ body {
 :where(a) { color: inherit; }
 
 :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
-.field-accent :focus-visible, .field-ink :focus-visible { outline-color: currentColor; }
+.field-accent :focus-visible, .field-ink :focus-visible,
+.mobile-menu :focus-visible { outline-color: currentColor; }
 
 img, video, svg { display: block; max-width: 100%; }
 
@@ -305,10 +306,14 @@ img, video, svg { display: block; max-width: 100%; }
 .hamburger[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
 .hamburger[aria-expanded='true'] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
+/* Open, the menu is the orange field the contact section is: the accent
+   full-bleed under the nav, type and rules in ink. The accent cannot mark
+   anything on its own field, so the page you are on is ruled in ink. */
 .mobile-menu {
   position: fixed; inset: var(--nav-h) 0 0 0;
   z-index: var(--z-menu);
-  background: var(--paper);
+  background: var(--accent);
+  color: var(--on-accent);
   display: none; flex-direction: column;
   padding: var(--space-block) var(--margin);
   opacity: 0; pointer-events: none;
@@ -319,12 +324,12 @@ img, video, svg { display: block; max-width: 100%; }
   font-weight: var(--w-bold);
   font-variation-settings: 'wdth' var(--wd-narrow);
   letter-spacing: var(--ls-display);
-  text-decoration: none; color: var(--ink);
+  text-decoration: none; color: var(--on-accent);
   padding-block: 0.6rem;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--accent-rule);
 }
-.mobile-menu a:first-child { border-top: 1px solid var(--rule); }
-.mobile-menu a[aria-current='true'] { border-bottom-color: var(--accent); }
+.mobile-menu a:first-child { border-top: 1px solid var(--accent-rule); }
+.mobile-menu a[aria-current='true'] { border-bottom-color: var(--on-accent); }
 
 /* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero { padding-top: var(--nav-h); position: relative; }
