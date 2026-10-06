@@ -534,6 +534,25 @@ img, video, svg { display: block; max-width: 100%; }
 }
 .partner-cell:hover img { filter: none; }
 
+/* Heritage folds out beneath the partners: dated rows on the page grid, date
+   in the margin, text in the text field, the institution's mark beside it. */
+.heritage-toggle-wrap { margin-top: var(--space-tight); }
+.heritage-toggle-wrap[hidden], .heritage[hidden] { display: none; }
+.heritage { margin-top: var(--space-block); }
+.heritage-list { margin-top: var(--space-tight); }
+.heritage-row { align-items: center; }
+.heritage-row > .label { padding-top: 0; }
+.heritage-logos {
+  grid-column: 9 / span 4;
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center;
+}
+.heritage-logos img {
+  height: clamp(1.5rem, 2.2vw, 2rem); width: auto;
+  filter: grayscale(1);
+  transition: filter 220ms linear;
+}
+.heritage-logos a:hover img { filter: none; }
+
 /* ── CAREERS ─────────────────────────────────────────────────────────────── */
 /* One intro column, then open positions across the full heading field. */
 .careers-layout { row-gap: var(--space-block); align-items: start; }
@@ -814,6 +833,7 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .system-figs { grid-template-columns: 1fr; }
   .system-chain { grid-template-columns: 1fr; }
   .system-step::before { display: none; }
+  .heritage-logos { grid-column: auto; margin-top: 0.5rem; }
   .partner-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .news-row { display: grid; grid-template-columns: 1fr; row-gap: 0.9rem; }

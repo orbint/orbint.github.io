@@ -173,6 +173,47 @@
     <p class="lede col-text reveal" style="--reveal-delay:90ms">Co-developed and validated by the institutions that operate critical European infrastructure.</p>
   </div>
 
+  <!-- Heritage folds out under the partners caption. Without script it stays open;
+       script.js closes it and shows the button. -->
+  <div class="grid heritage-toggle-wrap" id="heritage-toggle-wrap" hidden>
+    <button class="link fold-toggle col-text" id="heritage-toggle" type="button" aria-controls="heritage" aria-expanded="false">
+      <span data-more>Our heritage</span><span data-less hidden>Hide heritage</span> <span aria-hidden="true">&darr;</span>
+    </button>
+  </div>
+
+  <div class="heritage" id="heritage" role="region" aria-labelledby="heritage-title">
+    <div class="grid heritage-intro">
+      <p class="body col-text" id="heritage-title">Built on Germany's largest university space mission.</p>
+    </div>
+
+    <ul class="ruled heritage-list" data-stagger="60">
+    <li class="row grid heritage-row reveal">
+      <span class="label label--muted">Origin</span>
+      <div class="row-text">
+        <h4 class="title">SeRANIS mission</h4>
+        <p class="body">Small-satellite mission of the SPACE research center at the University of the Bundeswehr Munich, funded by dtec.bw.</p>
+      </div>
+      <div class="heritage-logos"><a href="https://seranis.de" target="_blank" rel="noopener"><img src="assets/images/partners/trimmed/seranis.png" alt="SeRANIS" loading="lazy"></a><a href="https://www.unibw.de/satcom/" target="_blank" rel="noopener"><img src="assets/images/partners/trimmed/unibw.png" alt="University of the Bundeswehr Munich" loading="lazy"></a><a href="https://dtecbw.de/home" target="_blank" rel="noopener"><img src="assets/images/partners/trimmed/dtec.png" alt="dtec.bw" loading="lazy"></a></div>
+    </li>
+    <li class="row grid heritage-row reveal">
+      <span class="label label--muted">Mar 2025</span>
+      <div class="row-text">
+        <h4 class="title">Spin-off</h4>
+        <p class="body">Orbint is founded out of the SeRANIS mission to bring space-based SIGINT into operation.</p>
+      </div>
+      <div class="heritage-logos"><img src="assets/images/logo-black.png" alt="Orbint" loading="lazy"></div>
+    </li>
+    <li class="row grid heritage-row reveal">
+      <span class="label label--muted">Nov 2025</span>
+      <div class="row-text">
+        <h4 class="title">Rohde &amp; Schwarz invests</h4>
+        <p class="body">Strategic partner for signals intelligence across all domains, now including space.</p>
+      </div>
+      <div class="heritage-logos"><a href="https://www.rohde-schwarz.com" target="_blank" rel="noopener"><img src="assets/images/partners/trimmed/RS_Logo.png" alt="Rohde &amp; Schwarz" loading="lazy"></a></div>
+    </li>
+    </ul>
+  </div>
+
   <div class="grid section-body">
     <div class="partner-grid reveal">
       <a class="partner-cell" href="https://www.unibw.de/satcom/" target="_blank" rel="noopener" style="--logo-scale:1">
