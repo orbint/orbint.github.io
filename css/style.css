@@ -334,7 +334,7 @@ img, video, svg { display: block; max-width: 100%; }
 }
 
 .hero-grid { position: relative; z-index: 1; width: 100%; row-gap: var(--space-tight); }
-.hero-actions { margin-top: clamp(1.5rem, 3vw, 2.5rem); }
+.hero-actions { margin-top: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; align-items: center; }
 
 /* The constellation. Three CubeSats over the map, drawn as a hidden-line
    illustration in the same greys as the rules; js/hero-satellites.js sets the
@@ -726,7 +726,7 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .use-case--government, .use-case--civilian,
   .contact-form, .contact-info,
   .partner-grid, .job-aside,
-  .hero-headline, .hero-actions { grid-column: 1 / span 6; }
+  .hero-headline, .hero-lede, .hero-actions { grid-column: 1 / span 6; }
 
   .job-aside { position: static; }
 
@@ -747,7 +747,8 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
     margin-block: auto;
   }
   .hero-headline { order: 1; }
-  .hero-actions { order: 2; margin-top: 1.618rem; }
+  .hero-lede { order: 2; margin-top: 1rem; }
+  .hero-actions { order: 3; margin-top: 1.618rem; }
 
   .hero-colophon { position: static; padding-top: 2.618rem; }
 
