@@ -274,7 +274,7 @@ img, video, svg { display: block; max-width: 100%; }
 .nav-logo { display: inline-flex; align-items: center; text-decoration: none; }
 .nav-logo img { height: 2.375rem; width: auto; }
 
-.nav-links { display: flex; gap: clamp(1.25rem, 2.4vw, 2.25rem); margin-left: auto; }
+.nav-links { display: flex; align-items: center; gap: clamp(1.25rem, 2.4vw, 2.25rem); margin-left: auto; }
 .nav-links a {
   text-decoration: none; color: var(--ink);
   padding-block: 0.4rem;
@@ -283,6 +283,14 @@ img, video, svg { display: block; max-width: 100%; }
 }
 .nav-links a:hover { border-bottom-color: var(--rule); }
 .nav-links a[aria-current='true'], .nav-links a.is-active { border-bottom-color: var(--accent); }
+/* Contact is the one call to action in the bar, so it alone is set on the
+   accent; it inverts to ink on hover like the orange field's own button. */
+.nav-links .nav-cta {
+  background: var(--accent); color: var(--on-accent);
+  padding: 0.4rem 0.85rem; border-bottom: 0;
+  transition: background-color 160ms linear, color 160ms linear;
+}
+.nav-links .nav-cta:hover, .nav-links .nav-cta.is-active { background: var(--ink); color: var(--on-ink); }
 
 .hamburger {
   display: none; margin-left: auto;
