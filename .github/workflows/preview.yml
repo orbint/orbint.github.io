@@ -1,0 +1,40 @@
+# Puts every push to this branch on the internal preview,
+# http://web.workstation.internal, within a minute or two.
+#
+# GitLab is only reachable inside the company VPN, so this runs on a
+# self-hosted runner on the workstation (label `orbint-preview`) and does one
+# thing: ask GitLab to rebuild and redeploy the preview. It never checks out or
+# runs code from this repository -- the runner sits inside the internal
+# network and this repository is public.
+#
+# Setup and lockdown: orbint-software/web/README.md.
+name: Internal preview
+
+on:
+  push:
+    branches: [redesign/swiss-minimal]
+
+permissions: {}
+
+concurrency:
+  group: internal-preview
+  cancel-in-progress: true
+
+jobs:
+  trigger:
+    if: github.repository == 'orbint/orbint.github.io'
+    runs-on: [self-hosted, orbint-preview]
+    # Holds the trigger token. Its deployment-branch rule admits only
+    # redesign/swiss-minimal, so a run from any other ref never gets the secret.
+    environment: internal-preview
+    timeout-minutes: 2
+    steps:
+      - name: Trigger the preview deploy in GitLab
+        env:
+          TOKEN: ${{ secrets.GITLAB_WEB_PREVIEW_TRIGGER_TOKEN }}
+        run: |
+          curl --fail-with-body -sS -X POST \
+            --form "token=$TOKEN" \
+            --form "ref=main" \
+            --form "variables[WEB_PREVIEW]=true" \
+            "https://gitlab.orbint.de/api/v4/projects/Orbint%2Forbint-software/trigger/pipeline"
