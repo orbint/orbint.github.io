@@ -29,7 +29,8 @@
       <img src="assets/images/logo-black.png" alt="Orbint" width="70" height="38">
     </a>
     <div class="nav-links">
-      <a class="label" href="#technology">Technology</a>
+      <a class="label" href="#system">System</a>
+      <a class="label" href="#use-cases">Use Cases</a>
       <a class="label" href="#career">Career</a>
       <a class="label" href="#news">News</a>
       <a class="label" href="#contact">Contact</a>
@@ -41,7 +42,8 @@
 </nav>
 
 <div id="mobile-menu" class="mobile-menu" hidden>
-  <a href="#technology">Technology</a>
+  <a href="#system">System</a>
+  <a href="#use-cases">Use Cases</a>
   <a href="#career">Career</a>
   <a href="#news">News</a>
   <a href="#contact">Contact</a>
@@ -57,7 +59,7 @@
       <h1 class="display hero-headline col-wide reveal" style="--reveal-delay:80ms">Full-spectrum insight from orbit.</h1>
       <p class="lede hero-lede col-text reveal" style="--reveal-delay:130ms">A full-service signals intelligence system: satellites in formation that detect, identify and localize radio emitters anywhere on Earth, for military and civilian operators.</p>
       <div class="hero-actions col-text reveal" style="--reveal-delay:180ms">
-        <a class="link" data-smooth href="#technology">How it works <span aria-hidden="true">&darr;</span></a>
+        <a class="link" data-smooth href="#system">How it works <span aria-hidden="true">&darr;</span></a>
       </div>
     </div>
     <div class="hero-colophon wrap reveal" style="--reveal-delay:280ms">
@@ -85,37 +87,79 @@
   </div>
 </header>
 
-<!-- ── TECHNOLOGY ──────────────────────────────────────────────────────── -->
-<section class="section wrap" id="technology" aria-labelledby="technology-title">
+<!-- ── SYSTEM ──────────────────────────────────────────────────────────── -->
+<section class="section wrap" id="system" aria-labelledby="system-title">
   <div class="section-rule reveal-rule"></div>
   <div class="grid section-head">
-    <p class="label col-margin reveal">Technology</p>
-    <h2 class="heading col-wide reveal" id="technology-title">Signals intelligence for operators who cannot afford gaps.</h2>
+    <p class="label col-margin reveal">System</p>
+    <h2 class="heading col-wide reveal" id="system-title">One system, from the payload to the analyst.</h2>
+    <p class="lede col-text reveal" style="--reveal-delay:90ms">Hardware and software developed together: the satellites, the processing and the interface come from one team.</p>
+  </div>
+
+  <div class="grid section-body">
+    <div class="system-figs">
+      <figure class="system-fig reveal">
+        <img class="system-img" src="assets/images/system/system-single.png" width="2160" height="972" alt="A single satellite above Northern Europe with its field of view cast onto the Baltic Sea, centred on a transmitting emitter" loading="lazy">
+        <figcaption>
+          <h3 class="title">One satellite: detect and identify</h3>
+          <p class="body">A single pass captures what is transmitting and fingerprints the emitter.</p>
+        </figcaption>
+      </figure>
+      <figure class="system-fig reveal" style="--reveal-delay:90ms">
+        <img class="system-img" src="assets/images/system/system-formation.png" width="2160" height="972" alt="Three satellites in formation above Northern Europe, their lines of sight meeting on one emitter in the Baltic Sea" loading="lazy">
+        <figcaption>
+          <h3 class="title">Formation: localize</h3>
+          <p class="body">Three satellites in formation measure the same signal and pin the emitter down to its position.</p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <ol class="system-chain reveal">
+      <li class="system-step">
+        <h4 class="title">RF payload</h4>
+        <p class="body">Space-qualified receivers, built in-house.</p>
+      </li>
+      <li class="system-step">
+        <h4 class="title">Onboard processing</h4>
+        <p class="body">Signals are processed on the satellite.</p>
+      </li>
+      <li class="system-step">
+        <h4 class="title">Ground segment</h4>
+        <p class="body">Tasking, downlink and fusion in European infrastructure.</p>
+      </li>
+      <li class="system-step">
+        <h4 class="title">Analyst interface</h4>
+        <p class="body">Emitter maps, tracks and alerts.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ── USE CASES ───────────────────────────────────────────────────────── -->
+<section class="section wrap" id="use-cases" aria-labelledby="use-cases-title">
+  <div class="section-rule reveal-rule"></div>
+  <div class="grid section-head">
+    <p class="label col-margin reveal">Use Cases</p>
+    <h2 class="heading col-wide reveal" id="use-cases-title">Signals intelligence for operators who cannot afford gaps.</h2>
     <p class="lede col-text reveal" style="--reveal-delay:90ms">Orbint delivers the full stack, from space-qualified RF receivers to the analyst interface. No data leaves European infrastructure.</p>
   </div>
 
   <div class="grid section-body use-cases">
     <div class="use-case use-case--government reveal">
-      <h3 class="title">Governmental</h3>
-      <p class="body">For armed forces, intelligence services and security agencies operating under a national or European mandate.</p>
-      <ul class="label use-case-index">
-        <li>Electromagnetic order of battle</li>
-        <li>Radar and emitter identification</li>
-        <li>Maritime domain awareness</li>
-        <li>GNSS jamming and spoofing attribution</li>
-        <li>Crisis early warning</li>
-      </ul>
+      <p class="label label--muted">Governmental use case example</p>
+      <figure class="use-case-fig">
+        <img src="assets/images/use-cases/force-buildup.png" width="1600" height="1120" alt="Formations on a map of the Baltic region, their axes of advance drawn as arrows, with rings marking where activity has changed" loading="lazy">
+      </figure>
+      <h3 class="title">Force build-up quantification</h3>
+      <p class="body">Units on the move change how they transmit. Orbint registers those activity changes over days, cues further collection and quantifies the build-up, for armed forces, intelligence services and security agencies.</p>
     </div>
     <div class="use-case use-case--civilian reveal" style="--reveal-delay:90ms">
-      <h3 class="title">Civilian</h3>
-      <p class="body">For regulators, infrastructure operators and commercial analysts who need to know what is transmitting, and from where.</p>
-      <ul class="label use-case-index">
-        <li>Satellite interference geolocation</li>
-        <li>Spectrum regulation and licence enforcement</li>
-        <li>GNSS interference mapping for aviation</li>
-        <li>Illegal fishing and dark vessel detection</li>
-        <li>Critical infrastructure protection</li>
-      </ul>
+      <p class="label label--muted">Civilian use case example</p>
+      <figure class="use-case-fig">
+        <img src="assets/images/use-cases/dark-vessel.svg" width="1600" height="1120" alt="Ships on their shipping lanes, drawn in outline; two are filled in, one marked AIS spoofing and one marked AIS off" loading="lazy">
+      </figure>
+      <h3 class="title">Dark vessel detection</h3>
+      <p class="body">A ship switches off its AIS transponder, but its radar and radio keep transmitting. Orbint localizes those emissions within hours and cues patrols, for coast guards, fisheries and port authorities.</p>
     </div>
   </div>
 </section>
@@ -330,7 +374,8 @@
     </div>
     <nav class="footer-nav" aria-label="Sections">
       <p class="label label--muted">Site</p>
-      <a class="footer-link" href="#technology">Technology</a>
+      <a class="footer-link" href="#system">System</a>
+      <a class="footer-link" href="#use-cases">Use Cases</a>
       <a class="footer-link" href="#career">Career</a>
       <a class="footer-link" href="#news">News</a>
       <a class="footer-link" href="#contact">Contact</a>

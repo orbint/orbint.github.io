@@ -468,9 +468,45 @@ img, video, svg { display: block; max-width: 100%; }
 .use-case--civilian   { grid-column: 8 / span 5; }
 .use-case .body { margin-top: 0.5rem; }
 
-/* Names only, one per line, set in the small role — an index, not prose. */
-.use-case-index { list-style: none; margin-top: var(--space-tight); }
-.use-case-index > li { padding-block: 0.12rem; }
+/* The sector label heads each case, then a small picture of the scenario. */
+.use-case-fig { margin: var(--space-tight) 0; }
+.use-case-fig img { display: block; width: 100%; height: auto; }
+.use-case .title { margin-top: 0.4rem; }
+
+
+/* How the system works: a single satellite beside the formation, then the
+   chain from payload to analyst, bracketed into hardware and software. */
+.system-figs {
+  grid-column: 3 / span 10;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-block) var(--gutter);
+}
+.system-fig { border-top: 1px solid var(--rule); padding-top: var(--space-tight); }
+.system-fig .body { margin-top: 0.35rem; }
+.system-img { width: 100%; height: auto; margin-bottom: 1rem; }
+
+.system-chain {
+  grid-column: 3 / span 10;
+  list-style: none;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-tight) var(--gutter);
+  margin-top: var(--space-block);
+}
+/* A step is small print beside the pictures: the title drops to body size. */
+.system-step .title { font-size: var(--t-body); line-height: 1.35; }
+.system-step .body { margin-top: 0.2rem; }
+/* A hairline chevron in the gutter before each step; the first one leads in. */
+.system-step { position: relative; }
+.system-step::before {
+  content: ''; position: absolute; pointer-events: none;
+  left: calc(var(--gutter) / -2); top: 0.15em;
+  width: 0.5rem; height: 1.1rem;
+  transform: translateX(-50%);
+  background: var(--rule);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 18'%3E%3Cpath d='M.5.5 7.5 9 .5 17.5' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 18'%3E%3Cpath d='M.5.5 7.5 9 .5 17.5' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
 
 /* ── PARTNERS ────────────────────────────────────────────────────────────── */
 .partner-grid {
@@ -725,7 +761,7 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .careers-jobs,
   .use-case--government, .use-case--civilian,
   .contact-form, .contact-info,
-  .partner-grid, .job-aside,
+  .system-figs, .system-chain, .partner-grid, .job-aside,
   .hero-headline, .hero-lede, .hero-actions { grid-column: 1 / span 6; }
 
   .job-aside { position: static; }
@@ -757,6 +793,9 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .row > .label, .row > .row-text,
   .careers-jobs .row > .row-text { grid-column: auto; padding-top: 0; }
 
+  .system-figs { grid-template-columns: 1fr; }
+  .system-chain { grid-template-columns: 1fr; }
+  .system-step::before { display: none; }
   .partner-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .news-row { display: grid; grid-template-columns: 1fr; row-gap: 0.9rem; }
