@@ -203,24 +203,16 @@ img, video, svg { display: block; max-width: 100%; }
 .label--muted  { color: var(--ink-55); }
 
 /* A label with a job of its own — the kicker that opens a section, and the
-   link back out of an interior page — is marked the way the hero readout is:
-   set on the accent, not in it. The block carries the mark at every width, so
-   the margin-column seat no longer has to. The box is one label line and its
-   padding and nothing else — it must never take the height of whatever sits
-   beside it, so it starts at the top of its row, hugs its text on both axes
-   and never wraps. One device, one height, everywhere it appears. */
+   link back out of an interior page — sits in the margin column as plain
+   type, level with the first line of the heading beside it. The accent is
+   kept for what can be tapped. */
 .section-head > .label,
 .page-head .col-margin > .label:first-child:not(.label--muted),
 .page-back {
   align-self: start;
-  width: fit-content;
-  height: fit-content;
   margin-top: 0.3rem;
-  padding: 0.3rem 0.5rem 0.35rem;
   line-height: 1.3;
   white-space: nowrap;
-  background: var(--accent);
-  color: var(--on-accent);
 }
 
 .meta { font-size: var(--t-body); color: var(--ink-55); font-variant-numeric: tabular-nums; }
@@ -532,7 +524,6 @@ img, video, svg { display: block; max-width: 100%; }
 /* On the orange field the accent cannot mark anything, so the kicker box
    inverts to ink; on the ink field the accent box already reads as it does on
    paper and needs no rule of its own. */
-.field-accent .section-head > .label { background: var(--ink); color: var(--on-ink); }
 .field-ink { background: var(--ink); color: var(--on-ink); }
 .field-ink .label--muted { color: var(--on-ink-muted); }
 
@@ -617,9 +608,10 @@ img, video, svg { display: block; max-width: 100%; }
   text-decoration: none;
   margin-top: 0;
   margin-bottom: var(--space-block);
-  transition: background-color 160ms linear, color 160ms linear, gap 260ms var(--ease-out);
+  transition: gap 260ms var(--ease-out);
 }
-.page-back:hover { background: var(--ink); color: var(--on-ink); gap: 0.9em; }
+.page-back { padding-bottom: 0.2em; border-bottom: 1px solid var(--accent); width: fit-content; }
+.page-back:hover { gap: 0.9em; }
 .page-head .grid { row-gap: var(--space-tight); }
 /* Only the labels seated in the page grid take the offset that lines them up
    with the title; the back link sits above the grid and sets its own box. */
