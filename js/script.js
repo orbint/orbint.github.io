@@ -309,6 +309,44 @@
     field.classList.add('is-tracked');
   }
 
+  /* ── FOLDS ───────────────────────────────────────────────────────────────
+     Content that is complete without script and folded with it: the news
+     list opens on its latest three, the heritage block opens closed. */
+  function fold(btn, wrap, apply) {
+    var more = btn.querySelector('[data-more]');
+    var less = btn.querySelector('[data-less]');
+    function set(open) {
+      apply(open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.classList.toggle('is-open', open);
+      more.hidden = open;
+      less.hidden = !open;
+    }
+    set(false);
+    wrap.hidden = false;
+    btn.addEventListener('click', function () {
+      set(btn.getAttribute('aria-expanded') !== 'true');
+    });
+  }
+
+  function initFolds() {
+    var list = document.getElementById('news-list');
+    var newsBtn = document.getElementById('news-more');
+    if (list && newsBtn && list.children.length > 3) {
+      fold(newsBtn, document.getElementById('news-more-wrap'), function (open) {
+        list.classList.toggle('is-folded', !open);
+      });
+    }
+
+    var heritage = document.getElementById('heritage');
+    var heritageBtn = document.getElementById('heritage-toggle');
+    if (heritage && heritageBtn) {
+      fold(heritageBtn, document.getElementById('heritage-toggle-wrap'), function (open) {
+        heritage.hidden = !open;
+      });
+    }
+  }
+
   function init() {
     initReveal();
     initHeroCursor();
@@ -317,6 +355,7 @@
     initScrollSpy();
     initForm();
     initJobFeed();
+    initFolds();
   }
 
   if (document.readyState === 'loading') {

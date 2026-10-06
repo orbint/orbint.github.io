@@ -549,6 +549,16 @@ img, video, svg { display: block; max-width: 100%; }
 .jobs-note a { color: var(--accent-ink); text-underline-offset: 3px; }
 
 /* ── NEWS ────────────────────────────────────────────────────────────────── */
+.news-list.is-folded > li:nth-child(n + 4) { display: none; }
+.news-more-wrap { margin-top: var(--space-tight); }
+.news-more-wrap[hidden] { display: none; }
+.news-more, .fold-toggle {
+  font-family: inherit; color: inherit; background: none; cursor: pointer;
+  border: 0; border-bottom: 1px solid var(--accent); padding: 0 0 0.25em;
+  justify-self: start;
+}
+.news-more [aria-hidden], .fold-toggle [aria-hidden] { transition: transform 260ms var(--ease-out); }
+.news-more.is-open [aria-hidden], .fold-toggle.is-open [aria-hidden] { transform: rotate(180deg); }
 .news-row { text-decoration: none; transition: background 220ms linear; align-items: start; }
 .news-row:hover { background: #F5F5F5; }
 .news-when { grid-column: 1 / span 2; display: flex; flex-direction: column; gap: 0.3rem; padding-top: 0.3rem; }
