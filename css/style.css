@@ -878,3 +878,26 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   body { color: #000; background: #fff; }
   .field-accent, .field-ink { background: #fff; color: #000; }
 }
+
+/* ── TRIAL: orbint.de dark palette (uncommitted) ─────────────────────────── */
+:root {
+  --paper:      #121110;
+  --ink:        #E6E4E2;
+  --ink-70:     #B0AAA5;   /* 8.2:1 */
+  --ink-55:     #8A847E;   /* 5.1:1 */
+  --rule:       #302C28;
+  --accent-ink: #F2641C;   /* 5.9:1 */
+  --on-ink:     #FFFFFF;
+  --scene-ink:  #E6E4E2;   /* hero satellites; ink-55 is too dim on dark */
+}
+h1, h2, h3, .display, .title { color: #FFFFFF; }
+.field-ink { background: #1C1A18; }
+.skip-link, .nav-links .nav-cta:hover, .nav-links .nav-cta.is-active { color: var(--paper); }
+/* Black line art and logos flip to white on the dark field */
+.system-img, .use-case-fig img { filter: invert(1); }
+.hero-credit-logo { filter: brightness(0) invert(1); }
+.partner-cell img, .heritage-logos img:not([src*="logo-white"]) { filter: brightness(0) invert(1); opacity: 0.75; }
+.news-row:hover, .news-figure { background: #1C1A18; }
+.field-accent :is(h1, h2, h3, .display, .title) { color: var(--on-accent); }
+.section-head > .label.col-margin { color: var(--accent); }
+.field-accent .section-head > .label.col-margin { color: var(--on-accent); }
