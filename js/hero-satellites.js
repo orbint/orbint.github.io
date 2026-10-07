@@ -314,7 +314,7 @@ function start(canvas, mesh, reduceMotion) {
   const styles = getComputedStyle(document.documentElement);
   const paper = token(styles, '--paper', '#FFFFFF');
   const rule = token(styles, '--rule', '#C4C4C4');
-  const ink55 = token(styles, '--ink-55', '#6E6E6E');
+  const ink55 = token(styles, styles.getPropertyValue('--scene-ink').trim() ? '--scene-ink' : '--ink-55', '#6E6E6E');
 
   const fill = program(gl, FRAG_FILL, ['uModel', 'uViewProj', 'uLight', 'uEye', 'uLit', 'uShade', 'uSteps']);
   const line = program(gl, FRAG_LINE, ['uModel', 'uViewProj', 'uInk']);
