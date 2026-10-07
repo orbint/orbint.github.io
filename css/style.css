@@ -24,13 +24,13 @@
 /* ── TOKENS ──────────────────────────────────────────────────────────────── */
 :root {
   /* Fields. Chroma-0 neutrals; the orange is the only hue. */
-  --paper:       #FFFFFF;
+  --paper:       #F5F5F5;
   --ink:         #101010;
-  --ink-70:      #4A4A4A;   /* 8.9:1 on paper */
-  --ink-55:      #6E6E6E;   /* 5.1:1 on paper — smallest safe grey */
+  --ink-70:      #4A4A4A;   /* 8.1:1 on paper */
+  --ink-55:      #6E6E6E;   /* 4.7:1 on paper — smallest safe grey */
   --rule:        #C4C4C4;   /* the only rule colour in the system */
   --accent:      #F2641C;
-  --accent-ink:  #C4490A;   /* 4.9:1 on paper — orange that may carry small text */
+  --accent-ink:  #C4490A;   /* 4.47:1 on paper — orange that may carry small text */
 
   /* On the orange field type is ink; orange/white is only 3.2:1. */
   --on-accent:       #101010;
