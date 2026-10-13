@@ -180,56 +180,60 @@
     });
   }
 
-  /* ── JOB FEED ────────────────────────────────────────────────────────── */
-  function initJobFeed() {
-    var feed = document.getElementById('job-feed');
-    if (!feed) return;
+  /* ── BOOT SCREEN ─────────────────────────────────────────────────────────
+     The head script shows it and lifts it; this only runs the count up to
+     the hold, walks the readout in onto the fix the map then lights first,
+     and lifts it early for anyone who clicks, types or scrolls. */
+  var FIX = { lat: 57.6, lon: 19.4 };   // the Baltic emitter, as in js/hero-map.js
 
-    var slugs = (feed.getAttribute('data-slugs') || '').split(',').filter(Boolean);
-    if (!slugs.length) return;
+  function initIntro() {
+    var root = document.documentElement;
+    var intro = document.getElementById('intro');
+    if (!intro || !root.classList.contains('has-intro') || root.classList.contains('intro-lifted')) return;
 
-    Promise.all(slugs.map(function (slug) {
-      return fetch('jobs/posts/' + slug + '.json')
-        .then(function (r) { if (!r.ok) throw new Error(slug); return r.json(); })
-        .then(function (job) { job.slug = slug; return job; });
-    }))
-      .then(function (jobs) {
-        var rows = jobs.map(function (job) {
-          var li = document.createElement('li');
-          li.className = 'row subgrid';
+    var count = intro.querySelector('[data-count]');
+    var lat = intro.querySelector('[data-lat]');
+    var lon = intro.querySelector('[data-lon]');
+    var hold = parseFloat(getComputedStyle(root).getPropertyValue('--intro-hold')) || 1500;
 
-          var where = document.createElement('span');
-          where.className = 'label label--muted';
-          where.textContent = job.location || '';
+    function lift() {
+      root.classList.add('intro-lifted');
+      ['pointerdown', 'keydown', 'wheel', 'touchmove'].forEach(function (type) {
+        window.removeEventListener(type, lift);
+      });
+    }
+    ['pointerdown', 'keydown', 'wheel', 'touchmove'].forEach(function (type) {
+      window.addEventListener(type, lift, { passive: true });
+    });
 
-          var text = document.createElement('div');
-          text.className = 'row-text';
+    // The page's own clock, which the head script's timer also runs on.
+    function tick() {
+      var t = Math.min(1, performance.now() / hold);
+      var e = 1 - Math.pow(1 - t, 3);
+      // The search narrows as the count climbs: wide at first, then on it.
+      var spread = (1 - e) * 40;
+      var jitter = function () { return (Math.random() * 2 - 1) * spread; };
+      if (count) count.textContent = String(Math.round(e * 100));
+      if (lat) lat.textContent = degrees(FIX.lat + jitter() / 2, 2) + 'N';
+      if (lon) lon.textContent = degrees(FIX.lon + jitter(), 3) + 'E';
+      if (t < 1 && !root.classList.contains('intro-lifted')) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
 
-          var a = document.createElement('a');
-          a.className = 'job-link';
-          a.href = 'jobs/job.html?slug=' + encodeURIComponent(job.slug);
-
-          var title = document.createElement('span');
-          title.className = 'title';
-          title.textContent = job.title;
-
-          a.appendChild(title);
-          text.appendChild(a);
-          li.appendChild(where);
-          li.appendChild(text);
-          return li;
-        });
-        feed.replaceChildren.apply(feed, rows);
-      })
-      .catch(function () { /* the server-rendered list stays in place */ });
+  // Fixed width of the integer part, so tabular figures never reflow the box.
+  function degrees(value, digits) {
+    var s = Math.abs(value).toFixed(4);
+    while (s.indexOf('.') < digits) s = '0' + s;
+    return s + '° ';
   }
 
   /* ── HERO CURSOR ──────────────────────────────────────────────────────────
-     The hero field stands in for an equirectangular projection of the globe:
-     its left edge is 180° W, its top edge 90° N. Inside it the arrow is
-     replaced by an instrument — a point and its readout — that names the place
-     under the pointer. Mouse only: a finger has no hover position to report,
-     and none of this carries meaning. */
+     The hero field stands in for an equirectangular projection of the globe,
+     which js/hero-map.js draws and publishes as field.heroMap. Inside it the
+     arrow is replaced by an instrument — a point and its readout — that names
+     the place under the pointer. Mouse only: a finger has no hover position
+     to report, and none of this carries meaning. */
 
   function initHeroCursor() {
     var field = document.querySelector('.hero-type');
@@ -244,13 +248,6 @@
 
     var GAP = 10;             // the readout clears the point, never covers it
     var x = 0, y = 0, inside = false, queued = false;
-
-    // Fixed width of the integer part, so tabular figures never reflow the box.
-    function degrees(value, digits) {
-      var s = Math.abs(value).toFixed(4);
-      while (s.indexOf('.') < digits) s = '0' + s;
-      return s + '° ';
-    }
 
     function clamp(n) { return n < 0 ? 0 : n > 1 ? 1 : n; }
 
@@ -268,8 +265,16 @@
       cursor.classList.toggle('is-on', over);
       if (!over) return;
 
-      var lonDeg = clamp(u) * 360 - 180;
-      var latDeg = 90 - clamp(v) * 180;
+      // The map draws its own projection and publishes it; without the map
+      // the field is the whole globe, edge to edge.
+      var latDeg, lonDeg;
+      if (field.heroMap) {
+        var fix = field.heroMap.locate(x - r.left, y - r.top);
+        latDeg = fix.lat; lonDeg = fix.lon;
+      } else {
+        lonDeg = clamp(u) * 360 - 180;
+        latDeg = 90 - clamp(v) * 180;
+      }
       lat.textContent = degrees(latDeg, 2) + (latDeg < 0 ? 'S' : 'N');
       lon.textContent = degrees(lonDeg, 3) + (lonDeg < 0 ? 'W' : 'E');
 
@@ -311,7 +316,8 @@
 
   /* ── FOLDS ───────────────────────────────────────────────────────────────
      Content that is complete without script and folded with it: the news
-     list opens on its latest three, the heritage block opens closed. */
+     list opens on its latest three, and the heritage timeline waits folded
+     under its line until that line is well into view, then unfolds once. */
   function fold(btn, wrap, apply) {
     var more = btn.querySelector('[data-more]');
     var less = btn.querySelector('[data-less]');
@@ -339,22 +345,54 @@
     }
 
     var heritage = document.getElementById('heritage');
-    var heritageBtn = document.getElementById('heritage-toggle');
-    if (heritage && heritageBtn) {
-      fold(heritageBtn, document.getElementById('heritage-toggle-wrap'), function (open) {
-        heritage.hidden = !open;
+    var line = heritage && heritage.querySelector('.heritage-intro');
+    if (!heritage || !line) return;
+    function open() { heritage.classList.add('is-open'); }
+    if (reduceMotion || !('IntersectionObserver' in window)) { open(); return; }
+    var obs = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      open();
+      obs.disconnect();
+    }, { rootMargin: '0px 0px -30% 0px' });
+    obs.observe(line);
+  }
+
+  /* ── SYSTEM STEPS ─────────────────────────────────────────────────────────
+     Each step in the chain is a mark and a name; its sentence opens in a box
+     on a click or tap. Hover and focus open it too, in the stylesheet. One
+     box at a time, and Escape or a click elsewhere closes it. */
+  function initSystemSteps() {
+    var heads = Array.prototype.slice.call(document.querySelectorAll('.system-step-head'));
+    if (!heads.length) return;
+
+    function set(head, open) { head.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    function closeAll(except) { heads.forEach(function (h) { if (h !== except) set(h, false); }); }
+
+    heads.forEach(function (head) {
+      head.addEventListener('click', function () {
+        var open = head.getAttribute('aria-expanded') !== 'true';
+        closeAll(head);
+        set(head, open);
       });
-    }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.system-step')) closeAll();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAll();
+    });
   }
 
   function init() {
+    initIntro();
+    initSystemSteps();
     initReveal();
     initHeroCursor();
     initSmoothScroll();
     initMenu();
     initScrollSpy();
     initForm();
-    initJobFeed();
     initFolds();
   }
 

@@ -81,6 +81,7 @@
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
   --dur: 520ms;
 
   /* Stacking */
@@ -344,6 +345,51 @@ img, video, svg { display: block; max-width: 100%; }
 .hero-grid { position: relative; z-index: 1; width: 100%; row-gap: var(--space-tight); }
 .hero-actions { margin-top: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; align-items: center; }
 
+/* The map. The field's projection drawn as a grid of small squares in a grey
+   lighter than the rules, under everything else in the hero; js/hero-map.js
+   lays it down behind a scan on load. */
+.hero-map {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: var(--z-base);
+  display: block; pointer-events: none;
+}
+
+/* Emitters on the map: a point in the accent, and the square the cursor
+   rings a link with, opening off it at intervals. They are placed by
+   js/hero-map.js, and arrive one after the other once the scan has passed. */
+.hero-pings { position: absolute; inset: 0; z-index: var(--z-base); pointer-events: none; }
+.hero-ping {
+  position: absolute;
+  width: 7px; height: 7px;
+  margin: -3px 0 0 -3px;
+  background: var(--accent);
+  opacity: 0; scale: 0;
+  transition: opacity 200ms linear, scale 420ms var(--ease-out);
+  transition-delay: calc(var(--n, 0) * 260ms);
+}
+.hero-ping[hidden] { display: none; }
+.hero-ping::after {
+  content: ''; position: absolute;
+  inset: -7px;
+  border: 1px solid var(--accent);
+  opacity: 0;
+}
+.is-scanned .hero-ping { opacity: 1; scale: 1; }
+.is-scanned .hero-ping::after {
+  animation: hero-ping 3.6s var(--ease-out) infinite;
+  animation-delay: calc(var(--n, 0) * 260ms + 200ms);
+}
+@keyframes hero-ping {
+  0%   { opacity: 1; scale: 0.4; }
+  45%  { opacity: 0; scale: 2.6; }
+  100% { opacity: 0; scale: 2.6; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-ping { transition: none; }
+  .is-scanned .hero-ping::after { animation: none; }
+}
+
 /* The constellation. Three CubeSats over the map, drawn as a hidden-line
    illustration in the same greys as the rules; js/hero-satellites.js sets the
    tones from the tokens above. It sits under the type and takes no pointer,
@@ -365,11 +411,13 @@ img, video, svg { display: block; max-width: 100%; }
    threshold in js/hero-satellites.js). */
 @media (max-height: 479px) { .hero-scene { display: none; } }
 
-/* Colophon: one row across the foot of the hero field, a credit on each
-   margin. The headline block keeps extra bottom padding so the two never
-   meet. Both logo files carry their own colour; brightness(0) flattens them
-   to ink, so the orange stays the one accent on the page. Logos are sized by
-   height, not width, so two different aspect ratios read as one weight. */
+/* Colophon: one row across the foot of the hero field, a credit at each
+   margin and one between. The headline block keeps extra bottom padding so
+   the two never meet. Every logo file carries its own colour; brightness(0)
+   flattens them to ink, so the orange stays the one accent on the page. Logos
+   are sized by height, not width, so different aspect ratios read as one
+   weight — SeRANIS a step taller, as its wordmark shares the height with a
+   tagline. */
 .hero-colophon {
   position: absolute; inset-inline: 0; bottom: clamp(1.25rem, 3vh, 2.25rem);
   display: flex; align-items: center; justify-content: space-between;
@@ -381,9 +429,73 @@ img, video, svg { display: block; max-width: 100%; }
   gap: clamp(0.75rem, 1.4vw, 1.25rem);
 }
 .hero-credit-logo {
-  height: clamp(1.75rem, 2.4vw, 2.5rem); width: auto;
+  --logo-h: clamp(1.75rem, 2.4vw, 2.5rem);
+  height: var(--logo-h); width: auto;
   filter: brightness(0);
 }
+.hero-credit-logo--seranis { height: calc(var(--logo-h) * 1.25); }
+
+/* ── BOOT SCREEN ─────────────────────────────────────────────────────────── */
+/* The ink field, over everything, for the length of --intro-hold: the steps
+   the system runs, a count, and a readout walking in on a fix. Then it is
+   wiped up off the hero, and the hero arrives under it. Only ever shown while
+   <html> carries .has-intro, which the head script sets once a visit. The count
+   is the one size outside the scale: it is the screen, not type on it. */
+.intro { display: none; }
+html.has-intro .intro {
+  display: block;
+  position: fixed; inset: 0;
+  z-index: calc(var(--z-menu) + 1);
+  background: var(--ink); color: var(--on-ink);
+  clip-path: inset(0 0 0 0);
+}
+html.intro-lifted .intro {
+  animation: intro-lift 760ms var(--ease-in-out) forwards;
+}
+@keyframes intro-lift {
+  to { clip-path: inset(0 0 100% 0); visibility: hidden; }
+}
+
+.intro-inner {
+  height: 100%;
+  grid-template-rows: auto 1fr auto;
+  padding-block: calc(var(--nav-h) + var(--space-tight)) var(--margin);
+}
+.intro-mark { grid-row: 1; color: var(--accent); }
+.intro-steps { grid-row: 1; list-style: none; }
+.intro-steps li {
+  display: flex; gap: 1.25rem;
+  opacity: 0;
+  animation: intro-step 1ms linear forwards;
+  animation-delay: calc(var(--intro-hold, 1500ms) * var(--i) / 6);
+}
+.intro-steps li:nth-child(1) { --i: 0; }
+.intro-steps li:nth-child(2) { --i: 1; }
+.intro-steps li:nth-child(3) { --i: 2; }
+.intro-steps li:nth-child(4) { --i: 3; }
+.intro-steps li:nth-child(5) { --i: 4; }
+.intro-steps span { color: var(--on-ink-muted); font-variant-numeric: tabular-nums; }
+.intro-steps li:last-child { color: var(--accent); }
+@keyframes intro-step { to { opacity: 1; } }
+
+.intro-count {
+  grid-row: 3; align-self: end;
+  font-size: calc(var(--t-display) * 2.618);
+  font-weight: var(--w-bold);
+  font-variation-settings: 'wdth' var(--wd-narrow);
+  letter-spacing: var(--ls-display);
+  line-height: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+.intro-unit { color: var(--accent); }
+.intro-fix {
+  grid-row: 3; align-self: end;
+  display: flex; flex-direction: column;
+  color: var(--on-ink-muted);
+}
+
+/* The hero waits under the boot screen and arrives as it lifts. */
+html.has-intro:not(.intro-lifted) .hero .reveal.is-in { opacity: 0; transform: translateY(14px); }
 
 /* Cursor instrument. The hero field is read as one equirectangular projection
    of the globe — left edge 180° W, top edge 90° N — so the pointer always
@@ -500,14 +612,78 @@ img, video, svg { display: block; max-width: 100%; }
   gap: var(--space-tight) var(--gutter);
   margin-top: var(--space-block);
 }
-/* A step is small print beside the pictures: the title drops to body size. */
-.system-step .title { font-size: var(--t-body); line-height: 1.35; }
-.system-step .body { margin-top: 0.2rem; }
-/* A hairline chevron in the gutter before each step; the first one leads in. */
+/* A step is a mark and a name. The mark is drawn in the rules' own 1px line,
+   at any size; the name drops to body size. The sentence behind it waits in
+   a box (below). */
 .system-step { position: relative; }
+.system-step-head {
+  display: grid; grid-template-columns: auto auto;
+  justify-content: start; align-items: center;
+  gap: 0.9rem 0.6rem;
+  width: 100%;
+  font: inherit; color: inherit; text-align: left;
+  background: none; border: 0; padding: 0;
+}
+.system-icon {
+  grid-column: 1 / -1;
+  width: 3.5rem; height: 3.5rem;
+  fill: none; stroke: currentColor; stroke-width: 1;
+  stroke-linecap: square;
+}
+.system-icon * { vector-effect: non-scaling-stroke; }
+.system-step .title { font-size: var(--t-body); line-height: 1.35; }
+
+/* With script the sentence is folded into a box that opens off the name: on
+   hover and focus where there is a pointer, on a tap everywhere. The box is
+   the ink field, set like the hero's readout. A small plus beside the name
+   says there is more, and turns to a cross while the box is open. Without
+   script there is nothing to open, and the sentence is simply shown. */
+.system-tip { margin-top: 0.4rem; font-size: var(--t-label); line-height: 1.45; color: var(--ink-70); }
+
+html.js .system-step-head { cursor: pointer; }
+.system-more { display: none; }
+html.js .system-more {
+  display: block; position: relative;
+  width: 0.6rem; height: 0.6rem;
+  transition: rotate 260ms var(--ease-out);
+}
+html.js .system-more::before, html.js .system-more::after {
+  content: ''; position: absolute; background: var(--accent);
+}
+html.js .system-more::before { left: 0; right: 0; top: 50%; height: 1px; }
+html.js .system-more::after { top: 0; bottom: 0; left: 50%; width: 1px; }
+html.js .system-step-head[aria-expanded='true'] .system-more { rotate: 45deg; }
+
+html.js .system-tip {
+  position: absolute; left: 0; top: 100%;
+  z-index: 2;
+  width: max(100%, 15rem);
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.9rem 0.75rem;
+  background: var(--ink); color: var(--on-ink);
+  opacity: 0; translate: 0 -0.35rem;
+  visibility: hidden;
+  transition: opacity 180ms var(--ease-out), translate 260ms var(--ease-out), visibility 0s linear 260ms;
+}
+html.js .system-step-head[aria-expanded='true'] + .system-tip,
+html.js .system-step-head:focus-visible + .system-tip {
+  opacity: 1; translate: 0 0; visibility: visible;
+  transition-delay: 0s;
+}
+@media (hover: hover) {
+  html.js .system-step:hover .system-tip { opacity: 1; translate: 0 0; visibility: visible; transition-delay: 0s; }
+  html.js .system-step:hover .system-icon { color: var(--accent-ink); }
+}
+.system-icon { transition: color 160ms linear; }
+@media (prefers-reduced-motion: reduce) {
+  html.js .system-tip, html.js .system-more { transition: none; }
+}
+
+/* A hairline chevron in the gutter before each step, level with the marks;
+   the first one leads in. */
 .system-step::before {
   content: ''; position: absolute; pointer-events: none;
-  left: calc(var(--gutter) / -2); top: 0.15em;
+  left: calc(var(--gutter) / -2); top: calc(1.75rem - 0.55rem);
   width: 0.5rem; height: 1.1rem;
   transform: translateX(-50%);
   background: var(--rule);
@@ -534,50 +710,100 @@ img, video, svg { display: block; max-width: 100%; }
 }
 .partner-cell:hover img { filter: none; }
 
-/* Heritage folds out beneath the partners: dated rows on the page grid, date
-   in the margin, text in the text field, the institution's mark beside it. */
-.heritage-toggle-wrap { margin-top: var(--space-tight); }
-.heritage-toggle-wrap[hidden], .heritage[hidden] { display: none; }
-.heritage { margin-top: var(--space-block); }
-.heritage-list { margin-top: var(--space-tight); }
+/* Heritage: where Orbint comes from, under the partners. A line of its own
+   with the kicker in the margin, then dated rows on the page grid — date in
+   the margin, text in the text field, the institution's mark beside it.
+
+   With script the rows start folded and unfold beneath the line as it comes
+   into view (script.js adds .is-open); the rows then arrive one by one as the
+   fold opens past them. Without script, or with less motion, it is open. */
+.heritage { margin-top: var(--space-section); }
+.heritage-intro { row-gap: var(--space-tight); }
+.heritage-intro > .label { align-self: start; margin-top: 0.3rem; line-height: 1.3; }
+.heritage-list { margin-top: var(--space-block); }
+
+html.js .heritage-fold {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 1100ms var(--ease-in-out);
+}
+html.js .heritage.is-open .heritage-fold { grid-template-rows: 1fr; }
+html.js .heritage-fold-inner { overflow: hidden; min-height: 0; }
+@media (prefers-reduced-motion: reduce) {
+  html.js .heritage-fold { grid-template-rows: 1fr; transition: none; }
+}
+
 .heritage-row { align-items: center; }
 .heritage-row > .label { padding-top: 0; }
 .heritage-logos {
   grid-column: 9 / span 4;
   display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center;
 }
+/* The partners' marks have already been shown in full above; here every
+   mark is set back to the same trace of itself, Orbint's own included, and
+   the linked ones come forward under the pointer. */
 .heritage-logos img {
   height: clamp(1.5rem, 2.2vw, 2rem); width: auto;
   filter: grayscale(1);
-  transition: filter 220ms linear;
+  opacity: 0.35;
+  transition: filter 220ms linear, opacity 220ms linear;
 }
-.heritage-logos a:hover img { filter: none; }
+.heritage-logos a:hover img { filter: none; opacity: 1; }
 
 /* ── CAREERS ─────────────────────────────────────────────────────────────── */
-/* One intro column, then open positions across the full heading field. */
-.careers-layout { row-gap: var(--space-block); align-items: start; }
-.careers-jobs { grid-column: 1 / span 10; }
-.careers-jobs > li { grid-column: 1 / -1; }
-.careers-jobs .row > .row-text { grid-column: 3 / span 8; }
+/* The section head, then the way through to the career site and a line for
+   those who would rather write. */
+.careers-layout { row-gap: var(--space-tight); align-items: start; }
 
-/* The whole title is the target; the rule above it carries the row. */
-.job-link { text-decoration: none; transition: color 160ms linear; }
-.job-link:hover { color: var(--accent-ink); }
+/* The way through to career.orbint.de: a panel on the ink field across the
+   heading field, the address as its kicker, a heading-size line, and an arrow
+   drawn in the same 1px line as the system marks. Under the pointer the
+   panel turns to the accent and the arrow steps out towards where it leads. */
+.career-cta {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--gutter);
+  padding: clamp(1.5rem, 3.2vw, 2.75rem) clamp(1.25rem, 3.2vw, 2.75rem);
+  background: var(--ink); color: var(--on-ink);
+  text-decoration: none;
+  transition: background-color 200ms linear, color 200ms linear;
+}
+.career-cta-text { display: flex; flex-direction: column; gap: 0.6rem; }
+.career-cta-kicker { color: var(--accent); transition: color 200ms linear; }
+.career-cta-title {
+  font-size: var(--t-head);
+  font-weight: var(--w-bold);
+  font-variation-settings: 'wdth' var(--wd-narrow);
+  letter-spacing: var(--ls-display);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.career-cta-sub { font-size: var(--t-body); color: var(--on-ink-muted); transition: color 200ms linear; }
+.career-cta-arrow {
+  flex: none;
+  width: clamp(2.5rem, 5vw, 4rem); height: clamp(2.5rem, 5vw, 4rem);
+  fill: none; stroke: var(--accent); stroke-width: 1; stroke-linecap: square;
+  transition: translate 320ms var(--ease-out), stroke 200ms linear;
+}
+.career-cta-arrow * { vector-effect: non-scaling-stroke; }
+.career-cta:hover { background: var(--accent); color: var(--on-accent); }
+.career-cta:hover .career-cta-kicker, .career-cta:hover .career-cta-sub { color: var(--on-accent-muted); }
+.career-cta:hover .career-cta-arrow { stroke: var(--on-accent); translate: 0.4rem -0.4rem; }
+.career-cta:focus-visible { outline-color: var(--accent-ink); }
+@media (prefers-reduced-motion: reduce) { .career-cta-arrow { transition: none; } }
 
-.jobs-note { margin-top: 1.25rem; color: var(--ink-55); font-size: var(--t-label); }
+.jobs-note { color: var(--ink-55); font-size: var(--t-label); }
 .jobs-note a { color: var(--accent-ink); text-underline-offset: 3px; }
 
 /* ── NEWS ────────────────────────────────────────────────────────────────── */
 .news-list.is-folded > li:nth-child(n + 4) { display: none; }
 .news-more-wrap { margin-top: var(--space-tight); }
 .news-more-wrap[hidden] { display: none; }
-.news-more, .fold-toggle {
+.news-more {
   font-family: inherit; color: inherit; background: none; cursor: pointer;
   border: 0; border-bottom: 1px solid var(--accent); padding: 0 0 0.25em;
   justify-self: start;
 }
-.news-more [aria-hidden], .fold-toggle [aria-hidden] { transition: transform 260ms var(--ease-out); }
-.news-more.is-open [aria-hidden], .fold-toggle.is-open [aria-hidden] { transform: rotate(180deg); }
+.news-more [aria-hidden] { transition: transform 260ms var(--ease-out); }
+.news-more.is-open [aria-hidden] { transform: rotate(180deg); }
 .news-row { text-decoration: none; transition: background 220ms linear; align-items: start; }
 .news-row:hover { background: #F5F5F5; }
 .news-when { grid-column: 1 / span 2; display: flex; flex-direction: column; gap: 0.3rem; padding-top: 0.3rem; }
@@ -651,6 +877,16 @@ img, video, svg { display: block; max-width: 100%; }
 .footer-grid { row-gap: var(--space-block); align-items: start; }
 .footer-brand { grid-column: 1 / span 2; }
 .footer-brand img { height: 2.75rem; width: auto; }
+/* Under the mark, the company's one social link: LinkedIn's own glyph, in the
+   white of the footer's links, taking the accent under the pointer like every
+   other link on the ink field. */
+.footer-social {
+  display: inline-flex; margin-top: 1.5rem;
+  color: var(--on-ink);
+  transition: color 160ms linear;
+}
+.footer-social svg { width: 1rem; height: 1rem; fill: currentColor; }
+.footer-social:hover { color: var(--accent); }
 .footer-nav   { grid-column: 3 / span 3; display: flex; flex-direction: column; gap: 0.375rem; }
 .footer-legal { grid-column: 6 / span 3; display: flex; flex-direction: column; gap: 0.375rem; }
 .footer-end   { grid-column: 9 / span 4; }
@@ -773,8 +1009,6 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
 @media (max-width: 1100px) {
   .col-wide { grid-column: 3 / span 9; }
   .partner-grid { grid-column: 3 / span 9; }
-  .careers-jobs { grid-column: 1 / span 11; }
-  .careers-jobs .row > .row-text { grid-column: 3 / span 9; }
 }
 
 @media (max-width: 860px) {
@@ -795,7 +1029,6 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   /* The margin column folds above the content it annotates; everything else
      becomes a single full-width column. */
   .col-margin, .col-text, .col-wide,
-  .careers-jobs,
   .use-case--government, .use-case--civilian,
   .contact-form, .contact-info,
   .system-figs, .system-chain, .partner-grid, .job-aside,
@@ -825,14 +1058,25 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
 
   .hero-colophon { position: static; padding-top: 2.618rem; }
 
+  /* The boot screen's two columns fold into one: steps under the mark, the
+     fix over the count. */
+  .intro-inner { grid-template-rows: auto auto 1fr auto auto; row-gap: 1rem; }
+  .intro-steps { grid-row: 2; }
+  .intro-fix { grid-row: 4; }
+  .intro-count { grid-row: 5; }
+
   .subgrid { display: block; }
   .row { display: grid; grid-template-columns: 1fr; row-gap: 0.4rem; }
-  .row > .label, .row > .row-text,
-  .careers-jobs .row > .row-text { grid-column: auto; padding-top: 0; }
+  .row > .label, .row > .row-text { grid-column: auto; padding-top: 0; }
 
   .system-figs { grid-template-columns: 1fr; }
-  .system-chain { grid-template-columns: 1fr; }
+  /* Two steps abreast, and the box opens in place under its name rather than
+     floating: a phone has no hover, and a floating box would run off the
+     edge of a half-width column. */
+  .system-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-block); }
   .system-step::before { display: none; }
+  html.js .system-tip { position: static; width: auto; display: none; }
+  html.js .system-step-head[aria-expanded='true'] + .system-tip { display: block; }
   .heritage-logos { grid-column: auto; margin-top: 0.5rem; }
   .partner-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
@@ -848,19 +1092,22 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .footer-end   { grid-column: 1 / span 6; }
 }
 
-/* Below this the two credits no longer fit the width as label-beside-mark, so
-   each credit turns the corner: mark under label, the two abreast. One band of
-   small print instead of a wrapped row. The marks are set on a common bottom
-   line, so a label running to two lines cannot break it. */
-@media (max-width: 640px) {
+/* Below this the three credits no longer fit the width as label-beside-mark,
+   so each credit turns the corner: mark under label, the three abreast. One
+   band of small print instead of a wrapped row. The marks are set on a common
+   bottom line, so a label running to two lines cannot break it. */
+@media (max-width: 1100px) {
   .hero-colophon {
-    display: grid; grid-template-columns: 1fr 1fr;
+    display: grid; grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
     align-items: end;
     gap: 1.618rem var(--gutter);
   }
   .hero-credit { flex-direction: column; align-items: flex-start; gap: 0.618rem; }
   .hero-credit .label { text-wrap: balance; }
-  .hero-credit-logo { height: 1.5rem; }
+}
+@media (max-width: 640px) {
+  .hero-credit-logo { --logo-h: 1.25rem; max-width: 100%; }
 
   /* Leading follows the measure. At the full width of a phone a paragraph runs
      about 44 characters, and 1.7 spreads it into an even grey field; the lines

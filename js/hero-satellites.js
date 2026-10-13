@@ -4,8 +4,12 @@
    globe: script.js reads the pointer out as a latitude and a longitude. Three
    CubeSats fly above that map in formation — an equilateral cluster, one
    fixed separation, every belly pointing the same way down at the ground.
-   The cluster is rigid, so the pointer banks all three together, the way a
-   real constellation is slewed onto a target rather than flown apart.
+
+   On load the three fly in from wide and close up into formation, turning
+   onto station as they come; after that the cluster is rigid, and scrolling
+   the hero away slews all three together, the way a real constellation is
+   turned onto a target rather than flown apart. The pointer is left to the
+   cursor readout.
 
    They are drawn as a hidden-line technical illustration — a near-paper fill
    in a few quantised tones, and the model's hard edges as 1px lines in the
@@ -25,7 +29,7 @@ const MESH_URL = 'assets/models/cubesat.glb';
 const FORMATION = {
   centre: [0.505, 0.385],   /* the cluster's centroid across the field */
   spread: 1.100,            /* circumradius of the triangle */
-  size: 0.150,              /* each satellite's length */
+  size: 0.118,              /* each satellite's length */
   phase: 3.578,             /* which way round the triangle sits */
   plane: [0.10, 1.10],      /* the formation plane's normal, x and y of it */
 };
@@ -62,11 +66,17 @@ const TURN = Math.PI;             /* turn about the vertical, after the above */
 
 const FOV = 20 * Math.PI / 180;   /* narrow: near-axonometric, as a drawing is */
 const CAMERA_Z = 12;
-const BANK = 0.26;                /* radians the cluster banks, edge to edge */
-const TAU = 0.55;                 /* seconds the bank takes to settle */
 const LIGHT = norm([-0.35, 0.72, 0.60]);
 const STEPS = 4;                  /* tones in the quantised shading */
 const MAX_DPR = 2;
+
+/* The arrival. The formation starts this far off its own pose — turned round
+   in its plane, opened wider, banked — and closes onto it over `ms`. */
+const ARRIVE = { ms: 2600, spin: 1.1, spread: 0.85, yaw: -0.42, pitch: 0.28 };
+
+/* The slew, at the moment the hero has scrolled fully away: the turn in the
+   plane, the pitch, and how far the cluster rises, in half-fields. */
+const SLEW = { spin: 0.45, pitch: 0.32, rise: 0.30 };
 
 /* ── vector and matrix helpers ─────────────────────────────────────────── */
 
@@ -261,15 +271,17 @@ function rig(plan) {
   const normal = norm([plan.plane[0], plan.plane[1], 1]);
   const across = norm(cross(normal, Math.abs(normal[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0]));
   const down = cross(normal, across);
-  const stations = [0, 1, 2].map((i) => {
-    const angle = plan.phase + i * 2 * Math.PI / 3;
+  /* `spin` turns the triangle round in its own plane, off its station. */
+  const station = (i, spin = 0) => {
+    const angle = plan.phase + spin + i * 2 * Math.PI / 3;
     const [c, s] = [Math.cos(angle), Math.sin(angle)];
     return across.map((a, k) => a * c + down[k] * s);
-  });
+  };
+  const stations = [0, 1, 2].map((i) => station(i));
   const xs = stations.map((p) => p[0]);
   const ys = stations.map((p) => p[1]);
   return {
-    stations,
+    station,
     reach: {
       across: (Math.max(...xs) - Math.min(...xs)) / 2,
       shift: (Math.max(...xs) + Math.min(...xs)) / 2,   /* off centre, and by how much */
@@ -301,6 +313,21 @@ function token(styles, name, fallback) {
 }
 
 function mixRGB(a, b, t) { return a.map((c, i) => c + (b[i] - c) * t); }
+
+/* While the boot screen holds the page, the formation waits, and sets out as
+   it lifts — on its timer or on a click, whichever comes first. A mesh that
+   arrives after that does not wait at all. */
+function afterIntro(fn) {
+  const root = document.documentElement;
+  const done = () => !root.classList.contains('has-intro') || root.classList.contains('intro-lifted');
+  if (done()) return fn();
+  const observer = new MutationObserver(() => {
+    if (!done()) return;
+    observer.disconnect();
+    fn();
+  });
+  observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+}
 
 /* ── the scene ─────────────────────────────────────────────────────────── */
 
@@ -459,12 +486,17 @@ function start(canvas, mesh, reduceMotion) {
   }
 
   /* Placing the cluster: the bank turns the whole rig — the stations around
-     the centroid and the attitude they all hold — as one body. */
-  function place(banked) {
+     the centroid and the attitude they all hold — as one body. The pose adds
+     what the arrival and the scroll have still to take up: a turn of the
+     triangle in its plane, how much wider than its own it is open, and how
+     far it has risen. */
+  function place(pose) {
+    const banked = bank(pose.pitch, pose.yaw);
     const basis = rotate(banked, hold);
+    const at = [centre[0], centre[1] + pose.rise * halfH, centre[2]];
     sats.forEach((sat, i) => {
-      const offset = apply(banked, cluster.stations[i]);
-      sat.pos = centre.map((c, k) => c + offset[k] * spread);
+      const offset = apply(banked, cluster.station(i, pose.spin));
+      sat.pos = at.map((c, k) => c + offset[k] * spread * pose.open);
       /* Perspective already makes the near one larger; scale is the same for
          all three, because they are the same satellite. */
       sat.scale = size;
@@ -488,8 +520,8 @@ function start(canvas, mesh, reduceMotion) {
       gl.uniformMatrix4fv(fill.at.uViewProj, false, viewProj);
       gl.uniform3fv(fill.at.uLight, LIGHT);
       gl.uniform3f(fill.at.uEye, 0, 0, CAMERA_Z);
-      gl.uniform3fv(fill.at.uLit, mixRGB(paper, rule, 0.07 * near));
-      gl.uniform3fv(fill.at.uShade, mixRGB(paper, ink55, 0.42 * near));
+      gl.uniform3fv(fill.at.uLit, mixRGB(paper, rule, 0.05 * near));
+      gl.uniform3fv(fill.at.uShade, mixRGB(paper, ink55, 0.32 * near));
       gl.uniform1f(fill.at.uSteps, STEPS);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, triBuffer);
       gl.drawElements(gl.TRIANGLES, mesh.tris.length, indexType, 0);
@@ -498,29 +530,38 @@ function start(canvas, mesh, reduceMotion) {
       gl.useProgram(line.prog);
       gl.uniformMatrix4fv(line.at.uModel, false, model);
       gl.uniformMatrix4fv(line.at.uViewProj, false, viewProj);
-      gl.uniform3fv(line.at.uInk, mixRGB(paper, ink55, 0.92 * near));
+      gl.uniform3fv(line.at.uInk, mixRGB(paper, ink55, 0.72 * near));
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
       gl.drawElements(gl.LINES, mesh.lines.length, indexType, 0);
     }
   }
 
-  /* Where the cluster is being pointed, in the same fractions of the field it
-     is placed in. It starts at the centre of the map, which is where the
-     formation sits until a pointer says otherwise — on touch, that is for
-     good, and the scene is the still drawing it should be. */
-  const target = { x: 0.5, y: 0.5 };
-  const held = { pitch: 0, yaw: 0 };
+  /* How much of the arrival is still to come — 1 before the formation sets
+     out, 0 once it is on station — and how far the hero has scrolled away,
+     0 to 1. Between them they are the whole of the motion. */
+  let ahead = reduceMotion ? 0 : 1;
+  let away = 0;
+
+  function pose() {
+    return {
+      spin: ahead * ARRIVE.spin + away * SLEW.spin,
+      open: 1 + ahead * ARRIVE.spread,
+      yaw: ahead * ARRIVE.yaw,
+      pitch: ahead * ARRIVE.pitch + away * SLEW.pitch,
+      rise: away * SLEW.rise,
+    };
+  }
 
   let refit = true;
 
   function render() {
     if (resize() || refit) { fit(); refit = false; }
-    place(bank(held.pitch, held.yaw));
+    place(pose());
     draw();
   }
 
   /* A resize is the one thing that can invalidate a settled frame without the
-     pointer moving. Observing the box beats measuring it every frame, which
+     page moving. Observing the box beats measuring it every frame, which
      would force a layout on each one. */
   if ('ResizeObserver' in window) {
     const observer = new ResizeObserver(() => { refit = true; render(); });
@@ -536,62 +577,40 @@ function start(canvas, mesh, reduceMotion) {
 
   /* ── motion ──────────────────────────────────────────────────────────── */
 
-  function onPointer(event) {
-    const box = canvas.getBoundingClientRect();
-    if (!box.width || !box.height) return;
-    target.x = (event.clientX - box.left) / box.width;
-    target.y = (event.clientY - box.top) / box.height;
-    wake();
+  const hero = field.closest('.hero') || field;
+  function scrolled() {
+    const box = hero.getBoundingClientRect();
+    return box.height ? Math.min(1, Math.max(0, -box.top / box.height)) : 0;
   }
-  window.addEventListener('pointermove', onPointer, { passive: true });
+  away = scrolled();
 
-  const REST = 0.0004;   /* radians below which the bank has arrived */
-  let running = false, last = 0;
-
-  function frame(now) {
-    if (!running) return;
-    const dt = Math.min((now - last) / 1000 || 0, 0.1);
-    last = now;
-
-    /* One bank for the whole rig, settling on the pointer. Exponential
-       approach, so it is framerate-independent and never overshoots. */
-    const k = 1 - Math.exp(-dt / TAU);
-    const yaw = (target.x - 0.5) * 2 * BANK;
-    const pitch = (target.y - 0.5) * 2 * BANK;
-    held.yaw += (yaw - held.yaw) * k;
-    held.pitch += (pitch - held.pitch) * k;
-
-    /* Once it has arrived, snap and stop: a settled formation is a still
-       drawing, and a still drawing has no reason to hold a frame loop. */
-    const arrived = Math.abs(yaw - held.yaw) < REST && Math.abs(pitch - held.pitch) < REST;
-    if (arrived) { held.yaw = yaw; held.pitch = pitch; }
-
+  /* The arrival, once, after the boot screen has lifted. Eased out hard, so
+     the formation lands on station rather than stops at it. Its frame loop
+     ends with it: a formation on station is a still drawing. */
+  let begin = null;
+  function arrive(now) {
+    if (begin === null) begin = now;
+    const t = Math.min(1, (now - begin) / ARRIVE.ms);
+    ahead = Math.pow(1 - t, 4);
     render();
-    if (arrived) running = false;
-    else requestAnimationFrame(frame);
+    if (t < 1) requestAnimationFrame(arrive);
   }
+  afterIntro(() => requestAnimationFrame(arrive));
 
-  /* The scene only turns while it is on screen, the tab is in front, and the
-     bank still has somewhere to go. */
-  const visible = { hero: true, tab: !document.hidden };
-
-  function wake() {
-    if (running || !visible.hero || !visible.tab) return;
-    running = true;
-    last = performance.now();
-    requestAnimationFrame(frame);
-  }
-
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver((entries) => {
-      visible.hero = entries[0].isIntersecting;
-      if (visible.hero) wake(); else running = false;
-    }, { threshold: 0 }).observe(canvas);
-  }
-  document.addEventListener('visibilitychange', () => {
-    visible.tab = !document.hidden;
-    if (visible.tab) wake(); else running = false;
-  });
+  /* The slew follows the scroll: one frame per frame at most, and none once
+     the hero is gone, since every position past it is the same. */
+  let queued = false;
+  window.addEventListener('scroll', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      const next = scrolled();
+      if (next === away) return;
+      away = next;
+      if (!ahead) render();   /* while it arrives, the arrival draws */
+    });
+  }, { passive: true });
 }
 
 /* ── entry ─────────────────────────────────────────────────────────────── */
