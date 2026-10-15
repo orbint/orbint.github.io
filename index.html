@@ -209,7 +209,7 @@
     <div class="use-case use-case--government reveal">
       <p class="label label--muted">Governmental use case example</p>
       <figure class="use-case-fig">
-        <img src="assets/images/use-cases/force-buildup.png" width="1600" height="1120" alt="Formations on a map of the Baltic region, their axes of advance drawn as arrows, with rings marking where activity has changed" loading="lazy">
+        <div id="sk2-anim"></div>
       </figure>
       <h3 class="title">Force build-up quantification</h3>
       <p class="body">Units on the move change how they transmit. Orbint registers those activity changes over days, cues further collection and quantifies the build-up, for armed forces, intelligence services and security agencies.</p>
@@ -217,7 +217,7 @@
     <div class="use-case use-case--civilian reveal" style="--reveal-delay:90ms">
       <p class="label label--muted">Civilian use case example</p>
       <figure class="use-case-fig">
-        <img src="assets/images/use-cases/dark-vessel.svg" width="1600" height="1120" alt="Ships on their shipping lanes, drawn in outline; two are filled in, one marked AIS spoofing and one marked AIS off" loading="lazy">
+        <div id="orbint-anim"></div>
       </figure>
       <h3 class="title">Dark vessel detection</h3>
       <p class="body">A ship switches off its AIS transponder, but its radar and radio keep transmitting. Orbint localizes those emissions within hours and cues patrols, for coast guards, fisheries and port authorities.</p>
@@ -342,6 +342,20 @@
   </div>
 
   <ul class="ruled section-body news-list" id="news-list" data-stagger="60">
+    <li class="reveal">
+      <a class="news-row row grid" href="news/athene-1-in-orbit.html">
+        <div class="news-when">
+          <time class="label label--muted" datetime="2026-10-01">1 Oct 2026</time>
+        </div>
+        <div class="news-text">
+          <h3 class="title">Separation successful: ATHENE-1 is in orbit</h3>
+          <p class="body">ATHENE-1, the satellite of the SeRANIS mission that Orbint was spun off from, lifted off aboard Transporter-18 and separated successfully, carrying 15 experiments into orbit.</p>
+        </div>
+        <div class="news-figure">
+          <img src="news/articles/assets/athene-1-separation.jpg" alt="Satellites stacked on the Transporter-18 payload adapter in orbit" loading="lazy">
+        </div>
+      </a>
+    </li>
     <li class="reveal">
       <a class="news-row row grid" href="news/airbus-ila-2026-mou.html">
         <div class="news-when">
@@ -538,6 +552,11 @@
 </footer>
 
 <script src="js/script.js" defer></script>
+<!-- The use-case sketches, as delivered by marketing: each script mounts its
+     own drawing into the element of the same id and animates it while it is
+     on screen. -->
+<script src="assets/animations/skizze-2-animation.js" defer></script>
+<script src="assets/animations/orbint-animation.js" defer></script>
 <!-- The hero map and constellation. Modules, so browsers without them skip
      both and the hero stays what it is without any of this. -->
 <script src="js/hero-map.js" type="module"></script>

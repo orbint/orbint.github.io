@@ -6,6 +6,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://orbint.de/news/athene-1-in-orbit.html</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://orbint.de/news/rohde-schwarz-investment.html</loc>
     <lastmod>2025-11-13</lastmod>
     <changefreq>never</changefreq>

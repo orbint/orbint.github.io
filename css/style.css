@@ -591,6 +591,16 @@ html.has-intro:not(.intro-lifted) .hero .reveal.is-in { opacity: 0; transform: t
 /* The sector label heads each case, then a small picture of the scenario. */
 .use-case-fig { margin: var(--space-tight) 0; }
 .use-case-fig img { display: block; width: 100%; height: auto; }
+
+/* The two sketches from marketing (assets/animations/) are drawn to different
+   proportions; each is set in the same frame and centred in it, so the titles
+   beneath them start on one line. Their ink and their orange are taken back
+   to the page's own tokens rather than the near-misses they ship with. */
+.use-case-fig .orbint-anim, .use-case-fig .sk2-anim { aspect-ratio: 5 / 4; }
+.use-case-fig .orbint-anim svg, .use-case-fig .sk2-anim svg { width: 100%; height: 100%; }
+.use-case-fig .orbint-anim svg > g, .use-case-fig .sk2-anim svg > g { fill: var(--ink); }
+.use-case-fig .orbint-anim .oa-links, .use-case-fig .sk2-anim .sk2-links { stroke: var(--accent); }
+.use-case-fig .orbint-anim .oa-wave { fill: var(--accent); }
 .use-case .title { margin-top: 0.4rem; }
 
 
@@ -963,7 +973,7 @@ html.js .heritage-fold-inner { overflow: hidden; min-height: 0; }
   letter-spacing: var(--ls-tight); line-height: 1.35; color: var(--ink);
 }
 .copy figure { margin: 2rem 0; }
-.copy img { width: 100%; border: 1px solid var(--rule); }
+.copy img { width: 100%; height: auto; border: 1px solid var(--rule); }
 /* Small print inside long-form copy. Scoped, because `.copy p` outranks a bare
    role class on its own children and would otherwise pull these back to body
    size and body colour. */
