@@ -6,3 +6,5 @@ assets/videos/60sLEO_sketch_small.mp4
 assets/.DS_Store
 .DS_Store
 .DS_Store
+node_modules/
+package-lock.json

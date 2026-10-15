@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- Builds the land mask js/hero-map.js draws the hero's world map from.
+
+     Natural Earth land at 1:110m (via world-atlas) is filled into an
+     equirectangular raster four samples to the degree, then read back one
+     cell per degree: a cell is land when at least a third of it is, so the
+     islands a reader looks for — Britain, Japan, Sri Lanka — survive the
+     coarse grid. The result is a 360 × 180 bitset, row by row from 90° N and
+     180° W, most significant bit first, as base64.
+
+     The page fetches its data from jsdelivr and prints the string into
+     #out. Run it in headless Edge or Chrome and copy the string into
+     LAND in js/land-mask.js:
+       msedge --headless --disable-gpu --virtual-time-budget=15000 \
+              --dump-dom file:///<repo>/tools/build-land-mask.html -->
+<meta charset="utf-8">
+<title>Land mask</title>
+<pre id="out">pending</pre>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+(async function () {
+  const out = document.getElementById('out');
+  try {
+    const SAMPLES = 4;                 /* per degree, each way */
+    const THRESHOLD = 1 / 3;           /* share of a cell that makes it land */
+    const W = 360, H = 180;
+
+    const topo = await (await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json')).json();
+    const land = topojson.feature(topo, topo.objects.land);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = W * SAMPLES; canvas.height = H * SAMPLES;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    const ring = (coords) => coords.forEach(([lon, lat], i) => {
+      const x = (lon + 180) * SAMPLES, y = (90 - lat) * SAMPLES;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    for (const f of land.features) {
+      const g = f.geometry;
+      const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+      polys.forEach((poly) => poly.forEach(ring));
+    }
+    ctx.fill('evenodd');
+
+    const px = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    const bytes = new Uint8Array(W * H / 8);
+    for (let r = 0; r < H; r++) {
+      for (let c = 0; c < W; c++) {
+        let sum = 0;
+        for (let dy = 0; dy < SAMPLES; dy++) {
+          for (let dx = 0; dx < SAMPLES; dx++) {
+            sum += px[((r * SAMPLES + dy) * canvas.width + c * SAMPLES + dx) * 4 + 3];
+          }
+        }
+        if (sum / (255 * SAMPLES * SAMPLES) >= THRESHOLD) {
+          const i = r * W + c;
+          bytes[i >> 3] |= 0x80 >> (i & 7);
+        }
+      }
+    }
+    out.textContent = btoa(String.fromCharCode(...bytes));
+  } catch (e) {
+    out.textContent = 'error: ' + e.message;
+  }
+})();
+</script>

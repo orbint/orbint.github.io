@@ -1,489 +1,404 @@
+/* ORBINT — site behaviour.
+   Everything here is progressive enhancement: the page is complete without it. */
 
-// ── USE CASE CANVAS animated waterfall / emitter map ──
-(function() {
-  const canvas = document.getElementById('uc-canvas');
-  if (!canvas) return;
-  let W, H, rows = [], frame = 0;
-  const COLORS = ['#2A2724','#3A2E28','#5C3A1E','#8B4513','#C45A1A','#F2641C','#FFD700'];
+(function () {
+  'use strict';
 
-  function resize() {
-    W = canvas.width = canvas.offsetWidth || 400;
-    H = canvas.height = canvas.offsetHeight || 300;
-    rows = [];
-  }
-  resize();
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Signal emitters (freq bands)
-  const emitters = [
-    { freqFrac: 0.3, width: 0.04, power: 0.9, active: true },
-    { freqFrac: 0.55, width: 0.02, power: 0.6, active: true },
-    { freqFrac: 0.72, width: 0.06, power: 0.4, active: true },
-  ];
+  /* ── REVEAL ──────────────────────────────────────────────────────────────
+     `html.js` (set inline in <head>) is what hides .reveal elements, so a
+     failed observer can never leave content invisible. The timeout below is a
+     second net for hidden tabs and headless renderers, where transitions and
+     IntersectionObserver callbacks can be deferred indefinitely. */
+  function initReveal() {
+    var els = Array.prototype.slice.call(document.querySelectorAll('.reveal, .reveal-rule'));
+    if (!els.length) return;
 
-  function makeRow() {
-    const row = new Float32Array(Math.floor(W));
-    // Base noise
-    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.08;
-    // Emitter signals
-    emitters.forEach(e => {
-      if (!e.active) return;
-      const cx = Math.floor(e.freqFrac * W);
-      const hw = Math.floor(e.width * W / 2);
-      for (let i = cx - hw * 3; i <= cx + hw * 3; i++) {
-        if (i < 0 || i >= row.length) continue;
-        const d = Math.abs(i - cx) / hw;
-        row[i] += e.power * Math.exp(-d * d * 0.8) * (0.85 + Math.random() * 0.15);
-      }
-    });
-    return row;
-  }
+    function show(el) { el.classList.add('is-in'); }
 
-  const MAX_ROWS = 120;
-
-  function draw() {
-    frame++;
-    if (frame % 3 === 0) {
-      rows.unshift(makeRow());
-      if (rows.length > MAX_ROWS) rows.pop();
-    }
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, W, H);
-
-    const rowH = H / MAX_ROWS;
-    rows.forEach((row, ri) => {
-      for (let xi = 0; xi < row.length; xi++) {
-        const v = Math.min(1, row[xi]);
-        const ci = Math.floor(v * (COLORS.length - 1));
-        const cf = v * (COLORS.length - 1) - ci;
-        // Simple color interp using CSS parse
-        ctx.fillStyle = COLORS[Math.min(ci, COLORS.length - 1)];
-        ctx.fillRect(xi, ri * rowH, 1, rowH + 1);
-      }
-    });
-
-    // Frequency axis labels
-    ctx.font = '9px "IBM Plex Sans", monospace';
-    ctx.fillStyle = 'rgba(158,150,144,0.7)';
-    ['437.0', '437.5', '438.0'].forEach((label, i) => {
-      ctx.fillText(label, 10 + i * (W / 3) - 14, H - 6);
-    });
-
-    // Highlight boxes on emitters
-    emitters.forEach(e => {
-      const ex = e.freqFrac * W;
-      const ew = e.width * W * 3;
-      ctx.strokeStyle = `rgba(242,100,28,0.35)`;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(ex - ew / 2, 0, ew, H - 16);
-    });
-
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-// ── WATERFALL MINI (product section) ──
-(function() {
-  const canvas = document.getElementById('waterfall-mini');
-  if (!canvas) return;
-  let W = 0, H = 0, rows = [], frame = 0;
-  const COLORS = ['#121110','#1C1A18','#3A2E28','#8B4513','#F2641C','#FFD700'];
-
-  // Signal definitions. baud = rows per symbol period.
-  // FSK:  two tones alternating; shift = half-separation in px at reference width 800
-  // MFSK: N evenly-spaced tones, one active per symbol
-  // PSK:  very narrow; phase reversals create periodic amplitude nulls (diamond idle)
-  // DV:   flat wideband block (digital voice / vocoder); pulse = PTT keying
-  const SIGS = [
-    { type:'fsk',  frac:0.08, shift:10, spread:2,   power:0.70, baud:7,  label:'RTTY · FSK-170'  },
-    { type:'mfsk', frac:0.22, tones:8,  gap:6,  spread:1.5, power:0.68, baud:4, label:'MFSK16'         },
-    { type:'psk',  frac:0.38, spread:1.5, power:0.92, baud:3,  label:'PSK31'          },
-    { type:'dv',   frac:0.54, width:28,  power:0.55, pulse:{on:40,off:22}, label:'DMR · Tier II'  },
-    { type:'fsk',  frac:0.67, shift:16, spread:2.5, power:0.64, baud:5,  label:'FSK · ALE'        },
-    { type:'psk',  frac:0.78, spread:1,  power:0.48, baud:2,  label:'BPSK63'         },
-    { type:'mfsk', frac:0.90, tones:4,  gap:8,  spread:2,   power:0.52, baud:6, label:'Olivia 4/500' },
-  ];
-
-  // Returns [x1, x2] pixel bounds for a signal at current W
-  function sigBounds(sig) {
-    const cx = Math.floor(sig.frac * W);
-    const sc = W / 800;
-    if (sig.type === 'fsk') {
-      const half = Math.round(sig.shift * sc / 2) + Math.ceil(sig.spread * sc * 4);
-      return [cx - half, cx + half];
-    }
-    if (sig.type === 'mfsk') {
-      const hw = (sig.tones - 1) * sig.gap * sc / 2 + Math.ceil(sig.spread * sc * 4);
-      return [cx - hw, cx + hw];
-    }
-    if (sig.type === 'psk') {
-      return [cx - 8, cx + 8];
-    }
-    if (sig.type === 'dv') {
-      const hw = Math.round(sig.width * sc / 2);
-      return [cx - hw, cx + hw];
-    }
-    return [cx - 16, cx + 16];
-  }
-
-  // Active detection overlays: { si, age }
-  let detections = [];
-  const DET_SPAWN = 130; // frames between spawn attempts (~2 s at 60 fps)
-  const DET_LIFE  = 320; // total lifespan in frames (~5 s)
-  const DET_FADE  = 30;  // fade in / out duration
-
-  // Runtime state per signal
-  const st = SIGS.map(() => ({ tone: 0, timer: 0, null_: false }));
-
-  function resize() {
-    const parent = canvas.parentElement;
-    const w = parent.offsetWidth;
-    const h = parent.offsetHeight;
-    if (w < 4 || h < 4) return;
-    if (w === W && h === H) return;
-    W = canvas.width = w;
-    H = canvas.height = h;
-    rows = [];
-  }
-
-  const ro = new ResizeObserver(() => resize());
-  ro.observe(canvas.parentElement);
-  setTimeout(resize, 100);
-  resize();
-
-  function gauss(row, cx, spread, power) {
-    const r = Math.ceil(spread * 4);
-    for (let i = Math.max(0, cx - r); i <= Math.min(row.length - 1, cx + r); i++) {
-      const d = (i - cx) / spread;
-      row[i] += power * Math.exp(-d * d) * (0.88 + Math.random() * 0.12);
-    }
-  }
-
-  function makeRow() {
-    const row = new Float32Array(Math.floor(W));
-    for (let i = 0; i < row.length; i++) row[i] = Math.random() * 0.05 + 0.01;
-
-    // Scale shift/gap/width from reference width 800 to actual W
-    const scale = W / 800;
-
-    SIGS.forEach((sig, si) => {
-      const s = st[si];
-
-      // PTT / pulse gating for DV
-      if (sig.pulse) {
-        const cyc = sig.pulse.on + sig.pulse.off;
-        if (frame % cyc >= sig.pulse.on) return;
-      }
-
-      // Advance symbol clock
-      s.timer++;
-      if (s.timer >= sig.baud) {
-        s.timer = 0;
-        if (sig.type === 'fsk')  s.tone = 1 - s.tone;
-        if (sig.type === 'mfsk') s.tone = Math.floor(Math.random() * sig.tones);
-        if (sig.type === 'psk')  s.null_ = Math.random() < 0.25; // phase reversal → null
-      }
-
-      const cx = Math.floor(sig.frac * W);
-
-      if (sig.type === 'fsk') {
-        // Two tones; the inactive one bleeds through faintly (realistic)
-        const off = Math.round((sig.shift * scale) / 2);
-        gauss(row, cx + (s.tone ? off : -off), sig.spread * scale, sig.power);
-        gauss(row, cx + (s.tone ? -off : off), sig.spread * scale, sig.power * 0.08);
-
-      } else if (sig.type === 'mfsk') {
-        // All tones faintly present; active tone at full power
-        const totalW = (sig.tones - 1) * sig.gap * scale;
-        const t0 = cx - totalW / 2;
-        for (let t = 0; t < sig.tones; t++) {
-          const tx = Math.round(t0 + t * sig.gap * scale);
-          gauss(row, tx, sig.spread * scale, t === s.tone ? sig.power : sig.power * 0.06);
-        }
-
-      } else if (sig.type === 'psk') {
-        // Phase reversal: brief amplitude null visible in waterfall
-        if (!s.null_) gauss(row, cx, sig.spread * scale, sig.power);
-
-      } else if (sig.type === 'dv') {
-        // Flat rectangular block with tapered edges — typical vocoder spectrum
-        const hw = Math.round(sig.width * scale / 2);
-        for (let i = Math.max(0, cx - hw); i <= Math.min(row.length - 1, cx + hw); i++) {
-          const edge = Math.min(1, (hw - Math.abs(i - cx)) / (3 * scale));
-          row[i] += sig.power * edge * (0.65 + Math.random() * 0.35);
-        }
-      }
-    });
-
-    return row;
-  }
-
-  const MAX = 60;
-
-  function draw() {
-    requestAnimationFrame(draw);
-    if (W < 4 || H < 4) return;
-    frame++;
-    if (frame % 4 === 0) {
-      rows.unshift(makeRow());
-      if (rows.length > MAX) rows.pop();
-    }
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, W, H);
-    const rh = H / MAX;
-    rows.forEach((row, ri) => {
-      for (let xi = 0; xi < row.length; xi++) {
-        const v = Math.min(1, row[xi]);
-        const ci = Math.floor(v * (COLORS.length - 1));
-        ctx.fillStyle = COLORS[Math.min(ci, COLORS.length - 1)];
-        ctx.fillRect(xi, ri * rh, 1, rh + 1);
-      }
-    });
-
-    ctx.font = '8px IBM Plex Sans, monospace';
-    ctx.fillStyle = 'rgba(158,150,144,0.6)';
-    ctx.fillText('437.525 MHz  LIVE', 8, H - 5);
-
-    // ── DETECTION OVERLAYS ──
-    if (frame % DET_SPAWN === 0) {
-      const free = SIGS.map((_, i) => i).filter(i => !detections.some(d => d.si === i));
-      if (free.length && Math.random() < 0.7) {
-        const bh = Math.floor(H * (0.25 + Math.random() * 0.2));
-        detections.push({ si: free[Math.floor(Math.random() * free.length)], age: 0,
-          by: Math.floor(Math.random() * (H - bh - 20)), bh });
-      }
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      els.forEach(show);
+      return;
     }
 
-    detections.forEach(d => d.age++);
-    detections = detections.filter(d => d.age < DET_LIFE);
-
-    detections.forEach(d => {
-      const a = d.age;
-      const alpha = a < DET_FADE ? a / DET_FADE
-                  : a > DET_LIFE - DET_FADE ? (DET_LIFE - a) / DET_FADE
-                  : 1;
-      const sig = SIGS[d.si];
-      const [x1, x2] = sigBounds(sig);
-      const bx = x1 - 3, bw = Math.max(18, x2 - x1 + 6);
-      const { by, bh } = d;
-
-      ctx.save();
-      ctx.globalAlpha = alpha;
-
-      ctx.fillStyle = 'rgba(242,100,28,0.05)';
-      ctx.fillRect(bx, by, bw, bh);
-      ctx.strokeStyle = 'rgba(242,100,28,0.65)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
-
-      ctx.font = '8px "JetBrains Mono", monospace';
-      const tw = ctx.measureText(sig.label).width;
-      const tx = Math.max(2, Math.min(bx, W - tw - 8));
-      ctx.fillStyle = 'rgba(242,100,28,0.88)';
-      ctx.fillRect(tx - 1, by + 2, tw + 6, 13);
-      ctx.fillStyle = '#0D0B09';
-      ctx.fillText(sig.label, tx + 2, by + 12);
-
-      ctx.restore();
-    });
-  }
-  draw();
-})();
-
-// ── SCROLL FADE-IN ──
-(function() {
-  const els = document.querySelectorAll('.fade-up:not(.visible)');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), 0);
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        show(entry.target);
         obs.unobserve(entry.target);
-      }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+
+    els.forEach(function (el) { obs.observe(el); });
+
+    // Stagger siblings that opt in, so a list arrives as a list.
+    document.querySelectorAll('[data-stagger]').forEach(function (group) {
+      var step = parseInt(group.getAttribute('data-stagger'), 10) || 70;
+      Array.prototype.slice.call(group.children).forEach(function (child, i) {
+        child.style.setProperty('--reveal-delay', (i * step) + 'ms');
+      });
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  els.forEach(el => obs.observe(el));
-})();
 
-// ── USE CASE TABS ──
-(function() {
-  const items = document.querySelectorAll('.usecase-item');
-  items.forEach(item => {
-    item.addEventListener('click', () => {
-      items.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-    });
-  });
-})();
-
-// ── FORM SUBMIT ──
-async function handleSubmit(e) {
-  e.preventDefault();
-  const btn = document.getElementById('submit-btn');
-  const success = document.getElementById('form-success');
-  const error = document.getElementById('form-error');
-  btn.textContent = 'Sending…';
-  btn.style.opacity = '0.6';
-  btn.style.pointerEvents = 'none';
-  error.style.display = 'none';
-
-  try {
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      body: new FormData(e.target),
-    });
-    const json = await res.json();
-    if (json.success) {
-      btn.style.display = 'none';
-      success.style.display = 'block';
-    } else {
-      throw new Error(json.message);
-    }
-  } catch {
-    btn.textContent = 'Send message';
-    btn.style.opacity = '';
-    btn.style.pointerEvents = '';
-    error.style.display = 'block';
-  }
-}
-
-// ── LIVE metric ticker ──
-(function() {
-  function tick() {
-    const t = document.getElementById('metric-tracking');
-    const a = document.getElementById('metric-acquiring');
-    if (t) t.textContent = (2 + Math.floor(Math.random() * 3));
-    if (a) a.textContent = Math.floor(Math.random() * 2);
-  }
-  setInterval(tick, 3000);
-})();
-
-// ── CSS pulse animation ──
-const style = document.createElement('style');
-style.textContent = `@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }`;
-document.head.appendChild(style);
-
-// ── HAMBURGER MENU ──
-(function() {
-  const btn = document.getElementById('hamburger');
-  const menu = document.getElementById('mobile-menu');
-  if (!btn || !menu) return;
-
-  function toggleMenu(open) {
-    btn.classList.toggle('open', open);
-    menu.classList.toggle('open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
+    setTimeout(function () { els.forEach(show); }, 2500);
   }
 
-  btn.addEventListener('click', () => toggleMenu(!menu.classList.contains('open')));
+  /* ── SMOOTH SCROLL ───────────────────────────────────────────────────────
+     `html.scroll-smooth` is off by default, so a hash landing from another
+     page and the back button both arrive instantly. Links that opt in switch
+     it on for the length of their own scroll and nothing else. */
+  function initSmoothScroll() {
+    var links = Array.prototype.slice.call(document.querySelectorAll('a[data-smooth][href^="#"]'));
+    if (!links.length || reduceMotion) return;
 
-  // Close on link click
-  menu.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => toggleMenu(false));
-  });
+    var root = document.documentElement;
+    var timer;
 
-  // Close on resize to desktop
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) toggleMenu(false);
-  });
-})();
-
-// ── HERO HEADLINE AUTOSCALE ────────────────────────────────────────────────────
-(function() {
-  function fitHeroHeadline() {
-    const el = document.querySelector('.hero-headline');
-    const hero = document.querySelector('.hero');
-    if (!el || !hero) return;
-
-    const targetH = hero.offsetHeight / 4;
-    let lo = 10, hi = 400;
-
-    for (let i = 0; i < 30; i++) {
-      const mid = (lo + hi) / 2;
-      el.style.fontSize = mid + 'px';
-      if (el.offsetHeight <= targetH) lo = mid;
-      else hi = mid;
-    }
-    el.style.fontSize = lo + 'px';
-  }
-
-  fitHeroHeadline();
-  window.addEventListener('resize', fitHeroHeadline);
-})();
-
-// ── NAVBAR SCROLL & SCROLL SPY ──
-(function() {
-  const nav = document.getElementById('main-nav');
-  const navLinks = document.querySelectorAll('.nav-links a');
-  const mobileLinks = document.querySelectorAll('.mobile-menu a');
-  const sections = Array.from(navLinks).map(link => {
-    const id = link.getAttribute('href').substring(1);
-    return document.getElementById(id);
-  }).filter(s => s);
-
-  if (!nav) return;
-
-  function updateActiveLink() {
-    const scrollPos = window.scrollY + 100; // Offset for nav height
-
-    // Update nav background
-    if (window.scrollY > 50) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
+    function off() {
+      clearTimeout(timer);
+      root.classList.remove('scroll-smooth');
     }
 
-    // Scroll spy logic: find the last section that started above the current scroll position
-    let currentSectionId = '';
-    sections.forEach(section => {
-      if (scrollPos >= section.offsetTop) {
-        currentSectionId = section.getAttribute('id');
+    links.forEach(function (link) {
+      link.addEventListener('click', function () {
+        root.classList.add('scroll-smooth');
+        clearTimeout(timer);
+        timer = setTimeout(off, 1500);
+        if ('onscrollend' in window) window.addEventListener('scrollend', off, { once: true });
+      });
+    });
+  }
+
+  /* ── MOBILE MENU ─────────────────────────────────────────────────────── */
+  function initMenu() {
+    var btn = document.getElementById('hamburger');
+    var menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
+
+    function setOpen(open) {
+      btn.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('is-open', open);
+      menu.hidden = !open;
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+
+    setOpen(false);
+
+    btn.addEventListener('click', function () {
+      setOpen(btn.getAttribute('aria-expanded') !== 'true');
+    });
+
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        btn.focus();
       }
     });
 
-    // Special case for bottom of page
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 20) {
-      currentSectionId = sections[sections.length - 1].getAttribute('id');
-    }
-
-    if (currentSectionId) {
-      navLinks.forEach(link => {
-        link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`);
-      });
-      mobileLinks.forEach(link => {
-        link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`);
-      });
-    }
-  }
-
-  window.addEventListener('scroll', updateActiveLink);
-  // Initial check
-  updateActiveLink();
-})();
-
-// ── CAROUSEL ARROWS ──
-function initCarouselArrow(grid, arrowRight, arrowLeft) {
-  function update() {
-    const atStart = grid.scrollLeft <= 4;
-    const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 4;
-    arrowRight.hidden = atEnd;
-    if (arrowLeft) arrowLeft.hidden = atStart;
-  }
-  grid.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
-  arrowRight.addEventListener('click', () => {
-    grid.scrollBy({ left: grid.clientWidth * 0.75, behavior: 'smooth' });
-  });
-  if (arrowLeft) {
-    arrowLeft.addEventListener('click', () => {
-      grid.scrollBy({ left: -grid.clientWidth * 0.75, behavior: 'smooth' });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 860) setOpen(false);
     });
   }
-}
 
-(function() {
-  const teamGrid = document.querySelector('.team-grid');
-  const teamArrowRight = document.getElementById('team-arrow-right');
-  const teamArrowLeft = document.getElementById('team-arrow-left');
-  if (teamGrid && teamArrowRight) initCarouselArrow(teamGrid, teamArrowRight, teamArrowLeft);
+  /* ── SCROLL SPY ──────────────────────────────────────────────────────── */
+  function initScrollSpy() {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"], .mobile-menu a[href^="#"]'));
+    if (!links.length || !('IntersectionObserver' in window)) return;
+
+    var byId = {};
+    var sections = [];
+    links.forEach(function (link) {
+      var id = link.getAttribute('href').slice(1);
+      var section = document.getElementById(id);
+      if (!section) return;
+      byId[id] = link;
+      sections.push(section);
+    });
+    if (!sections.length) return;
+
+    var visible = new Set();
+
+    function paint() {
+      // The topmost section currently in the band wins.
+      var winner = sections.filter(function (s) { return visible.has(s.id); })[0];
+      links.forEach(function (link) {
+        var on = !!winner && link.getAttribute('href') === '#' + winner.id;
+        link.classList.toggle('is-active', on);
+        if (on) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      });
+    }
+
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) visible.add(entry.target.id);
+        else visible.delete(entry.target.id);
+      });
+      paint();
+    }, { rootMargin: '-20% 0px -60% 0px' });
+
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+
+  /* ── CONTACT FORM ────────────────────────────────────────────────────── */
+  function initForm() {
+    var form = document.getElementById('contact-form');
+    if (!form) return;
+
+    var btn = form.querySelector('[type="submit"]');
+    var ok = document.getElementById('form-success');
+    var bad = document.getElementById('form-error');
+    var label = btn ? btn.textContent : '';
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      if (bad) bad.hidden = true;
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(form)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (json) {
+          if (!json.success) throw new Error(json.message || 'Submission failed');
+          form.reset();
+          if (btn) btn.hidden = true;
+          if (ok) {
+            ok.hidden = false;
+            ok.focus();
+          }
+        })
+        .catch(function () {
+          if (btn) { btn.disabled = false; btn.textContent = label; }
+          if (bad) bad.hidden = false;
+        });
+    });
+  }
+
+  /* ── BOOT SCREEN ─────────────────────────────────────────────────────────
+     The head script shows it and lifts it; this only runs the count up to
+     the hold, walks the readout in onto the fix the map then lights first,
+     and lifts it early for anyone who clicks, types or scrolls. */
+  var FIX = { lat: 57.6, lon: 19.4 };   // the Baltic emitter, as in js/hero-map.js
+
+  function initIntro() {
+    var root = document.documentElement;
+    var intro = document.getElementById('intro');
+    if (!intro || !root.classList.contains('has-intro') || root.classList.contains('intro-lifted')) return;
+
+    var count = intro.querySelector('[data-count]');
+    var lat = intro.querySelector('[data-lat]');
+    var lon = intro.querySelector('[data-lon]');
+    var hold = parseFloat(getComputedStyle(root).getPropertyValue('--intro-hold')) || 1500;
+
+    function lift() {
+      root.classList.add('intro-lifted');
+      ['pointerdown', 'keydown', 'wheel', 'touchmove'].forEach(function (type) {
+        window.removeEventListener(type, lift);
+      });
+    }
+    ['pointerdown', 'keydown', 'wheel', 'touchmove'].forEach(function (type) {
+      window.addEventListener(type, lift, { passive: true });
+    });
+
+    // The page's own clock, which the head script's timer also runs on.
+    function tick() {
+      var t = Math.min(1, performance.now() / hold);
+      var e = 1 - Math.pow(1 - t, 3);
+      // The search narrows as the count climbs: wide at first, then on it.
+      var spread = (1 - e) * 40;
+      var jitter = function () { return (Math.random() * 2 - 1) * spread; };
+      if (count) count.textContent = String(Math.round(e * 100));
+      if (lat) lat.textContent = degrees(FIX.lat + jitter() / 2, 2) + 'N';
+      if (lon) lon.textContent = degrees(FIX.lon + jitter(), 3) + 'E';
+      if (t < 1 && !root.classList.contains('intro-lifted')) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Fixed width of the integer part, so tabular figures never reflow the box.
+  function degrees(value, digits) {
+    var s = Math.abs(value).toFixed(4);
+    while (s.indexOf('.') < digits) s = '0' + s;
+    return s + '° ';
+  }
+
+  /* ── HERO CURSOR ──────────────────────────────────────────────────────────
+     The hero field stands in for an equirectangular projection of the globe,
+     which js/hero-map.js draws and publishes as field.heroMap. Inside it the
+     arrow is replaced by an instrument — a point and its readout — that names
+     the place under the pointer. Mouse only: a finger has no hover position
+     to report, and none of this carries meaning. */
+
+  function initHeroCursor() {
+    var field = document.querySelector('.hero-type');
+    var cursor = document.getElementById('hero-cursor');
+    if (!field || !cursor) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    var lat = cursor.querySelector('[data-lat]');
+    var lon = cursor.querySelector('[data-lon]');
+    var box = cursor.querySelector('.hero-readout');
+    if (!lat || !lon || !box) return;
+
+    var GAP = 10;             // the readout clears the point, never covers it
+    var x = 0, y = 0, inside = false, queued = false;
+
+    function clamp(n) { return n < 0 ? 0 : n > 1 ? 1 : n; }
+
+    function set(name, px) { cursor.style.setProperty(name, Math.round(px) + 'px'); }
+
+    function paint() {
+      queued = false;
+      var r = field.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+
+      var u = (x - r.left) / r.width;
+      var v = (y - r.top) / r.height;
+      // Scrolling moves the field out from under a resting pointer.
+      var over = inside && u >= 0 && u <= 1 && v >= 0 && v <= 1;
+      cursor.classList.toggle('is-on', over);
+      if (!over) return;
+
+      // The map draws its own projection and publishes it; without the map
+      // the field is the whole globe, edge to edge.
+      var latDeg, lonDeg;
+      if (field.heroMap) {
+        var fix = field.heroMap.locate(x - r.left, y - r.top);
+        latDeg = fix.lat; lonDeg = fix.lon;
+      } else {
+        lonDeg = clamp(u) * 360 - 180;
+        latDeg = 90 - clamp(v) * 180;
+      }
+      lat.textContent = degrees(latDeg, 2) + (latDeg < 0 ? 'S' : 'N');
+      lon.textContent = degrees(lonDeg, 3) + (lonDeg < 0 ? 'W' : 'E');
+
+      set('--x', x); set('--y', y);
+
+      // The readout hangs below the point, its left edge on the point's, and
+      // flips at the viewport edge rather than let itself be clipped.
+      var w = box.offsetWidth, h = box.offsetHeight;
+      set('--bx', x + w > window.innerWidth ? x + 3 - w : x - 3);
+      set('--by', y + GAP + h > window.innerHeight ? y - GAP - h : y + GAP);
+    }
+
+    function queue() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(paint);
+    }
+
+    function track(e) {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      x = e.clientX; y = e.clientY;
+      inside = true;
+      cursor.classList.toggle('is-over-link', !!e.target.closest('a, button'));
+      queue();
+    }
+
+    field.addEventListener('pointerenter', track);
+    field.addEventListener('pointermove', track);
+
+    field.addEventListener('pointerleave', function () {
+      inside = false;
+      cursor.classList.remove('is-on');
+    });
+
+    window.addEventListener('scroll', function () { if (inside) queue(); }, { passive: true });
+
+    field.classList.add('is-tracked');
+  }
+
+  /* ── FOLDS ───────────────────────────────────────────────────────────────
+     Content that is complete without script and folded with it: the news
+     list opens on its latest three, and the heritage timeline waits folded
+     under its line until that line is well into view, then unfolds once. */
+  function fold(btn, wrap, apply) {
+    var more = btn.querySelector('[data-more]');
+    var less = btn.querySelector('[data-less]');
+    function set(open) {
+      apply(open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.classList.toggle('is-open', open);
+      more.hidden = open;
+      less.hidden = !open;
+    }
+    set(false);
+    wrap.hidden = false;
+    btn.addEventListener('click', function () {
+      set(btn.getAttribute('aria-expanded') !== 'true');
+    });
+  }
+
+  function initFolds() {
+    var list = document.getElementById('news-list');
+    var newsBtn = document.getElementById('news-more');
+    if (list && newsBtn && list.children.length > 3) {
+      fold(newsBtn, document.getElementById('news-more-wrap'), function (open) {
+        list.classList.toggle('is-folded', !open);
+      });
+    }
+
+    var heritage = document.getElementById('heritage');
+    var line = heritage && heritage.querySelector('.heritage-intro');
+    if (!heritage || !line) return;
+    function open() { heritage.classList.add('is-open'); }
+    if (reduceMotion || !('IntersectionObserver' in window)) { open(); return; }
+    var obs = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      open();
+      obs.disconnect();
+    }, { rootMargin: '0px 0px -30% 0px' });
+    obs.observe(line);
+  }
+
+  /* ── SYSTEM STEPS ─────────────────────────────────────────────────────────
+     Each step in the chain is a mark and a name; its sentence opens in a box
+     on a click or tap. Hover and focus open it too, in the stylesheet. One
+     box at a time, and Escape or a click elsewhere closes it. */
+  function initSystemSteps() {
+    var heads = Array.prototype.slice.call(document.querySelectorAll('.system-step-head'));
+    if (!heads.length) return;
+
+    function set(head, open) { head.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    function closeAll(except) { heads.forEach(function (h) { if (h !== except) set(h, false); }); }
+
+    heads.forEach(function (head) {
+      head.addEventListener('click', function () {
+        var open = head.getAttribute('aria-expanded') !== 'true';
+        closeAll(head);
+        set(head, open);
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.system-step')) closeAll();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeAll();
+    });
+  }
+
+  function init() {
+    initIntro();
+    initSystemSteps();
+    initReveal();
+    initHeroCursor();
+    initSmoothScroll();
+    initMenu();
+    initScrollSpy();
+    initForm();
+    initFolds();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
