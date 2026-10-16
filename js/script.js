@@ -358,30 +358,65 @@
   }
 
   /* ── SYSTEM STEPS ─────────────────────────────────────────────────────────
-     Each step in the chain is a mark and a name; its sentence opens in a box
-     on a click or tap. Hover and focus open it too, in the stylesheet. One
-     box at a time, and Escape or a click elsewhere closes it. */
+     The chain is a stepper, built as tabs: one step is active at a time and
+     its sentence stands in the one panel under the row. The first step is
+     active from the start, so the row reads as something to step through.
+     A pointer activates a step by resting on it; a click, a tap or a key
+     activates it too, and the arrow keys move along the row. The sentences
+     stay in the markup, under each name, for anyone without script. */
   function initSystemSteps() {
-    var heads = Array.prototype.slice.call(document.querySelectorAll('.system-step-head'));
+    var chain = document.querySelector('.system-chain');
+    var panel = document.getElementById('system-detail');
+    if (!chain || !panel) return;
+    var heads = Array.prototype.slice.call(chain.querySelectorAll('.system-step-head'));
     if (!heads.length) return;
 
-    function set(head, open) { head.setAttribute('aria-expanded', open ? 'true' : 'false'); }
-    function closeAll(except) { heads.forEach(function (h) { if (h !== except) set(h, false); }); }
+    chain.setAttribute('role', 'tablist');
+    Array.prototype.forEach.call(chain.children, function (li) { li.setAttribute('role', 'presentation'); });
+    panel.hidden = false;
 
-    heads.forEach(function (head) {
-      head.addEventListener('click', function () {
-        var open = head.getAttribute('aria-expanded') !== 'true';
-        closeAll(head);
-        set(head, open);
+    var active = null;
+
+    function select(head, moveFocus) {
+      if (head === active) return;
+      active = head;
+      heads.forEach(function (h) {
+        var on = h === head;
+        h.setAttribute('aria-selected', on ? 'true' : 'false');
+        h.tabIndex = on ? 0 : -1;
+      });
+      var tip = head.parentNode.querySelector('.system-tip');
+      panel.textContent = tip ? tip.textContent : '';
+      panel.setAttribute('aria-labelledby', head.id);
+      panel.style.setProperty('--step', heads.indexOf(head));
+      // Restart the fade, so each change reads as a change.
+      panel.classList.remove('is-new');
+      void panel.offsetWidth;
+      panel.classList.add('is-new');
+      if (moveFocus) head.focus();
+    }
+
+    var hover = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    heads.forEach(function (head, i) {
+      head.setAttribute('role', 'tab');
+      head.setAttribute('aria-controls', panel.id);
+      head.addEventListener('click', function () { select(head); });
+      head.addEventListener('mouseenter', function () { if (hover.matches) select(head); });
+      head.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = heads[(i + 1) % heads.length];
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = heads[(i - 1 + heads.length) % heads.length];
+        else if (e.key === 'Home') next = heads[0];
+        else if (e.key === 'End') next = heads[heads.length - 1];
+        if (!next) return;
+        e.preventDefault();
+        select(next, true);
       });
     });
 
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.system-step')) closeAll();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeAll();
-    });
+    select(heads[0]);
+    panel.classList.remove('is-new');
   }
 
   function init() {

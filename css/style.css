@@ -613,7 +613,9 @@ html.has-intro:not(.intro-lifted) .hero .reveal.is-in { opacity: 0; transform: t
 }
 .system-fig { border-top: 1px solid var(--rule); padding-top: var(--space-tight); }
 .system-fig .body { margin-top: 0.35rem; }
-.system-img { width: 100%; height: auto; margin-bottom: 1rem; }
+/* The two sketches differ a little in height; one frame, both sat on its
+   foot, keeps the horizons and the captions under them level. */
+.system-img { width: 100%; height: auto; aspect-ratio: 1721 / 628; object-fit: contain; object-position: center bottom; margin-bottom: 1rem; }
 
 .system-chain {
   grid-column: 3 / span 10;
@@ -622,71 +624,57 @@ html.has-intro:not(.intro-lifted) .hero .reveal.is-in { opacity: 0; transform: t
   gap: var(--space-tight) var(--gutter);
   margin-top: var(--space-block);
 }
-/* A step is a mark and a name. The mark is drawn in the rules' own 1px line,
-   at any size; the name drops to body size. The sentence behind it waits in
-   a box (below). */
+/* A step is a mark and a name over a 1px rule. The mark is drawn in the
+   rules' own 1px line, at any size; the name drops to body size. Without
+   script each sentence simply stands under its name. */
 .system-step { position: relative; }
 .system-step-head {
-  display: grid; grid-template-columns: auto auto;
-  justify-content: start; align-items: center;
-  gap: 0.9rem 0.6rem;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem;
   width: 100%;
   font: inherit; color: inherit; text-align: left;
-  background: none; border: 0; padding: 0;
+  background: none; border: 0; border-radius: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: 0 0 var(--space-tight);
+  transition: color 160ms linear, border-color 160ms linear;
 }
 .system-icon {
-  grid-column: 1 / -1;
   width: 3.5rem; height: 3.5rem;
   fill: none; stroke: currentColor; stroke-width: 1;
   stroke-linecap: square;
 }
 .system-icon * { vector-effect: non-scaling-stroke; }
 .system-step .title { font-size: var(--t-body); line-height: 1.35; }
-
-/* With script the sentence is folded into a box that opens off the name: on
-   hover and focus where there is a pointer, on a tap everywhere. The box is
-   the ink field, set like the hero's readout. A small plus beside the name
-   says there is more, and turns to a cross while the box is open. Without
-   script there is nothing to open, and the sentence is simply shown. */
 .system-tip { margin-top: 0.4rem; font-size: var(--t-label); line-height: 1.45; color: var(--ink-70); }
 
-html.js .system-step-head { cursor: pointer; }
-.system-more { display: none; }
-html.js .system-more {
-  display: block; position: relative;
-  width: 0.6rem; height: 0.6rem;
-  transition: rotate 260ms var(--ease-out);
-}
-html.js .system-more::before, html.js .system-more::after {
-  content: ''; position: absolute; background: var(--accent);
-}
-html.js .system-more::before { left: 0; right: 0; top: 50%; height: 1px; }
-html.js .system-more::after { top: 0; bottom: 0; left: 50%; width: 1px; }
-html.js .system-step-head[aria-expanded='true'] .system-more { rotate: 45deg; }
-
-html.js .system-tip {
-  position: absolute; left: 0; top: 100%;
-  z-index: 2;
-  width: max(100%, 15rem);
-  margin-top: 0.75rem;
-  padding: 0.7rem 0.9rem 0.75rem;
-  background: var(--ink); color: var(--on-ink);
-  opacity: 0; translate: 0 -0.35rem;
-  visibility: hidden;
-  transition: opacity 180ms var(--ease-out), translate 260ms var(--ease-out), visibility 0s linear 260ms;
-}
-html.js .system-step-head[aria-expanded='true'] + .system-tip,
-html.js .system-step-head:focus-visible + .system-tip {
-  opacity: 1; translate: 0 0; visibility: visible;
-  transition-delay: 0s;
-}
+/* With script the chain is a stepper, like tabs: one step is active at a
+   time, and its sentence stands in the one panel under the row, so a second
+   sentence can never open over the first and nothing floats over the page.
+   The active step is drawn in ink and underlined in the accent; the others
+   are set back to the muted grey. A pointer makes a step active by resting
+   on it, a finger or a key by choosing it (script.js). */
+html.js .system-tip { display: none; }
+html.js .system-step-head { cursor: pointer; color: var(--ink-55); }
+html.js .system-step-head[aria-selected='true'] { color: var(--ink); border-bottom-color: var(--accent); }
 @media (hover: hover) {
-  html.js .system-step:hover .system-tip { opacity: 1; translate: 0 0; visibility: visible; transition-delay: 0s; }
-  html.js .system-step:hover .system-icon { color: var(--accent-ink); }
+  html.js .system-step-head:hover { color: var(--ink); }
 }
-.system-icon { transition: color 160ms linear; }
+
+/* The panel spans the chain and stands under the active step: one column
+   wide, moved across by whole columns (--step, set by script.js). Percentages
+   here are of the panel's grid area, which is the chain's width. */
+.system-detail {
+  grid-column: 3 / span 10;
+  width: calc((100% - 3 * var(--gutter)) / 4);
+  margin-left: calc(var(--step, 0) * (100% + var(--gutter)) / 4);
+  margin-top: var(--space-tight);
+  min-height: 4.8em;   /* three lines, so a longer sentence never moves the page */
+}
+.system-detail[hidden] { display: none; }
+.system-detail.is-new { animation: system-detail-in 260ms var(--ease-out); }
+@keyframes system-detail-in { from { opacity: 0; translate: 0 0.35rem; } }
 @media (prefers-reduced-motion: reduce) {
-  html.js .system-tip, html.js .system-more { transition: none; }
+  .system-step-head { transition: none; }
+  .system-detail.is-new { animation: none; }
 }
 
 /* A hairline chevron in the gutter before each step, level with the marks;
@@ -750,14 +738,14 @@ html.js .heritage-fold-inner { overflow: hidden; min-height: 0; }
 }
 /* The partners' marks have already been shown in full above; here every
    mark is set back to the same trace of itself, Orbint's own included, and
-   the linked ones come forward under the pointer. */
+   each comes forward under the pointer. */
 .heritage-logos img {
   height: clamp(1.5rem, 2.2vw, 2rem); width: auto;
   filter: grayscale(1);
   opacity: 0.35;
   transition: filter 220ms linear, opacity 220ms linear;
 }
-.heritage-logos a:hover img { filter: none; opacity: 1; }
+.heritage-logos a:hover img, .heritage-logos > img:hover { filter: none; opacity: 1; }
 
 /* ── CAREERS ─────────────────────────────────────────────────────────────── */
 /* The section head, then the way through to the career site and a line for
@@ -887,6 +875,9 @@ html.js .heritage-fold-inner { overflow: hidden; min-height: 0; }
 .footer-grid { row-gap: var(--space-block); align-items: start; }
 .footer-brand { grid-column: 1 / span 2; }
 .footer-brand img { height: 2.75rem; width: auto; }
+/* The mark is the way home: back to the hero on the home page, to the home
+   page from anywhere else. */
+.footer-logo { display: block; width: fit-content; }
 /* Under the mark, the company's one social link: LinkedIn's own glyph, in the
    white of the footer's links, taking the accent under the pointer like every
    other link on the ink field. */
@@ -1041,7 +1032,7 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   .col-margin, .col-text, .col-wide,
   .use-case--government, .use-case--civilian,
   .contact-form, .contact-info,
-  .system-figs, .system-chain, .partner-grid, .job-aside,
+  .system-figs, .system-chain, .system-detail, .partner-grid, .job-aside,
   .hero-headline, .hero-lede, .hero-actions { grid-column: 1 / span 6; }
 
   .job-aside { position: static; }
@@ -1083,10 +1074,11 @@ html.js .reveal-rule.is-in { transform: scaleX(1); }
   /* Two steps abreast, and the box opens in place under its name rather than
      floating: a phone has no hover, and a floating box would run off the
      edge of a half-width column. */
-  .system-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-block); }
+  .system-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-tight); }
   .system-step::before { display: none; }
-  html.js .system-tip { position: static; width: auto; display: none; }
-  html.js .system-step-head[aria-expanded='true'] + .system-tip { display: block; }
+  /* Two steps abreast leave a column too narrow to read; under the grid the
+     panel takes the full width again. */
+  .system-detail { width: auto; margin-left: 0; min-height: 3.2em; }
   .heritage-logos { grid-column: auto; margin-top: 0.5rem; }
   .partner-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
